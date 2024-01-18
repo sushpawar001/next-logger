@@ -28,6 +28,7 @@ export default function EditEntry({ params }) {
     const submitForm = async (e) => {
         e.preventDefault()
         try {
+            data.createdAt = new Date(data.createdAt).toISOString()
             const response = await axios.put(`/api/weight/update/${params.entryId}`, data)
             notify(response.data.message, 'success')
             router.push('/weight/');
