@@ -67,6 +67,7 @@ export default function WeightPage() {
                                     <option>30</option>
                                     <option>90</option>
                                     <option>365</option>
+                                    <option value={365 * 10}>All</option>
                                 </select>
                             </div>
                             <table className='table-auto'>

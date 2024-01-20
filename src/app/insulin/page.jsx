@@ -6,6 +6,8 @@ import axios from 'axios'
 import Link from 'next/link'
 import InsulinAdd from "@/components/InsulinAdd";
 import InsulinChart from "@/components/InsulinChart";
+import InsulinChartSeparate from "@/components/InsulinChartSeparate";
+
 
 const TdStyle = {
     ThStyle: `w-1/6 lg:min-w-[100px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
@@ -67,6 +69,7 @@ export default function InsulinPage() {
                                     <option>30</option>
                                     <option>90</option>
                                     <option>365</option>
+                                    <option value={365 * 10}>All</option>
                                 </select>
                             </div>
                             <table className='table-auto'>
@@ -92,7 +95,8 @@ export default function InsulinPage() {
                 </div>
                 <div>
                     <div className='mb-6 mx-auto px-10 py-5 rounded-md bg-white shadow-md h-72'>
-                        <InsulinChart data={insulinData} />
+                        {/* <InsulinChart data={insulinData} /> */}
+                        <InsulinChartSeparate data={insulinData} />
                     </div>
                     <InsulinAdd data={insulinData} setData={setInsulinData} />
                 </div>
