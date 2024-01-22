@@ -13,7 +13,7 @@ import {
 import annotationPlugin from 'chartjs-plugin-annotation';
 import { Line } from 'react-chartjs-2';
 import axios from 'axios';
-import formatDate from '@/helpers/formatDate';
+import { ShortDateformat } from '@/helpers/formatDate';
 
 ChartJS.register(
     CategoryScale,
@@ -30,7 +30,7 @@ export const options = {
     responsive: true,
     plugins: {
         legend: {
-            position: 'top',
+            display: false,
         },
         // annotation: {
         //     annotations: {
@@ -62,7 +62,10 @@ export const options = {
     scales: {
         x: {
             ticks: {
-                display: false
+                display: false,
+                // font: {
+                //     size: 10
+                // }
             }
         },
     },
@@ -91,7 +94,7 @@ export default function GlucoseChart(props) {
         }
     };
     const data = {
-        labels: glucose.map((dataElem) => formatDate(dataElem.createdAt)),
+        labels: glucose.map((dataElem) => ShortDateformat(dataElem.createdAt)),
         datasets: [
             {
                 label: 'Glucose',

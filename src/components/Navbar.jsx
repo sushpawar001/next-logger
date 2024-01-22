@@ -43,7 +43,7 @@ const Navbar = ({ token }) => {
                             <nav
                                 // :className="!navbarOpen && 'hidden' "
                                 id="navbarCollapse"
-                                className={`absolute right-4 top-full w-full max-w-[250px] bg-cyan-600 lg:bg-cyan-600 px-6 py-3 shadow-xl dark:bg-dark-2 lg:static lg:block lg:w-full lg:max-w-full lg:shadow-none lg:dark:bg-transparent ${!open && "hidden"
+                                className={`rounded absolute right-4 top-full w-full max-w-[250px] bg-cyan-900 lg:bg-cyan-600 px-6 py-3 shadow-xl dark:bg-dark-2 lg:static lg:block lg:w-full lg:max-w-full lg:shadow-none lg:dark:bg-transparent ${!open && "hidden"
                                     } `}
                             >
                                 {token ? <ul className="block lg:flex">
@@ -51,10 +51,10 @@ const Navbar = ({ token }) => {
                                     <ListItem NavLink="/glucose">Glucose</ListItem>
                                     <ListItem NavLink="/insulin">Insulin</ListItem>
                                     <ListItem NavLink="/weight">Weight</ListItem>
-                                    <button className="rounded-md lg:ml-8 bg-white px-5 py-2 mt-2 lg:mt-0 text-md font-medium text-cyan-600 hover:text-cyan-800 transition ease-in-out duration-200 hover:shadow-xl w-full"
+                                    <button className="rounded-md lg:ml-8 outline outline-1 outline-white px-5 py-2 mt-2 lg:mt-0 text-base font-medium text-white transition ease-in-out duration-200 w-full"
                                         onClick={logOut}>Log Out</button>
                                 </ul> :
-                                    <div className="block lg:flex"><button className="rounded-md lg:ml-8 bg-white px-5 py-2 mt-2 lg:mt-0 text-md font-medium text-cyan-600 hover:text-cyan-800 transition ease-in-out duration-200 hover:shadow-xl w-full"
+                                    <div className="block lg:flex"><button className="rounded-md lg:ml-8 outline outline-1 outline-white px-5 py-2 mt-2 lg:mt-0 text-base font-medium text-white transition ease-in-out duration-200 w-full"
                                         onClick={logIn}>Log in</button></div>
                                 }
                             </nav>

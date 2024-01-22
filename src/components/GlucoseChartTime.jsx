@@ -2,21 +2,21 @@
 import React, { useEffect, useState } from 'react';
 import {
     Chart as ChartJS,
-    CategoryScale,
     LinearScale,
+    TimeScale,
     PointElement,
     LineElement,
     Title,
     Tooltip,
     Legend,
 } from 'chart.js';
+import 'chartjs-adapter-moment';
 import { Line } from 'react-chartjs-2';
 import axios from 'axios';
-import formatDate from '@/helpers/formatDate';
 
 ChartJS.register(
-    CategoryScale,
     LinearScale,
+    TimeScale,
     PointElement,
     LineElement,
     Title,
@@ -34,8 +34,12 @@ export const options = {
     maintainAspectRatio: false,
     scales: {
         x: {
+            type: 'time',
+            time: {
+                unit: 'day'
+            },
             ticks: {
-                display: false
+                display: true,
             }
         },
     },
@@ -46,15 +50,15 @@ export const options = {
     }
 };
 
-export default function WeightChart(props) {
-    const [weight, setWeight] = useState([])
+export default function GlucoseChartTime(props) {
+    const [glucose, setGlucose] = useState([])
     const daysOfData = props.days || 7;
-    const getWeight = async () => {
+    const getGlucose = async () => {
         try {
-            const response = await axios.get(`/api/weight/get/${daysOfData}/`);
+            const response = await axios.get(`/api/glucose/get/${daysOfData}/`);
             if (response.status === 200) {
-                let weightData = response.data.data.reverse()
-                setWeight(weightData);
+                let glucoseData = response.data.data.reverse()
+                setGlucose(glucoseData);
             }
             else {
                 console.error('API request failed with status:', response.status);
@@ -64,11 +68,12 @@ export default function WeightChart(props) {
         }
     };
     const data = {
-        labels: weight.map((dataElem) => formatDate(dataElem.createdAt)),
+        // labels: glucose.map((dataElem) => ShortDateformat(dataElem.createdAt)),
+        labels: glucose.map((dataElem) => dataElem.createdAt),
         datasets: [
             {
-                label: 'Weight',
-                data: weight.map((dataElem) => dataElem.value),
+                label: 'Glucose',
+                data: glucose.map((dataElem) => dataElem.value),
                 borderColor: 'rgb(8,145,178)',
                 backgroundColor: 'rgb(207,250,254)',
             }
@@ -76,9 +81,9 @@ export default function WeightChart(props) {
     };
     useEffect(() => {
         if (props.data && props.data.length > 0) {
-            setWeight(props.data.reverse())
+            setGlucose(props.data.reverse())
         } else {
-            getWeight();
+            getGlucose();
         }
     }, [props.data])
 

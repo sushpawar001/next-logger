@@ -12,6 +12,7 @@
     "axios": "^1.6.5",
     "bcryptjs": "^2.4.3",
     "chart.js": "^4.4.1",
+    "chartjs-adapter-moment": "^1.0.1",
     "chartjs-plugin-annotation": "^3.0.1",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",

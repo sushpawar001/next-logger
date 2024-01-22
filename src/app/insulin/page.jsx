@@ -56,7 +56,7 @@ export default function InsulinPage() {
     }
     return (
         <section className='h-full flex justify-center items-center bg-stone-100 p-5'>
-            <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6'>
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
                 <div className='bg-white p-4 rounded-md shadow-md order-1 md:order-first'>
                     <div className='flex flex-wrap'>
                         <div className='max-w-full overflow-x-auto rounded'>
@@ -94,8 +94,7 @@ export default function InsulinPage() {
                     </div>
                 </div>
                 <div>
-                    <div className='mb-6 mx-auto px-10 py-5 rounded-md bg-white shadow-md h-72'>
-                        {/* <InsulinChart data={insulinData} /> */}
+                    <div className='mb-4 md:mb-6 mx-auto px-10 py-5 rounded-md bg-white shadow-md h-72'>
                         <InsulinChartSeparate data={insulinData} />
                     </div>
                     <InsulinAdd data={insulinData} setData={setInsulinData} />
