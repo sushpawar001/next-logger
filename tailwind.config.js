@@ -6,4 +6,18 @@ module.exports = {
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   plugins: [require("tailgrids/plugin")],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          DEFAULT: '#5E4AE3',
+          dark: '#503ac8',
+          ring: '#8384f6'
+        },
+        secondary: '#202125',
+        background: '#E0E0E0',
+      
+      },
+    },
+  },
 }

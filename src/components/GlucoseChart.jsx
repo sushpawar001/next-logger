@@ -2,28 +2,26 @@
 import React, { useEffect, useState } from 'react';
 import {
     Chart as ChartJS,
-    CategoryScale,
     LinearScale,
+    TimeScale,
     PointElement,
     LineElement,
     Title,
     Tooltip,
     Legend,
 } from 'chart.js';
-import annotationPlugin from 'chartjs-plugin-annotation';
+import 'chartjs-adapter-moment';
 import { Line } from 'react-chartjs-2';
 import axios from 'axios';
-import { ShortDateformat } from '@/helpers/formatDate';
 
 ChartJS.register(
-    CategoryScale,
     LinearScale,
+    TimeScale,
     PointElement,
     LineElement,
     Title,
     Tooltip,
     Legend,
-    annotationPlugin,
 );
 
 export const options = {
@@ -32,40 +30,16 @@ export const options = {
         legend: {
             display: false,
         },
-        // annotation: {
-        //     annotations: {
-        //         line1: {
-        //             type: 'line',
-        //             yMin: 70,
-        //             yMax: 70,
-        //             borderColor: 'rgb(220,38,38)',
-        //             borderWidth: 2,
-        //             borderDash: [5, 7],
-        //             label: {
-        //                 content: "Dashed Line at 50",
-        //                 position: "center",
-        //                 display: true
-        //             },
-        //         },
-        //         line2: {
-        //             type: 'line',
-        //             yMin: 200,
-        //             yMax: 200,
-        //             borderColor: 'rgb(220,38,38)',
-        //             borderWidth: 2,
-        //             borderDash: [5, 7]
-        //         },
-        //     }
-        // }
     },
     maintainAspectRatio: false,
     scales: {
         x: {
+            type: 'time',
+            time: {
+                unit: 'day'
+            },
             ticks: {
-                display: false,
-                // font: {
-                //     size: 10
-                // }
+                display: true,
             }
         },
     },
@@ -76,7 +50,7 @@ export const options = {
     }
 };
 
-export default function GlucoseChart(props) {
+export default function GlucoseChartTime(props) {
     const [glucose, setGlucose] = useState([])
     const daysOfData = props.days || 7;
     const getGlucose = async () => {
@@ -94,13 +68,14 @@ export default function GlucoseChart(props) {
         }
     };
     const data = {
-        labels: glucose.map((dataElem) => ShortDateformat(dataElem.createdAt)),
+        // labels: glucose.map((dataElem) => ShortDateformat(dataElem.createdAt)),
+        labels: glucose.map((dataElem) => dataElem.createdAt),
         datasets: [
             {
                 label: 'Glucose',
                 data: glucose.map((dataElem) => dataElem.value),
-                borderColor: 'rgb(8,145,178)',
-                backgroundColor: 'rgb(207,250,254)',
+                borderColor: '#d62828',
+                backgroundColor: '#E0E0E0',
             }
         ],
     };

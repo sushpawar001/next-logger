@@ -11,7 +11,7 @@ export async function POST(request) {
         const { units, name } = body;
         const user = getUserFromToken(request);
         const entry = await Insulin.create({ units, name, user });
-        return NextResponse.json({ entry, message: "Entry added!" })
+        return NextResponse.json({ entry, message: `${name} insulin Entry added!` })
 
     } catch (error) {
         console.log("Error adding Insulin" + error);

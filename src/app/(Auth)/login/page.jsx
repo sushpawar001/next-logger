@@ -36,10 +36,10 @@ export default function LogIn() {
 
     };
     return (
-        <div className='flex h-full justify-center items-center bg-stone-100 py-10 px-8 md:px-20'>
-            <div className="mx-auto w-full max-w-lg rounded-md bg-white px-10 py-16 text-center shadow-md">
+        <div className='flex h-full justify-center items-center bg-background py-10 px-8 md:px-20'>
+            <div className="mx-auto w-full max-w-lg rounded-xl bg-white px-10 py-16 text-center shadow-md">
                 <div className="mb-6 text-3xl font-bold">
-                    <h1>Login</h1>
+                    <h1 className='text-secondary'>Login</h1>
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-6">
@@ -49,7 +49,7 @@ export default function LogIn() {
                             name='email'
                             value={formData.email}
                             onChange={handleInputChange}
-                            className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-cyan focus-visible:shadow-none dark:border-dark-3 dark:text-white"
+                            className="w-full rounded-xl border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary-ring focus-visible:shadow-none"
                         />
                     </div>
                     <div className="mb-6">
@@ -59,10 +59,10 @@ export default function LogIn() {
                             name='password'
                             value={formData.password}
                             onChange={handleInputChange}
-                            className="w-full rounded-md border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-cyan focus-visible:shadow-none dark:border-dark-3 dark:text-white"
+                            className="w-full rounded-xl border border-stroke bg-transparent px-5 py-3 text-base text-body-color outline-none focus:border-primary-ring focus-visible:shadow-none"
                         />
                     </div>
-                    <button type="submit" className="text-white bg-cyan-600 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-full px-5 py-2.5 text-center dark:bg-cyan-600 dark:hover:bg-cyan-600 dark:focus:ring-cyan-800">Login</button>
+                    <button type="submit" className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full px-5 py-2.5 text-center">Login</button>
                 </form>
             </div>
         </div>

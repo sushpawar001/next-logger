@@ -1,22 +1,22 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import {
     Chart as ChartJS,
-    CategoryScale,
     LinearScale,
+    TimeScale,
     PointElement,
     LineElement,
     Title,
     Tooltip,
     Legend,
 } from 'chart.js';
+import 'chartjs-adapter-moment';
 import { Line } from 'react-chartjs-2';
 import axios from 'axios';
-import formatDate from '@/helpers/formatDate';
 
 ChartJS.register(
-    CategoryScale,
     LinearScale,
+    TimeScale,
     PointElement,
     LineElement,
     Title,
@@ -34,9 +34,13 @@ export const options = {
     maintainAspectRatio: false,
     scales: {
         x: {
+            type: 'time',
+            time: {
+                unit: 'day'
+            },
             ticks: {
-                display: false
-            }
+                display: true,
+            },
         },
     },
     elements: {
@@ -49,31 +53,32 @@ export const options = {
 export default function WeightChart(props) {
     const [weight, setWeight] = useState([])
     const daysOfData = props.days || 7;
-    const getWeight = async () => {
+    const getWeight = useCallback(async () => {
         try {
             const response = await axios.get(`/api/weight/get/${daysOfData}/`);
             if (response.status === 200) {
-                let weightData = response.data.data.reverse()
+                let weightData = response.data.data.reverse();
                 setWeight(weightData);
-            }
-            else {
+            } else {
                 console.error('API request failed with status:', response.status);
             }
         } catch (error) {
             console.log(error);
         }
-    };
-    const data = {
-        labels: weight.map((dataElem) => formatDate(dataElem.createdAt)),
+    }, [daysOfData]);
+
+    const data = useMemo(() => ({
+        labels: weight.map((dataElem) => dataElem.createdAt),
         datasets: [
             {
                 label: 'Weight',
                 data: weight.map((dataElem) => dataElem.value),
-                borderColor: 'rgb(8,145,178)',
-                backgroundColor: 'rgb(207,250,254)',
+                borderColor: '#f77f00',
+                backgroundColor: '#E0E0E0',
             }
         ],
-    };
+    }), [weight]);
+
     useEffect(() => {
         if (props.data && props.data.length > 0) {
             setWeight(props.data.reverse())

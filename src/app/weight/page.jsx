@@ -11,7 +11,7 @@ const TdStyle = {
     ThStyle: `w-1/6 lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
     TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-base`,
     TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-base`,
-    TdButton: `inline-block px-4 py-1.5 border rounded-md border-cyan-800 text-cyan-800 hover:bg-cyan-800 hover:text-white font-normal text-base`,
+    TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-base`,
     TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-base`,
 }
 
@@ -53,15 +53,15 @@ export default function WeightPage() {
         }
     }
     return (
-        <section className='h-full flex justify-center items-center bg-stone-100 p-5'>
+        <section className='h-full flex justify-center items-center bg-background p-5'>
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6'>
-                <div className='bg-white p-4 rounded-md shadow-md order-1 md:order-first'>
+                <div className='bg-white p-4 rounded-xl shadow-md order-1 md:order-first'>
                     <div className='flex flex-wrap'>
-                        <div className='max-w-full overflow-x-auto rounded'>
+                        <div className='max-w-full overflow-x-auto rounded-xl'>
                             <div className='mb-2 grid grid-cols-2'>
                                 <h3 className='my-auto ml-1 text-lg font-medium text-gray-900'>Weight History</h3>
                                 <select id="daysOfDataInput" value={daysOfData} onChange={changeDaysOfData}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-cyan-500 dark:focus:border-cyan-500">
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5">
                                     <option defaultValue="7">7</option>
                                     <option>14</option>
                                     <option>30</option>
@@ -71,11 +71,11 @@ export default function WeightPage() {
                                 </select>
                             </div>
                             <table className='table-auto'>
-                                <thead className='text-center bg-cyan-800'>
+                                <thead className='text-center bg-secondary'>
                                     <tr>
-                                        <th className={`${TdStyle.ThStyle} rounded-tl`}>Weight</th>
+                                        <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>Weight</th>
                                         <th className={TdStyle.ThStyle}>DateTime</th>
-                                        <th className={`${TdStyle.ThStyle} rounded-tr`}>Action</th>
+                                        <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>Action</th>
                                     </tr>
                                 </thead>
 
@@ -174,15 +174,15 @@ function Modal(props) {
                     onBlur={() => setModalOpen(false)}
                     className="w-full max-w-[500px] rounded-[20px] bg-white px-8 py-12 text-center md:px-[70px] md:py-[60px]"
                 >
-                    <h3 className="pb-[18px] text-xl font-semibold text-dark dark:text-white sm:text-2xl">
+                    <h3 className="pb-[18px] text-xl font-semibold text-dark sm:text-2xl">
                         Do you really want to delete this?
                     </h3>
                     <span
-                        className={`mx-auto mb-6 inline-block h-1 w-[90px] rounded bg-cyan-600`}
+                        className={`mx-auto mb-6 inline-block h-1 w-[90px] rounded bg-primary`}
                     ></span>
                     <div className="-mx-3 flex flex-wrap">
                         <div className="w-1/2 px-3">
-                            <button className="block w-full rounded-md border-cyan-600 bg-cyan-600 p-3 text-center text-base font-medium text-white transition hover:bg-cyan-800" onClick={() => setModalOpen(false)}>
+                            <button className="block w-full rounded-md border-primary bg-primary p-3 text-center text-base font-medium text-white transition hover:bg-primary-dark" onClick={() => setModalOpen(false)}>
                                 Cancel
                             </button>
                         </div>

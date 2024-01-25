@@ -39,16 +39,16 @@ export default function WeightAdd(props) {
         }
     }
     return (
-        <form className="max-w-full mx-auto p-5 md:p-7 rounded-md bg-white shadow-md" onSubmit={submitForm}>
-            <label htmlFor="weight" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your Body Weight (kg)</label>
-            <div className='flex flex-col md:flex-row gap-3'>
+        <form className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow-md" onSubmit={submitForm}>
+            <label htmlFor="weight" className="block mb-2 text-sm font-medium text-secondary dark:text-white">Your Body Weight (kg)</label>
+            <div className='flex flex-col md:flex-row gap-2'>
                 <input type="number" id="weight"
-                    className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-lg focus:ring-cyan-500 focus:border-cyan-500 block w-full p-2.5"
+                    className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                     placeholder="72 kg"
                     value={weight}
                     onChange={changeWeight}
                     required />
-                <button type="submit" className="text-white bg-cyan-600 hover:bg-cyan-800 focus:ring-4 focus:outline-none focus:ring-cyan-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center">Submit</button>
+                <button type="submit" className="text-white bg-primary hover:bg-primary-dark focus:ring-4 focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center">Submit</button>
             </div>
         </form>
 

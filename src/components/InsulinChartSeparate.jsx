@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -10,7 +10,6 @@ import {
     Tooltip,
     Legend,
 } from 'chart.js';
-import annotationPlugin from 'chartjs-plugin-annotation';
 import { Line } from 'react-chartjs-2';
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -23,7 +22,6 @@ ChartJS.register(
     Title,
     Tooltip,
     Legend,
-    annotationPlugin,
 );
 
 export const options = {
@@ -37,7 +35,7 @@ export const options = {
     scales: {
         x: {
             ticks: {
-                display: false
+                display: true,
             }
         },
     },
@@ -65,17 +63,19 @@ export default function InsulinChartSeparate(props) {
             console.log(error);
         }
     };
+    const aggregateInsulinData = useCallback(
+        (insulin) => {
+            const aggregatedData = {};
 
-    const aggregateInsulinData = (insulin) => {
-        const aggregatedData = {};
-
-        insulin.forEach(element => {
-            const date = moment.utc(element.createdAt).tz('Asia/Kolkata').format('DD MMM YY');
-            aggregatedData[date] = aggregatedData[date] || { Actrapid: 0, Lantus: 0 };
-            aggregatedData[date][element.name] += element.units;
-        });
-        return aggregatedData;
-    };
+            insulin.forEach(element => {
+                const date = moment.utc(element.createdAt).tz('Asia/Kolkata').format('DD MMM YY');
+                aggregatedData[date] = aggregatedData[date] || { Actrapid: 0, Lantus: 0 };
+                aggregatedData[date][element.name] += element.units;
+            });
+            return aggregatedData;
+        },
+        [],
+    )
 
     const getChartData = (aggregatedData) => {
         const labels = Object.keys(aggregatedData);
@@ -83,14 +83,14 @@ export default function InsulinChartSeparate(props) {
             {
                 label: 'ActrapidData',
                 data: labels.map(createdAt => aggregatedData[createdAt].Actrapid),
-                borderColor: 'rgb(8,145,178)',
-                backgroundColor: 'rgb(207,250,254)',
+                borderColor: '#0E7C7B',
+                backgroundColor: '#A3F5F3',
             },
             {
                 label: 'LantusData',
                 data: labels.map(createdAt => aggregatedData[createdAt].Lantus),
-                borderColor: 'rgb(220,38,38)',
-                backgroundColor: 'rgb(254,226,226)',
+                borderColor: '#202125',
+                backgroundColor: '#BEBFC6',
             }
         ];
 
@@ -105,8 +105,12 @@ export default function InsulinChartSeparate(props) {
         }
     }, [props.data])
 
-    const aggregatedData = aggregateInsulinData(insulin);
-    const ChartData = getChartData(aggregatedData)
+    // const aggregatedData = aggregateInsulinData(insulin);
+    // const ChartData = getChartData(aggregatedData)
+
+    const aggregatedData = useMemo(() => aggregateInsulinData(insulin), [aggregateInsulinData, insulin]);
+    const ChartData = useMemo(() => getChartData(aggregatedData), [aggregatedData]);
+
 
     return <Line options={options} data={ChartData} />;
 }
