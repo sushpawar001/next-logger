@@ -16,6 +16,7 @@ module.exports = {
         },
         secondary: '#202125',
         background: '#E0E0E0',
+        grayNav: '#39383d'
       
       },
     },
