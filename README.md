@@ -48,6 +48,13 @@ Next-logger [Fitdose] is a mobile-responsive web application built with Next.js,
 - Axios
 - react-toastify
 
+## Screenshots
+**Desktop Dashboard**
+![Desktop Dashboard](https://github.com/sushpawar001/next-logger/blob/main/screenshots/desktop/Dashboard%20Desktop_1.png?raw=true)
+
+**Mobile Dashboard**
+![Mobile Dashboard](https://github.com/sushpawar001/next-logger/blob/main/screenshots/mobile/Dashboard%20Mobile_1.png?raw=true)
+
 ## Contributing
 
 We welcome contributions! Feel free to open issues or pull requests for improvements or bug fixes.
