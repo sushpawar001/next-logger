@@ -67,7 +67,7 @@ export default function InsulinAdd(props) {
                         <option>Actrapid</option>
                         <option>Lantus</option>
                     </select>
-                    <button type="submit" className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center">Submit</button>
+                    <button type="submit" className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300">Submit</button>
                 </div>
 
         </form>

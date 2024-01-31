@@ -8,16 +8,16 @@ import {
 import axios from "axios";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const Navbar = ({ token }) => {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const trigger = useRef(null);
   const logOut = async () => {
     try {
       const response = await axios.get("/api/users/logout/");
       console.log(response);
-      // router.push('/login')
       router.refresh();
     } catch (error) {
       console.log(error);
@@ -26,6 +26,18 @@ const Navbar = ({ token }) => {
   const logIn = () => {
     router.push("/login");
   };
+
+  // close on click outside
+  useEffect(() => {
+    const clickHandler = ({ target }) => {
+      if (!open || trigger.current.contains(target)) return;
+      setTimeout(() => {
+        setOpen(false);
+      }, 100);
+    };
+    document.addEventListener("click", clickHandler);
+    return () => document.removeEventListener("click", clickHandler);
+  });
 
   return (
     <header className="flex w-full items-center bg-secondary py-2 md:py-0">
@@ -42,6 +54,7 @@ const Navbar = ({ token }) => {
             <div>
               <button
                 onClick={() => setOpen(!open)}
+                ref={trigger}
                 id="navbarToggler"
                 className={` ${
                   open && "navbarTogglerActive"
@@ -73,7 +86,7 @@ const Navbar = ({ token }) => {
                       <p className="my-auto">Weight</p>
                     </ListItem>
                     <button
-                      className="rounded-xl lg:ml-8 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-200 h-full w-full"
+                      className="rounded-xl lg:ml-8 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                       onClick={logOut}
                     >
                       Log Out
@@ -82,7 +95,7 @@ const Navbar = ({ token }) => {
                 ) : (
                   <div className="block lg:flex">
                     <button
-                      className="rounded-xl lg:ml-8 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-200 h-full w-full"
+                      className="rounded-xl lg:ml-8 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                       onClick={logIn}
                     >
                       Log in
@@ -103,13 +116,13 @@ export default Navbar;
 const ListItem = ({ children, NavLink, icon }) => {
   const currentRoute = usePathname();
   const nonActiveStyle =
-    "text-right flex py-2 text-base font-medium text-white lg:ml-6 lg:inline-flex hover:underline underline-offset-8";
+    "text-right flex py-2 text-base font-medium text-white lg:ml-6 lg:inline-flex hover:underline underline-offset-8 group";
   const activeStyle =
     "underline text-right flex py-2 text-base font-medium text-white lg:ml-6 lg:inline-flex hover:underline underline-offset-8";
   const activeIcon =
     "bg-primary flex size-8 items-center justify-center my-auto mr-4 lg:mr-2 rounded-lg";
   const nonActiveIcon =
-    "bg-grayNav flex size-8 items-center justify-center my-auto mr-4 lg:mr-2 rounded-lg";
+    "bg-grayNav flex size-8 items-center justify-center my-auto mr-4 lg:mr-2 rounded-lg group-hover:scale-[1.15] transition-transform duration-300 ease-in-out";
   return (
     <>
       <li>
