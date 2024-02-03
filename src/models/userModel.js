@@ -1,16 +1,25 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
-}, { timestamps: true })
+    insulins: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "insulintype",
+      },
+    ],
+  },
+  { timestamps: true }
+);
 
 const User = mongoose.models.users || mongoose.model("users", userSchema);
 

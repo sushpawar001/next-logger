@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faWeightScale, faSyringe, faHouse, faDroplet } from '@fortawesome/free-solid-svg-icons'
+import { faWeightScale, faSyringe, faHouse, faDroplet, faUser } from '@fortawesome/free-solid-svg-icons'
 
 export function HouseIcon({className}) {
   return (
@@ -20,6 +20,12 @@ export function GlucoseIcon({className}) {
 export function WeightScaleIcon({className}) {
   return (
     <FontAwesomeIcon icon={faWeightScale} className={className||''} />
+  )
+}
+
+export function ProfileIcon({className}) {
+  return (
+    <FontAwesomeIcon icon={faUser} className={className||''} />
   )
 }
 

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import GlucoseAdd from "@/components/GlucoseAdd";
 import GlucoseChart from "@/components/GlucoseChart";
 import formatDate from "@/helpers/formatDate";
@@ -18,16 +18,17 @@ const TdStyle = {
 export default function GlucosePage() {
   const [glucoseData, setGlucoseData] = useState([]);
   const [daysOfData, setDaysOfData] = useState(7);
-
+  
   useEffect(() => {
     const getGlucoseData = async () => {
       try {
-        const response = await axios.get(`/api/glucose/get/${daysOfData}/`);
-        if (response.status === 200) {
-          setGlucoseData(response.data.data);
-        } else {
-          console.error("API request failed with status:", response.status);
-        }
+        axios.get(`/api/glucose/get/${daysOfData}/`).then((response) => {
+          if (response.status === 200) {
+            setGlucoseData(response.data.data);
+          } else {
+            console.error("API request failed with status:", response.status);
+          }
+        });
       } catch (error) {
         console.log(error);
       }
@@ -102,7 +103,7 @@ export default function GlucosePage() {
         </div>
         <div>
           <div className="mb-4 md:mb-6 mx-auto px-10 py-5 rounded-xl bg-white shadow-md h-72">
-            <GlucoseChart data={glucoseData} />
+              <GlucoseChart data={glucoseData} />
           </div>
           <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
         </div>

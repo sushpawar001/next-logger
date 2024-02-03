@@ -4,6 +4,7 @@ import {
   GlucoseIcon,
   WeightScaleIcon,
   SyringeIcon,
+  ProfileIcon
 } from "@/helpers/iconHelpers";
 import axios from "axios";
 import Link from "next/link";
@@ -42,7 +43,7 @@ const Navbar = ({ token }) => {
   return (
     <header className="flex w-full items-center bg-secondary py-2 md:py-0">
       <div className="container">
-        <div className="relative -mx-4 flex items-center justify-between">
+        <div className="relative -mx-4 lg:-mx-6 flex items-center justify-between">
           <div className="w-60 max-w-full px-4 py-1">
             <Link href="/">
               <h1 className="text-2xl md:text-3xl font-medium text-white">
@@ -76,6 +77,9 @@ const Navbar = ({ token }) => {
                     <ListItem NavLink="/" icon={<HouseIcon />}>
                       <p className="my-auto">Home</p>
                     </ListItem>
+                    <ListItem NavLink="/profile" icon={<ProfileIcon />}>
+                      <p className="my-auto">Profile</p>
+                    </ListItem>
                     <ListItem NavLink="/glucose" icon={<GlucoseIcon />}>
                       <p className="my-auto">Glucose</p>
                     </ListItem>
@@ -86,7 +90,7 @@ const Navbar = ({ token }) => {
                       <p className="my-auto">Weight</p>
                     </ListItem>
                     <button
-                      className="rounded-xl lg:ml-8 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
+                      className="rounded-xl lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                       onClick={logOut}
                     >
                       Log Out
@@ -95,7 +99,7 @@ const Navbar = ({ token }) => {
                 ) : (
                   <div className="block lg:flex">
                     <button
-                      className="rounded-xl lg:ml-8 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
+                      className="rounded-xl lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                       onClick={logIn}
                     >
                       Log in
