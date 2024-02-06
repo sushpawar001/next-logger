@@ -11,14 +11,12 @@ export default function GlucoseAdd(props) {
 
   const submitForm = async (e) => {
     e.preventDefault();
-    console.log(glucose);
     try {
       const response = await axios.post(
         "/api/glucose/add/",
         { value: glucose },
         { withCredentials: true }
       );
-      console.log("response: [Add]", response);
       notify(response.data.message, "success");
       setGlucose("");
 

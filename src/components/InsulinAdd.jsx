@@ -28,13 +28,11 @@ export default function InsulinAdd(props) {
 
   const submitForm = async (e) => {
     e.preventDefault();
-    console.log(insulin);
     try {
       const response = await axios.post("/api/insulin/add/", {
         units: insulin,
         name: insulinType,
       });
-      console.log(response);
       notify(response.data.message, "success");
       setInsulinType("");
       setInsulin("");

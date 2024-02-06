@@ -18,7 +18,7 @@ const Navbar = ({ token }) => {
   const logOut = async () => {
     try {
       const response = await axios.get("/api/users/logout/");
-      console.log(response);
+      console.log('logout: ',response);
       router.refresh();
     } catch (error) {
       console.log(error);

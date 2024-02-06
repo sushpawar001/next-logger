@@ -11,7 +11,6 @@ export default function WeightAdd(props) {
 
     const submitForm = async (e) => {
         e.preventDefault()
-        console.log(weight)
         try {
             const response = await axios.post('/api/weight/add/', { value: weight })
             notify(response.data.message, 'success')
@@ -47,6 +46,7 @@ export default function WeightAdd(props) {
                     placeholder="72 kg"
                     value={weight}
                     onChange={changeWeight}
+                    step='any'
                     required />
                 <button type="submit" className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300">Submit</button>
             </div>
