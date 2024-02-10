@@ -3,21 +3,28 @@ import React, { useState, useEffect } from "react";
 import notify from "@/helpers/notify";
 import axios from "axios";
 
-export default function InsulinTypeAdd(props) {
+type InsulinType = {
+  _id: string,
+  name: string,
+  createdAt: string,
+}
+
+export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: any; }) {
   const [insulinType, setInsulinType] = useState("");
-  const [allInsulinType, setallInsulinType] = useState([]);
+  const [allInsulinType, setallInsulinType] = useState<InsulinType[]>([]);
   const [newInsulinType, setNewInsulinType] = useState("");
   const { data, setData } = props;
-  const changeInsulinType = (event) => {
+  
+  const changeInsulinType = (event: { target: { value: string; }; }) => {
     const insulinTypeInput = event.target.value;
     setInsulinType(insulinTypeInput);
   };
 
-  const changeNewInsulinType = (event) => {
+  const changeNewInsulinType = (event: { target: { value: string; }; }) => {
     const newInsulinTypeInput = event.target.value;
     setNewInsulinType(newInsulinTypeInput);
   };
-  const sortData = (data) => {
+  const sortData = (data: InsulinType[]) => {
     return data.sort((a, b) => a.name.localeCompare(b.name));
   };
 
@@ -32,7 +39,6 @@ export default function InsulinTypeAdd(props) {
         const response = await axios.post("/api/insulin-type/add/", {
           name: newInsulinType,
         });
-        console.log("new:", response);
         notify(response.data.message, "success");
         setNewInsulinType("");
         setallInsulinType((data) => [...data, response.data.entry]);
@@ -109,7 +115,7 @@ export default function InsulinTypeAdd(props) {
                 {data.name}
               </option>
             ))}
-          </select>              
+          </select>
           <button
             type="submit"
             className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300"

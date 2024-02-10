@@ -1,9 +1,4 @@
-export function totalWeight(plates, barWeight) {
-  // if (typeof plates == "number") {
-  //   console.log("plates:", plates);
-  //   plates = [plates];
-  // }
-
+export function totalWeight(plates: number[], barWeight: number): number {
   let total = 0;
   for (let i = 0; i < plates.length; i++) {
     total += 2 * plates[i];
@@ -12,7 +7,10 @@ export function totalWeight(plates, barWeight) {
   return total + barWeight;
 }
 
-export function greedyApproach(oneSideWeight, availablePlates) {
+export function greedyApproach(
+  oneSideWeight: number,
+  availablePlates: number[]
+): number[] {
   const plates = availablePlates.slice().sort(function (a, b) {
     return b - a;
   });
@@ -31,7 +29,10 @@ export function greedyApproach(oneSideWeight, availablePlates) {
   return platesToLoad;
 }
 
-export function mathApproach(oneSideWeight, availablePlates) {
+export function mathApproach(
+  oneSideWeight: number,
+  availablePlates: number[]
+): number[] | null {
   let plates = null;
   let rangeObj = [2, 3, 4]; // Array Number of sets
 
@@ -39,10 +40,10 @@ export function mathApproach(oneSideWeight, availablePlates) {
     rangeObj = [1, 2];
   }
 
-  const helper = (oneSideWeight, num) => {
-    plates = Math.floor(oneSideWeight / num);
+  const helper = (oneSideWeight: number, numOfSets: number) => {
+    plates = Math.floor(oneSideWeight / numOfSets);
     if (availablePlates.indexOf(plates) !== -1) {
-      return Array(num).fill(plates);
+      return Array(numOfSets).fill(plates);
     }
   };
 
@@ -59,30 +60,11 @@ export function mathApproach(oneSideWeight, availablePlates) {
   return plates;
 }
 
-// export function robustApproach(Load, barWeight, availablePlates) {
-//   const oneSideWeight = calcOneSideWeight(Load, barWeight);
-//   let platesToLoad = mathApproach(oneSideWeight, availablePlates);
-
-//   if (platesToLoad) {
-//     const calcTotalWeight = totalWeight(platesToLoad, barWeight);
-
-//     if (calcTotalWeight && calcTotalWeight !== Load) {
-//       const remainingWeight = Load - calcTotalWeight;
-//       const remainingPlates = greedyApproach(
-//         remainingWeight / 2,
-//         availablePlates
-//       );
-
-//       platesToLoad = platesToLoad.concat(remainingPlates);
-//     }
-//   } else {
-//     return greedyApproach(oneSideWeight, availablePlates);
-//   }
-
-//   return platesToLoad;
-// }
-
-export function robustApproach(load, barWeight, availablePlates) {
+export function robustApproach(
+  load: number,
+  barWeight: number,
+  availablePlates: number[]
+): number[] {
   const oneSideWeight = calcOneSideWeight(load, barWeight);
 
   // Attempt the mathematical approach first
@@ -108,9 +90,9 @@ export function robustApproach(load, barWeight, availablePlates) {
   return greedyApproach(oneSideWeight, availablePlates);
 }
 
-export function calcOneSideWeight(Load, barWeight) {
-  if (Load > barWeight) {
-    return (Load - barWeight) / 2;
+export function calcOneSideWeight(load: number, barWeight: number): number {
+  if (load > barWeight) {
+    return (load - barWeight) / 2;
   } else {
     return 0;
   }

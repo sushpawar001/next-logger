@@ -11,8 +11,8 @@ export default function SignUp() {
     password: "",
   });
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+  const handleInputChange = (event: { target: { name: string; value: string; }; }) => {
+    const { name, value }: { name: string; value: string } = event.target;
     setFormData({
       ...formData,
       [name]: value,
@@ -23,7 +23,6 @@ export default function SignUp() {
     e.preventDefault();
     try {
       const response = await axios.post("/api/users/signup/", formData);
-      // console.log(response)
       if (response.status === 200) {
         notify("Signup Successful!", "success");
         router.push("/login");

@@ -11,8 +11,10 @@ export default function LogIn() {
     password: "",
   });
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
+  const handleInputChange = (event: {
+    target: { name: string; value: string };
+  }) => {
+    const { name, value }: { name: string; value: string } = event.target;
     setFormData({
       ...formData,
       [name]: value,
@@ -23,7 +25,6 @@ export default function LogIn() {
     e.preventDefault();
     try {
       const response = await axios.post("/api/users/login/", formData);
-      // console.log(response)
       if (response.status === 200) {
         notify("Login Successful!", "success");
         router.push("/");
@@ -34,6 +35,7 @@ export default function LogIn() {
       notify(error.response.data.error, "error");
     }
   };
+
   return (
     <div className="flex h-full justify-center items-center bg-background py-10 px-8 md:px-20">
       <div className="mx-auto w-full max-w-lg rounded-xl bg-white px-10 py-16 text-center shadow-md">

@@ -1,9 +1,9 @@
 import React from 'react'
-import GlucoseAdd from '@/components/GlucoseAdd'
-import InsulinAdd from '@/components/InsulinAdd'
 import WeightAdd from '@/components/WeightAdd'
 import GlucoseChart from '@/components/GlucoseChart'
 import WeightChart from '@/components/WeightChart'
+import GlucoseAdd from '@/components/GlucoseAdd'
+import InsulinAdd from '@/components/InsulinAdd'
 
 export default function Dashboard() {
     return (

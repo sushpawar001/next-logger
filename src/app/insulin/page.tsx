@@ -1,52 +1,60 @@
 "use client";
-import React, { Suspense, useEffect, useRef, useState } from "react";
-import GlucoseAdd from "@/components/GlucoseAdd";
-import GlucoseChart from "@/components/GlucoseChart";
+import React, { useEffect, useRef, useState } from "react";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
+import InsulinAdd from "@/components/InsulinAdd";
+import InsulinChartSeparate from "@/components/InsulinChartSeparate";
 
 const TdStyle = {
-  ThStyle: `w-1/6 lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
+  ThStyle: `w-1/6 lg:min-w-[100px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
   TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-base`,
   TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-base`,
   TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-base`,
   TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-base`,
 };
 
-export default function GlucosePage() {
-  const [glucoseData, setGlucoseData] = useState([]);
+type insulinEntryType = {
+  _id: string;
+  user: string;
+  name: string;
+  createdAt: string;
+  units: number;
+};
+
+export default function InsulinPage() {
+  const [insulinData, setInsulinData] = useState<insulinEntryType[]>([]);
   const [daysOfData, setDaysOfData] = useState(7);
-  
+
   useEffect(() => {
-    const getGlucoseData = async () => {
+    const getInsulinData = async () => {
       try {
-        axios.get(`/api/glucose/get/${daysOfData}/`).then((response) => {
-          if (response.status === 200) {
-            setGlucoseData(response.data.data);
-          } else {
-            console.error("API request failed with status:", response.status);
-          }
-        });
+        const response = await axios.get(`/api/insulin/get/${daysOfData}/`);
+        if (response.status === 200) {
+          let fetchedData: insulinEntryType[] = response.data.data;
+          setInsulinData(fetchedData);
+        } else {
+          console.error("API request failed with status:", response.status);
+        }
       } catch (error) {
         console.log(error);
       }
     };
-    getGlucoseData();
+    getInsulinData();
   }, [daysOfData]);
 
-  const changeDaysOfData = (event) => {
+  const changeDaysOfData = (event: { target: { value: string } }) => {
     const daysInput = event.target.value;
-    setDaysOfData(daysInput);
+    setDaysOfData(parseInt(daysInput));
   };
 
-  const deleteData = async (id) => {
+  const deleteData = async (id: string) => {
     try {
-      const deletedData = await axios.delete(`/api/glucose/delete/${id}`);
-      let updatedData = glucoseData.filter((obj) => obj._id !== id);
-      setGlucoseData(updatedData);
-      notify("Glucose data deleted!", "success");
+      const deletedData = await axios.delete(`/api/insulin/delete/${id}`);
+      let updatedData = insulinData.filter((obj) => obj._id !== id);
+      setInsulinData(updatedData);
+      notify("Insulin data deleted!", "success");
     } catch (error) {
       console.log(error);
     }
@@ -59,13 +67,13 @@ export default function GlucosePage() {
             <div className="max-w-full overflow-x-auto rounded-lg">
               <div className="mb-2 grid grid-cols-2">
                 <h3 className="my-auto ml-1 text-lg font-medium text-gray-900">
-                  Glucose History
+                  Insulin History
                 </h3>
                 <select
                   id="daysOfDataInput"
                   value={daysOfData}
                   onChange={changeDaysOfData}
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-full p-2.5"
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                 >
                   <option defaultValue="7">7</option>
                   <option>14</option>
@@ -80,8 +88,9 @@ export default function GlucosePage() {
                   <tr>
                     <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
                       {" "}
-                      Blood Glucose{" "}
+                      Blood Insulin{" "}
                     </th>
+                    <th className={TdStyle.ThStyle}> Type </th>
                     <th className={TdStyle.ThStyle}> DateTime </th>
                     <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
                       {" "}
@@ -91,7 +100,7 @@ export default function GlucosePage() {
                 </thead>
 
                 <tbody>
-                  {glucoseData.map((obj) => {
+                  {insulinData.map((obj) => {
                     return (
                       <TableRow key={obj._id} data={obj} delete={deleteData} />
                     );
@@ -103,27 +112,27 @@ export default function GlucosePage() {
         </div>
         <div>
           <div className="mb-4 md:mb-6 mx-auto px-10 py-5 rounded-xl bg-white shadow-md h-72">
-              <GlucoseChart data={glucoseData} />
+            <InsulinChartSeparate data={insulinData} />
           </div>
-          <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
+          <InsulinAdd data={insulinData} setData={setInsulinData} />
         </div>
       </div>
     </section>
   );
 }
 
-function TableRow(props) {
-  const { value, createdAt, _id } = props.data;
+function TableRow(props: { data: insulinEntryType; delete: (arg0: string) => void; }) {
+  const { units, name, createdAt, _id } = props.data;
   return (
     <tr>
-      <td className={TdStyle.TdStyle}>{value}</td>
-      <td className={TdStyle.TdStyle2}>{formatDate(createdAt)}</td>
-      <td className={TdStyle.TdStyle}>
+      <td className={TdStyle.TdStyle}>{units}</td>
+      <td className={TdStyle.TdStyle2}>{name}</td>
+      <td className={TdStyle.TdStyle}>{formatDate(createdAt)}</td>
+      <td className={TdStyle.TdStyle2}>
         <div className="flex gap-2">
-          <Link href={`/glucose/${_id}`} className={TdStyle.TdButton}>
+          <Link href={`/insulin/${_id}`} className={TdStyle.TdButton}>
             Edit
           </Link>
-          {/* <button className={TdStyle.TdButton2} onClick={() => { props.delete(_id) }}>Delete</button> */}
           <Modal
             delete={() => {
               props.delete(_id);
@@ -135,7 +144,7 @@ function TableRow(props) {
   );
 }
 
-function Modal(props) {
+function Modal(props: { delete: () => void; }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const trigger = useRef(null);
@@ -188,7 +197,7 @@ function Modal(props) {
           onBlur={() => setModalOpen(false)}
           className="w-full max-w-[500px] rounded-[20px] bg-white px-8 py-12 text-center md:px-[70px] md:py-[60px]"
         >
-          <h3 className="pb-[18px] text-xl font-semibold text-secondary dark:text-white sm:text-2xl">
+          <h3 className="pb-[18px] text-xl font-semibold text-secondary sm:text-2xl">
             Do you really want to delete this?
           </h3>
           <span
@@ -197,7 +206,7 @@ function Modal(props) {
           <div className="-mx-3 flex flex-wrap">
             <div className="w-1/2 px-3">
               <button
-                className="block w-full rounded-xl border-primary bg-primary p-3 text-center text-base font-medium text-white transition hover:bg-primary-dark"
+                className="block w-full rounded-xl border-primary-dark bg-primary p-3 text-center text-base font-medium text-white transition hover:bg-primary-dark"
                 onClick={() => setModalOpen(false)}
               >
                 Cancel

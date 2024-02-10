@@ -1,6 +1,12 @@
 import React from "react";
 
-export default function UserDetails(props) {
+type InsulinType = {
+  _id: string;
+  name: string;
+  createdAt: string;
+};
+
+export default function UserDetails(props: { data: InsulinType[] }) {
   const { data } = props;
   return (
     <div className="max-w-full h-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow-md">

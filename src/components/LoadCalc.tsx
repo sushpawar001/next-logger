@@ -17,15 +17,17 @@ export default function LoadCalc() {
   const [platesToLoad, setplatesToLoad] = useState([]);
   const [isGreedy, setIsGreedy] = useState(false);
 
-  const changeBarWeight = (event) => {
+  const changeBarWeight = (event: { target: { value: string } }): void => {
     setBarWeight(parseFloat(event.target.value));
   };
 
-  const changeLoad = (event) => {
+  const changeLoad = (event: { target: { value: string } }): void => {
     setLoad(parseFloat(event.target.value));
   };
 
-  const changeAvailablePlates = (event) => {
+  const changeAvailablePlates = (event: {
+    target: { value: string };
+  }): void => {
     let numbersString = event.target.value;
     setAvailablePlatesInput(numbersString);
     let numbersArray = numbersString.split(",").filter(Boolean).map(Number);
@@ -159,7 +161,13 @@ export default function LoadCalc() {
   );
 }
 
-const Switcher = ({ isGreedy, setIsGreedy }) => {
+const Switcher = ({
+  isGreedy,
+  setIsGreedy,
+}: {
+  isGreedy: boolean;
+  setIsGreedy: any;
+}) => {
   const handleCheckboxChange = () => {
     setIsGreedy(!isGreedy);
   };

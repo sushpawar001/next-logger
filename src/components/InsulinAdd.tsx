@@ -7,26 +7,26 @@ export default function InsulinAdd(props) {
   const [insulin, setInsulin] = useState("");
   const [insulinType, setInsulinType] = useState("");
   const [userInsulinType, setuserInsulinType] = useState([]);
-  const changeInsulin = (event) => {
+
+  const changeInsulin = (event: { target: { value: string } }): void => {
     const insulinInput = event.target.value;
     setInsulin(insulinInput);
   };
 
-  const changeInsulinType = (event) => {
+  const changeInsulinType = (event: { target: { value: string } }): void => {
     const insulinTypeInput = event.target.value;
     setInsulinType(insulinTypeInput);
   };
 
   const getUserInsulinType = async () => {
     const reponse = await axios.get("api/users/get-insulin/");
-    console.log(reponse);
-    let sortedData = reponse.data.data.sort((a, b) =>
-      a.name.localeCompare(b.name)
+    let sortedData = reponse.data.data.sort(
+      (a: { name: string }, b: { name: string }) => a.name.localeCompare(b.name)
     );
     setuserInsulinType(sortedData);
   };
 
-  const submitForm = async (e) => {
+  const submitForm = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     try {
       const response = await axios.post("/api/insulin/add/", {
@@ -46,7 +46,10 @@ export default function InsulinAdd(props) {
           const newData = [newEntry, ...prevData];
 
           // Sort the array based on the 'date' property
-          newData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          newData.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
 
           return newData;
         });
@@ -95,8 +98,6 @@ export default function InsulinAdd(props) {
           {userInsulinType.map((data) => (
             <option key={data._id}>{data.name}</option>
           ))}
-          {/* <option>Actrapid</option>
-          <option>Lantus</option> */}
         </select>
         <button
           type="submit"

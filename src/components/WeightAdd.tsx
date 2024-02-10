@@ -3,25 +3,21 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import React, { useState } from "react";
 
-export default function GlucoseAdd(props) {
-  const [glucose, setGlucose] = useState("");
-  const changeGlucose = (event) => {
-    setGlucose(event.target.value);
+export default function WeightAdd(props) {
+  const [weight, setWeight] = useState("");
+
+  const changeWeight = (event: { target: { value: string } }) => {
+    setWeight(event.target.value);
   };
 
   const submitForm = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
-        "/api/glucose/add/",
-        { value: glucose },
-        { withCredentials: true }
-      );
+      const response = await axios.post("/api/weight/add/", { value: weight });
       notify(response.data.message, "success");
-      setGlucose("");
+      setWeight("");
 
       if (props.data && props.setData) {
-        // Assuming response.data.entry has a 'date' property
         const newEntry = response.data.entry;
 
         props.setData((prevData) => {
@@ -29,7 +25,10 @@ export default function GlucoseAdd(props) {
           const newData = [newEntry, ...prevData];
 
           // Sort the array based on the 'date' property
-          newData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          newData.sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
 
           return newData;
         });
@@ -45,19 +44,20 @@ export default function GlucoseAdd(props) {
       onSubmit={submitForm}
     >
       <label
-        htmlFor="glucose"
+        htmlFor="weight"
         className="block mb-2 text-sm font-medium text-secondary dark:text-white"
       >
-        Your Blood Glucose
+        Your Body Weight (kg)
       </label>
       <div className="flex flex-col md:flex-row gap-2">
         <input
           type="number"
-          id="glucose"
-          className="bg-gray-50 border border-stone-400  text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
-          placeholder="98 mg/dl"
-          value={glucose}
-          onChange={changeGlucose}
+          id="weight"
+          className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+          placeholder="72 kg"
+          value={weight}
+          onChange={changeWeight}
+          step="any"
           required
         />
         <button

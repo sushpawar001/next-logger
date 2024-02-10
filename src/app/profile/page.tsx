@@ -4,12 +4,19 @@ import React, { useEffect, useState } from "react";
 import InsulinTypeAdd from "@/components/InsulinTypeAdd";
 import UserDetails from "@/components/UserDetails";
 
+type InsulinType = {
+  _id: string,
+  name: string,
+  createdAt: string,
+}
+
 export default function ProfilePage() {
-  const [userInsulins, setUserInsulins] = useState([]);
+  const [userInsulins, setUserInsulins] = useState<InsulinType[]>([]);
   useEffect(() => {
     const getData = async () => {
       const resposne = await axios.get("/api/users/get-insulin/");
-      setUserInsulins(resposne.data.data);
+      let fetchedData: InsulinType[] = resposne.data.data
+      setUserInsulins(fetchedData);
     };
     getData();
   }, []);
