@@ -6,6 +6,7 @@ import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 
 const TdStyle = {
   ThStyle: `w-1/6 lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
@@ -18,8 +19,10 @@ const TdStyle = {
 export default function GlucosePage() {
   const [glucoseData, setGlucoseData] = useState([]);
   const [daysOfData, setDaysOfData] = useState(7);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     const getGlucoseData = async () => {
       try {
         axios.get(`/api/glucose/get/${daysOfData}/`).then((response) => {
@@ -31,6 +34,8 @@ export default function GlucosePage() {
         });
       } catch (error) {
         console.log(error);
+      } finally {
+        setLoading(false);
       }
     };
     getGlucoseData();
@@ -51,6 +56,11 @@ export default function GlucosePage() {
       console.log(error);
     }
   };
+
+  if (loading === true) {
+    return <LoadingSkeleton />;
+  }
+
   return (
     <section className="h-full flex justify-center items-center bg-background p-5">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
