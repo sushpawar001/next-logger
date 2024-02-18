@@ -5,12 +5,15 @@ import {
   robustApproach,
 } from "@/helpers/loadCalcHelpers";
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export default function LoadCalc() {
   const [barWeight, setBarWeight] = useState(20);
   const [Load, setLoad] = useState(0);
   const [OneSideLoad, setOneSideLoad] = useState(0);
-  const [availablePlates, setAvailablePlates] = useState([2.5, 5, 10, 15, 20]);
+  const [availablePlates, setAvailablePlates] = useState([
+    2.5, 5, 10, 15, 20,
+  ]);
   const [availablePlatesInput, setAvailablePlatesInput] = useState(
     String(availablePlates)
   );
@@ -58,8 +61,8 @@ export default function LoadCalc() {
   }, [Load, OneSideLoad, availablePlates, barWeight, isGreedy]);
 
   const TdStyle = {
-    ThStyle: `w-1/6 border-l border-transparent p-2 text-base font-medium text-white lg:px-4`,
-    TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white p-2 text-center font-normal text-base`,
+    ThStyle: `w-1/6 min-w-[70px] border-l border-transparent px-3 py-2 text-base font-medium text-white lg:px-4`,
+    TdStyle2: `text-dark border border-[#E8E8E8] bg-white p-2 text-center font-normal text-base`,
   };
 
   return (
@@ -67,15 +70,38 @@ export default function LoadCalc() {
       <div className="text-secondary p-2 col-span-1 text-center">
         <p>One side weight: {OneSideLoad}kg</p>
         {platesToLoad.length > 0 ? (
-          <table className="table-auto my-2">
+          <motion.table
+            className="table-auto my-2"
+            initial={{ opacity: 0, y: "-10%" }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{
+              type: "spring",
+              duration: 0.5,
+              stiffness: 150,
+            }}
+          >
             <thead className="bg-secondary">
-              <tr>
-                <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>Set</th>
+              <motion.tr
+                initial={{ opacity: 0, y: "-50%" }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{
+                  type: "spring",
+                  duration: 0.3,
+                  stiffness: 150,
+                }}
+              >
+                <th
+                  className={`${TdStyle.ThStyle} rounded-tl-lg`}
+                >
+                  Set
+                </th>
                 <th className={`${TdStyle.ThStyle}`}>Plates</th>
-                <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
+                <th
+                  className={`${TdStyle.ThStyle} rounded-tr-lg`}
+                >
                   Progression
                 </th>
-              </tr>
+              </motion.tr>
             </thead>
             <tbody>
               {platesToLoad.map((elem, id, array) => {
@@ -83,17 +109,32 @@ export default function LoadCalc() {
                   .slice(0, id + 1)
                   .reduce((acc, val) => acc + val, 0);
                 return (
-                  <tr key={id}>
-                    <td className={TdStyle.TdStyle2}>{id + 1}</td>
-                    <td className={TdStyle.TdStyle2}>{elem} kg</td>
+                  <motion.tr
+                    key={id}
+                    initial={{ opacity: 0, y: "-50%" }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{
+                      type: "spring",
+                      duration: 0.3,
+                      stiffness: 150,
+                      delay: id < 6 ? id * 0.15 : 0.15 * 6,
+                    }}
+                  >
+                    <td className={TdStyle.TdStyle2}>
+                      {id + 1}
+                    </td>
+                    <td className={TdStyle.TdStyle2}>
+                      {elem} kg
+                    </td>
                     <td className={TdStyle.TdStyle2}>
                       {cumulativeSum * 2 + barWeight} kg
                     </td>
-                  </tr>
+                  </motion.tr>
                 );
               })}
             </tbody>
-          </table>
+          </motion.table>
         ) : (
           <p>Enter weight to see sets</p>
         )}
@@ -117,6 +158,7 @@ export default function LoadCalc() {
             value={Load}
             onChange={changeLoad}
             min={0}
+            max={1000}
             step="any"
             required
           />
@@ -174,7 +216,7 @@ const Switcher = ({
 
   return (
     <>
-      <label className="w-full border border-primary relative inline-flex cursor-pointer select-none items-center justify-center rounded-xl bg-white">
+      <label className="w-full border border-primary inline-flex cursor-pointer select-none items-center justify-center rounded-xl bg-white">
         <input
           type="checkbox"
           className="sr-only"
@@ -182,16 +224,14 @@ const Switcher = ({
           onChange={handleCheckboxChange}
         />
         <span
-          className={`flex flex-grow items-center justify-center rounded-l-lg py-2 px-4 text-sm font-medium ${
-            !isGreedy ? "text-white bg-primary" : "text-body-color"
-          }`}
+          className={`flex flex-grow items-center justify-center rounded-l-lg py-2 px-4 text-sm font-medium ${!isGreedy ? "text-white bg-primary" : "text-body-color"
+            }`}
         >
           Robust Mode
         </span>
         <span
-          className={`flex flex-grow items-center justify-center rounded-r-lg py-2 px-4 text-sm font-medium ${
-            isGreedy ? "text-white bg-primary" : "text-body-color"
-          }`}
+          className={`flex flex-grow items-center justify-center rounded-r-lg py-2 px-4 text-sm font-medium ${isGreedy ? "text-white bg-primary" : "text-body-color"
+            }`}
         >
           Greedy Mode
         </span>
