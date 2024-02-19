@@ -81,7 +81,7 @@ export default function WeightChart(props) {
 
     useEffect(() => {
         if (props.data && props.data.length > 0) {
-            setWeight(props.data.reverse())
+            setWeight(props.data.slice().reverse())
         } else {
             getWeight();
         }

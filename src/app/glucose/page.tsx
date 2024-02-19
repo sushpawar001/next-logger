@@ -164,7 +164,7 @@ function TableRow(props) {
     );
 }
 
-function Modal(props) {
+function Modal(props: { delete: () => void; }) {
     const [modalOpen, setModalOpen] = useState(false);
     const trigger = useRef(null);
     const modal = useRef(null);

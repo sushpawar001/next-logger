@@ -81,7 +81,7 @@ export default function GlucoseChartTime(props) {
     };
     useEffect(() => {
         if (props.data && props.data.length > 0) {
-            setGlucose(props.data.reverse())
+            setGlucose(props.data.slice().reverse())
         } else {
             getGlucose();
         }

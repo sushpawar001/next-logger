@@ -99,7 +99,7 @@ export default function InsulinChartSeparate(props) {
 
     useEffect(() => {
         if (props.data && props.data.length > 0) {
-            setInsulin(props.data.reverse())
+            setInsulin(props.data.slice().reverse())
         } else {
             getInsulin();
         }
