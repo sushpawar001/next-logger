@@ -132,7 +132,7 @@ export default function GlucosePage() {
                 </div>
                 <div>
                     <div className="mb-4 md:mb-6 mx-auto px-10 py-5 rounded-xl bg-white shadow-md h-72">
-                        <GlucoseChart data={glucoseData} />
+                        <GlucoseChart data={glucoseData} fetch={false} />
                     </div>
                     <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
                 </div>
@@ -152,7 +152,6 @@ function TableRow(props) {
                     <Link href={`/glucose/${_id}`} className={TdStyle.TdButton}>
                         Edit
                     </Link>
-                    {/* <button className={TdStyle.TdButton2} onClick={() => { props.delete(_id) }}>Delete</button> */}
                     <Modal
                         delete={() => {
                             props.delete(_id);
