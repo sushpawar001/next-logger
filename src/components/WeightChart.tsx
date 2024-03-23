@@ -15,6 +15,7 @@ import { Line } from "react-chartjs-2";
 import axios from "axios";
 import { weight } from "@/types/models";
 import type { ChartData, ChartOptions } from "chart.js";
+import zoomPlugin from "chartjs-plugin-zoom";
 
 ChartJS.register(
     LinearScale,
@@ -23,14 +24,47 @@ ChartJS.register(
     LineElement,
     Title,
     Tooltip,
-    Legend
+    Legend,
+    zoomPlugin
 );
+
+const calculateMovingAverage = (data, windowSize) => {
+    const movingAverage = [];
+    for (let i = 0; i < data.length; i++) {
+        const start = Math.max(0, i - windowSize + 1);
+        const end = i + 1;
+        const sum = data.slice(start, end).reduce((acc, val) => acc + val, 0);
+        movingAverage.push(sum / (end - start));
+    }
+    return movingAverage;
+};
 
 export const options: ChartOptions<"line"> = {
     responsive: true,
     plugins: {
         legend: {
-            display: false,
+            display: true,
+        },
+        zoom: {
+            pan: {
+                enabled: true,
+                mode: "xy",
+            },
+            zoom: {
+                wheel: {
+                    enabled: true,
+                },
+                pinch: {
+                    enabled: true,
+                },
+                mode: "xy",
+                onZoomComplete({ chart }) {
+                    // This update is needed to display up to date zoom level in the title.
+                    // Without this, previous zoom level is displayed.
+                    // The reason is: title uses the same beforeUpdate hook, and is evaluated before zoom.
+                    chart.update("none");
+                },
+            },
         },
     },
     maintainAspectRatio: false,
@@ -76,6 +110,11 @@ export default function WeightChart(props: {
         }
     }, [daysOfData]);
 
+    const movingAverage = calculateMovingAverage(
+        weight.map((dataElem) => dataElem.value),
+        7
+    );
+
     const data = useMemo(
         () => ({
             labels: weight.map((dataElem) => dataElem.createdAt),
@@ -83,8 +122,16 @@ export default function WeightChart(props: {
                 {
                     label: "Weight",
                     data: weight.map((dataElem) => dataElem.value),
-                    borderColor: "#f77f00",
-                    backgroundColor: "#E0E0E0",
+                    borderColor: "#fca311",
+                    backgroundColor: "#fca31195",
+                },
+                {
+                    label: "Weight MA",
+                    data: movingAverage,
+                    borderColor: "#000000",
+                    backgroundColor: "#00000095",
+                    pointRadius: 0,
+                    hidden: true,
                 },
             ],
         }),
