@@ -18,7 +18,6 @@
     "chart.js": "^4.4.1",
     "chartjs-adapter-moment": "^1.0.1",
     "chartjs-plugin-annotation": "^3.0.1",
-    "chartjs-plugin-zoom": "^2.0.1",
     "framer-motion": "^11.0.5",
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
