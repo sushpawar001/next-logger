@@ -87,7 +87,6 @@ export default function InsulinChartSeparate(props) {
                 };
                 aggregatedData[date][element.name] += element.units;
             });
-            console.log("aggregatedData", aggregatedData);
             return aggregatedData;
         },
         []
@@ -141,7 +140,7 @@ export default function InsulinChartSeparate(props) {
     const allInsulins: string[] = getUniqueInsulins(insulin);
     const aggregatedData = aggregateInsulinData(insulin, allInsulins);
     const ChartData = getChartData(aggregatedData, allInsulins);
-    console.log(ChartData);
+    // console.log(ChartData);
 
     // const aggregatedData = useMemo(
     //     () => aggregateInsulinData(insulin, allInsulins),

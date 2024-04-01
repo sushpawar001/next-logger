@@ -16,4 +16,5 @@ export interface weight {
 export interface glucose {
     value: number;
     createdAt?: Date;
+    _id?: string;
 }
