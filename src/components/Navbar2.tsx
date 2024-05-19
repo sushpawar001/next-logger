@@ -6,7 +6,7 @@ import {
     SyringeIcon,
     ProfileIcon,
 } from "@/helpers/iconHelpers";
-import { ReactNode, useState, useRef, useEffect } from "react";
+import { ReactNode, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
@@ -32,6 +32,7 @@ export default function Navbar2({
     const toggleDrawer = () => {
         if (drawerRef.current) {
             drawerRef.current.click();
+            // drawerRef.current.checked = false;
         }
     };
 
@@ -98,44 +99,7 @@ export default function Navbar2({
                                 <div className="hidden lg:flex gap-8 font-redhat font-semibold lg:flex-grow lg:justify-end lg:order-2">
                                     {token ? (
                                         <ul className="block lg:flex">
-                                            <ListItem
-                                                NavLink="/"
-                                                icon={<HouseIcon />}
-                                            >
-                                                <p className="my-auto">Home</p>
-                                            </ListItem>
-                                            <ListItem
-                                                NavLink="/profile"
-                                                icon={<ProfileIcon />}
-                                            >
-                                                <p className="my-auto">
-                                                    Profile
-                                                </p>
-                                            </ListItem>
-                                            <ListItem
-                                                NavLink="/glucose"
-                                                icon={<GlucoseIcon />}
-                                            >
-                                                <p className="my-auto">
-                                                    Glucose
-                                                </p>
-                                            </ListItem>
-                                            <ListItem
-                                                NavLink="/insulin"
-                                                icon={<SyringeIcon />}
-                                            >
-                                                <p className="my-auto">
-                                                    Insulin
-                                                </p>
-                                            </ListItem>
-                                            <ListItem
-                                                NavLink="/weight"
-                                                icon={<WeightScaleIcon />}
-                                            >
-                                                <p className="my-auto">
-                                                    Weight
-                                                </p>
-                                            </ListItem>
+                                            <IconList />
                                             <button
                                                 className="rounded-xl lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                                                 onClick={logOut}
@@ -143,6 +107,25 @@ export default function Navbar2({
                                                 Log Out
                                             </button>
                                         </ul>
+                                    ) : (
+                                        <div className="block lg:flex">
+                                            <button
+                                                className="rounded-xl lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
+                                                onClick={logIn}
+                                            >
+                                                Log in
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="order-3 lg:hidden min-w-fit">
+                                    {token ? (
+                                        <button
+                                            className="rounded-xl lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
+                                            onClick={logOut}
+                                        >
+                                            Log Out
+                                        </button>
                                     ) : (
                                         <div className="block lg:flex">
                                             <button
@@ -166,31 +149,7 @@ export default function Navbar2({
                         className="drawer-overlay"
                     ></label>
                     <ul className="menu p-4 w-80 min-h-full bg-secondary text-white">
-                        <ListItem NavLink="/" icon={<HouseIcon />}>
-                            <p className="my-auto" onClick={toggleDrawer}>
-                                Home
-                            </p>
-                        </ListItem>
-                        <ListItem NavLink="/profile" icon={<ProfileIcon />}>
-                            <p className="my-auto" onClick={toggleDrawer}>
-                                Profile
-                            </p>
-                        </ListItem>
-                        <ListItem NavLink="/glucose" icon={<GlucoseIcon />}>
-                            <p className="my-auto" onClick={toggleDrawer}>
-                                Glucose
-                            </p>
-                        </ListItem>
-                        <ListItem NavLink="/insulin" icon={<SyringeIcon />}>
-                            <p className="my-auto" onClick={toggleDrawer}>
-                                Insulin
-                            </p>
-                        </ListItem>
-                        <ListItem NavLink="/weight" icon={<WeightScaleIcon />}>
-                            <p className="my-auto" onClick={toggleDrawer}>
-                                Weight
-                            </p>
-                        </ListItem>
+                        <IconList onClickFn={toggleDrawer} />
                     </ul>
                 </div>
             </div>
@@ -198,7 +157,17 @@ export default function Navbar2({
     );
 }
 
-const ListItem = ({ children, NavLink, icon }) => {
+const ListItem = ({
+    children,
+    NavLink,
+    icon,
+    onClickFn,
+}: {
+    children: ReactNode;
+    NavLink: string;
+    icon: ReactNode;
+    onClickFn?: VoidFunction;
+}) => {
     const currentRoute = usePathname();
     const nonActiveStyle =
         "text-right flex py-2 text-base font-medium text-white lg:ml-6 lg:inline-flex hover:underline underline-offset-8 group";
@@ -210,7 +179,7 @@ const ListItem = ({ children, NavLink, icon }) => {
         "bg-grayNav flex size-8 items-center justify-center my-auto mr-4 lg:mr-2 rounded-lg group-hover:scale-[1.15] transition-transform duration-300 ease-in-out";
     return (
         <>
-            <li>
+            <li onClick={onClickFn}>
                 <Link
                     href={NavLink}
                     className={
@@ -232,3 +201,39 @@ const ListItem = ({ children, NavLink, icon }) => {
         </>
     );
 };
+
+const IconList = ({ onClickFn }: { onClickFn?: VoidFunction }) => (
+    <>
+        <ListItem NavLink="/" icon={<HouseIcon />} onClickFn={onClickFn}>
+            <p className="my-auto">Home</p>
+        </ListItem>
+        <ListItem
+            NavLink="/profile"
+            icon={<ProfileIcon />}
+            onClickFn={onClickFn}
+        >
+            <p className="my-auto">Profile</p>
+        </ListItem>
+        <ListItem
+            NavLink="/glucose"
+            icon={<GlucoseIcon />}
+            onClickFn={onClickFn}
+        >
+            <p className="my-auto">Glucose</p>
+        </ListItem>
+        <ListItem
+            NavLink="/insulin"
+            icon={<SyringeIcon />}
+            onClickFn={onClickFn}
+        >
+            <p className="my-auto">Insulin</p>
+        </ListItem>
+        <ListItem
+            NavLink="/weight"
+            icon={<WeightScaleIcon />}
+            onClickFn={onClickFn}
+        >
+            <p className="my-auto">Weight</p>
+        </ListItem>
+    </>
+);
