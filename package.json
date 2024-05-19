@@ -38,6 +38,7 @@
     "@types/react": "^18.2.54",
     "@types/react-fontawesome": "^1.6.8",
     "autoprefixer": "^10.0.1",
+    "daisyui": "^4.10.5",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
     "postcss": "^8",

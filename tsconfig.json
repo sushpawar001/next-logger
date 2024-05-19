@@ -30,7 +30,7 @@
     ".next/types/**/*.ts",
     "**/*.ts",
     "**/*.tsx"
-, "src/helpers/getUserFromToken.ts", "src/components/Navbar.jsx", "src/helpers/notify.js"  ],
+, "src/helpers/getUserFromToken.ts", "src/components/Navbar.jsx", "src/helpers/notify.js", "src/helpers/iconHelpers.js"  ],
   "exclude": [
     "node_modules"
   ]
