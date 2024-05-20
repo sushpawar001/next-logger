@@ -2,16 +2,18 @@
 import notify from "@/helpers/notify";
 import axios from "axios";
 import React, { useState } from "react";
-import { motion } from "framer-motion";
 
 export default function GlucoseAdd(props) {
     const [glucose, setGlucose] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     const changeGlucose = (event: { target: { value: string } }): void => {
         setGlucose(event.target.value);
     };
 
     const submitForm = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
+        setIsSubmitting(true);
         try {
             const response = await axios.post(
                 "/api/glucose/add/",
@@ -20,6 +22,7 @@ export default function GlucoseAdd(props) {
             );
             notify(response.data.message, "success");
             setGlucose("");
+            setIsSubmitting(false);
 
             if (props.data && props.setData) {
                 // Assuming response.data.entry has a 'date' property
@@ -48,11 +51,6 @@ export default function GlucoseAdd(props) {
         }
     };
     return (
-        // <motion.div
-        //     initial={{ y: "25%", opacity: 0 }}
-        //     animate={{ y: 0, opacity: 1 }}
-        //     transition={{ duration: 0.5 }}
-        // >
         <form
             className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow-md"
             onSubmit={submitForm}
@@ -67,7 +65,7 @@ export default function GlucoseAdd(props) {
                 <input
                     type="number"
                     id="glucose"
-                    className="bg-gray-50 border border-stone-400  text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                    className="bg-gray-50 border border-stone-400  text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full lg:w-4/5 p-2.5"
                     placeholder="98 mg/dl"
                     value={glucose}
                     onChange={changeGlucose}
@@ -75,9 +73,14 @@ export default function GlucoseAdd(props) {
                 />
                 <button
                     type="submit"
-                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300"
+                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full lg:w-1/5 px-5 py-2.5 text-center transition duration-300"
+                    disabled={isSubmitting}
                 >
-                    Submit
+                    {isSubmitting ? (
+                        <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                    ) : (
+                        "Submit"
+                    )}
                 </button>
             </div>
         </form>
