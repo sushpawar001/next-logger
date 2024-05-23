@@ -62,7 +62,7 @@ export default function Navbar2({
                     {/* Navbar */}
                     <div className="w-full bg-secondary text-white p-0">
                         <div className="container">
-                            <div className="flex lg:gap-16 my-3 w-full items-center lg:justify-center justify-between">
+                            <div className="flex lg:gap-16 my-1 lg:my-3 w-full items-center lg:justify-center justify-between">
                                 {/* logo */}
                                 <div className="flex-none lg:hidden">
                                     <label
