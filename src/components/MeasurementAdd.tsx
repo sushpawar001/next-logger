@@ -126,7 +126,7 @@ export default function MeasurementAdd({data = null, setData = null, className =
                 <div className="col-span-4 grid grid-cols-4 gap-1">
                     <button
                         type="submit"
-                        className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full px-5 py-2.5 text-center transition duration-300 col-span-3"
+                        className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full px-2.5 xl:px-5 py-2 xl:py-2.5 text-center transition duration-300 col-span-3"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? (
@@ -137,7 +137,7 @@ export default function MeasurementAdd({data = null, setData = null, className =
                     </button>
                     <button
                         type="reset"
-                        className="text-white bg-red-500 hover:bg-red-600 focus:ring focus:outline-none focus:ring-red-300 font-medium rounded-xl text-sm w-full px-5 py-2.5 text-center transition duration-300 col-span-1"
+                        className="text-white bg-red-500 hover:bg-red-600 focus:ring focus:outline-none focus:ring-red-300 font-medium rounded-xl text-sm w-full xl:px-5 px-2.5 py-2 xl:py-2.5 text-center transition duration-300 col-span-1"
                         disabled={isSubmitting}
                         onClick={resetForm}
                     >

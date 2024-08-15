@@ -8,11 +8,12 @@ import WeightAdd from "@/components/WeightAdd";
 import WeightChart from "@/components/WeightChart";
 
 const TdStyle = {
-    ThStyle: `w-1/6 lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
-    TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-base`,
-    TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-base`,
-    TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-base`,
-    TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-base`,
+    ThStyle: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4`,
+    // ThStyle: `w-1/6 xl:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
+    TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-sm xl:text-base`,
+    TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-sm xl:text-base`,
+    TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-sm xl:text-base`,
+    TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-sm xl:text-base`,
 };
 
 export default function WeightPage() {
@@ -60,7 +61,7 @@ export default function WeightPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <div className="bg-white p-4 rounded-xl shadow-md order-1 md:order-first">
                     <div className="flex flex-wrap">
-                        <div className="max-w-full overflow-x-auto rounded-xl">
+                        <div className="w-full overflow-x-auto rounded-xl">
                             <div className="mb-2 grid grid-cols-2">
                                 <h3 className="my-auto ml-1 text-lg font-medium text-gray-900">
                                     Weight History
@@ -79,37 +80,38 @@ export default function WeightPage() {
                                     <option value={365 * 100}>All</option>
                                 </select>
                             </div>
-                            <table className="table-auto">
-                                <thead className="text-center bg-secondary">
-                                    <tr>
-                                        <th
-                                            className={`${TdStyle.ThStyle} rounded-tl-lg`}
-                                        >
-                                            Weight
-                                        </th>
-                                        <th className={TdStyle.ThStyle}>
-                                            DateTime
-                                        </th>
-                                        <th
-                                            className={`${TdStyle.ThStyle} rounded-tr-lg`}
-                                        >
-                                            Action
-                                        </th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {weightData.map((obj) => {
-                                        return (
-                                            <TableRow
-                                                key={obj._id}
-                                                data={obj}
-                                                delete={deleteData}
-                                            />
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                            <div className="max-h-96 overflow-y-auto w-full">
+                                <table className="table-auto w-full">
+                                    <thead className="text-center bg-secondary sticky top-0 z-10">
+                                        <tr>
+                                            <th
+                                                className={`${TdStyle.ThStyle} rounded-tl-lg`}
+                                            >
+                                                Weight
+                                            </th>
+                                            <th className={TdStyle.ThStyle}>
+                                                DateTime
+                                            </th>
+                                            <th
+                                                className={`${TdStyle.ThStyle} rounded-tr-lg`}
+                                            >
+                                                Action
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {weightData.map((obj) => {
+                                            return (
+                                                <TableRow
+                                                    key={obj._id}
+                                                    data={obj}
+                                                    delete={deleteData}
+                                                />
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -190,7 +192,7 @@ function Modal(props) {
             </button>
             {/* modal  */}
             <div
-                className={`fixed left-0 top-0 flex h-full min-h-screen w-full items-center justify-center bg-dark/90 px-4 py-5 ${
+                className={`fixed left-0 top-0 flex h-full min-h-screen w-full items-center justify-center bg-dark/90 px-4 py-5 z-50 ${
                     modalOpen ? "block" : "hidden"
                 }`}
             >

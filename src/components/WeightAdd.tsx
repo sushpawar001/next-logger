@@ -49,7 +49,7 @@ export default function WeightAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow-md"
+            className="max-w-full mx-auto p-5 xl:p-7 rounded-xl bg-white shadow-md"
             onSubmit={submitForm}
         >
             <label

@@ -39,8 +39,10 @@ export default function Stats() {
     }>({});
 
     const TdStyle = {
-        ThStyle: `w-1/6 min-w-[100px] border-l border-transparent px-3 py-2 text-base font-medium text-white lg:px-4`,
-        TdStyle2: `text-dark border border-[#E8E8E8] bg-white p-2 text-center font-normal text-base`,
+        // ThStyle: `w-1/6 min-w-[100px] border-l border-transparent px-3 py-2 text-base font-medium text-white lg:px-4`,
+        ThStyle: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4 text-center`,
+        // TdStyle2: `text-dark border border-[#E8E8E8] bg-white p-2 text-center font-normal text-base`,
+        TdStyle2: `text-dark border border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-sm xl:text-base`,
     };
 
     const changeDaysOfData = (event: { target: { value: string } }) => {
@@ -167,7 +169,7 @@ export default function Stats() {
     return (
         <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
             <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5">
-                <div className="bg-white p-4 shadow-md md:col-span-2 rounded-xl">
+                <div className="bg-white p-2 xl:p-4 shadow-md md:col-span-2 rounded-xl">
                     <select
                         id="daysOfDataInput"
                         value={daysOfData}
@@ -182,8 +184,8 @@ export default function Stats() {
                         <option value={365 * 100}>All</option>
                     </select>
                 </div>
-                <div className="bg-white p-6 shadow-md rounded-xl">
-                    <h2 className="mb-3 text-2xl font-medium text-gray-900">
+                <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
+                    <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
                         Glucose:
                     </h2>
                     <table className="table table-auto">
@@ -235,8 +237,8 @@ export default function Stats() {
                         </tbody>
                     </table>
                 </div>
-                <div className="bg-white p-6 shadow-md rounded-xl">
-                    <h2 className="mb-3 text-2xl font-medium text-gray-900">
+                <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
+                    <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
                         Weight:
                     </h2>
                     <table className="table table-auto">
@@ -290,8 +292,11 @@ export default function Stats() {
                 </div>
                 {insulinData.length > 0
                     ? Object.entries(insulinStats).map((data, index) => (
-                          <div className="bg-white p-6 shadow-md rounded-xl" key={index}>
-                              <h2 className="mb-3 text-2xl font-medium text-gray-900">
+                          <div
+                              className="bg-white p-3 xl:p-6 shadow-md rounded-xl"
+                              key={index}
+                          >
+                              <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
                                   Insulin: {data[0]}
                               </h2>
                               <table className="table table-auto">
