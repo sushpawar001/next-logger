@@ -5,6 +5,8 @@ import {
     faHouse,
     faDroplet,
     faUser,
+    faTape,
+    faChartSimple,
 } from "@fortawesome/free-solid-svg-icons";
 
 export function HouseIcon({ className = "" }) {
@@ -23,4 +25,12 @@ export function WeightScaleIcon({ className = "" }) {
 
 export function ProfileIcon({ className = "" }) {
     return <FontAwesomeIcon icon={faUser} className={className || ""} />;
+}
+
+export function TapeIcon({ className = "" }) {
+    return <FontAwesomeIcon icon={faTape} className={className || ""} />;
+}
+
+export function ChartIcon({ className = "" }) {
+    return <FontAwesomeIcon icon={faChartSimple} className={className || ""} />;
 }

@@ -5,20 +5,13 @@ import {
     WeightScaleIcon,
     SyringeIcon,
     ProfileIcon,
+    TapeIcon,
+    ChartIcon,
 } from "@/helpers/iconHelpers";
 import { ReactNode, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import axios from "axios";
-
-const navPages = {
-    Home: "/",
-    Programs: "/programs",
-    About: "/about",
-    "Contact Us": "/contact",
-    Login: "https://learn.educodeindia.com/dashboard",
-    // Test: "/test",
-};
 
 export default function Navbar2({
     children,
@@ -215,6 +208,13 @@ const IconList = ({ onClickFn }: { onClickFn?: VoidFunction }) => (
             <p className="my-auto">Profile</p>
         </ListItem>
         <ListItem
+            NavLink="/stats"
+            icon={<ChartIcon />}
+            onClickFn={onClickFn}
+        >
+            <p className="my-auto">Stats</p>
+        </ListItem>
+        <ListItem
             NavLink="/glucose"
             icon={<GlucoseIcon />}
             onClickFn={onClickFn}
@@ -234,6 +234,13 @@ const IconList = ({ onClickFn }: { onClickFn?: VoidFunction }) => (
             onClickFn={onClickFn}
         >
             <p className="my-auto">Weight</p>
+        </ListItem>
+        <ListItem
+            NavLink="/measurement"
+            icon={<TapeIcon />}
+            onClickFn={onClickFn}
+        >
+            <p className="my-auto">Measurement</p>
         </ListItem>
     </>
 );
