@@ -179,7 +179,7 @@ export default function Stats() {
                         <option>30</option>
                         <option>90</option>
                         <option>365</option>
-                        <option value={365 * 10}>All</option>
+                        <option value={365 * 100}>All</option>
                     </select>
                 </div>
                 <div className="bg-white p-6 shadow-md rounded-xl">
