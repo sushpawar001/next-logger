@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { mean, median, mode, min, max, sum } from "mathjs";
 import { glucose, weight, insulin } from "@/types/models";
+import { getDailyInsulinValues } from "@/helpers/statsHelpers";
 
 interface statsObjType {
     mean: number;
@@ -11,28 +12,32 @@ interface statsObjType {
     min: number;
     max: number;
     sum?: number;
+    dailyAvg?: number;
 }
+const statsObj = {
+    mean: 0,
+    median: 0,
+    mode: [0],
+    min: 0,
+    max: 0,
+};
 
 export default function Stats() {
     const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
+    const [glucoseDataOld, setGlucoseDataOld] = useState<glucose[]>([]);
     const [weightData, setWeightData] = useState<weight[]>([]);
+    const [weightDataOld, setWeightDataOld] = useState<weight[]>([]);
     const [insulinData, setInsulinData] = useState<insulin[]>([]);
     const [daysOfData, setDaysOfData] = useState(7);
-    const [glucoseStats, setGlucoseStats] = useState<statsObjType>({
-        mean: 0,
-        median: 0,
-        mode: [0],
-        min: 0,
-        max: 0,
-    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [glucoseStats, setGlucoseStats] = useState<statsObjType>(statsObj);
 
-    const [weighteStats, setWeightStats] = useState<statsObjType>({
-        mean: 0,
-        median: 0,
-        mode: [0],
-        min: 0,
-        max: 0,
-    });
+    const [glucoseStatsOld, setGlucoseStatsOld] =
+        useState<statsObjType>(statsObj);
+
+    const [weightStats, setWeightStats] = useState<statsObjType>(statsObj);
+    const [weightStatsOld, setWeightStatsOld] =
+        useState<statsObjType>(statsObj);
 
     const [insulinStats, setInsulinStats] = useState<{
         [key: string]: statsObjType;
@@ -53,28 +58,42 @@ export default function Stats() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [glucoseResponse, weightResponse, insulinResponse] =
-                    await Promise.all([
-                        axios.get(`/api/glucose/get/${daysOfData}/`),
-                        axios.get(`/api/weight/get/${daysOfData}/`),
-                        axios.get(`/api/insulin/get/${daysOfData}/`),
-                    ]);
+                setIsLoading(true);
+                const [
+                    WeightRangeDataResponse,
+                    insulinResponse,
+                    GlucoseRangeDataResponse,
+                ] = await Promise.all([
+                    axios.get(`/api/weight/get-range/${daysOfData}/`),
+                    axios.get(`/api/insulin/get/${daysOfData}/`),
+                    axios.get(`/api/glucose/get-range/${daysOfData}/`),
+                ]);
 
-                if (glucoseResponse.status === 200) {
-                    setGlucoseData(glucoseResponse.data.data);
+                if (GlucoseRangeDataResponse.status === 200) {
+                    setGlucoseData(
+                        GlucoseRangeDataResponse.data.data.daysAgoData
+                    );
+                    setGlucoseDataOld(
+                        GlucoseRangeDataResponse.data.data.prevDaysAgoData
+                    );
                 } else {
                     console.error(
-                        "Glucose API request failed with status:",
-                        glucoseResponse.status
+                        "Range API request failed with status:",
+                        GlucoseRangeDataResponse.status
                     );
                 }
 
-                if (weightResponse.status === 200) {
-                    setWeightData(weightResponse.data.data);
+                if (WeightRangeDataResponse.status === 200) {
+                    setWeightData(
+                        WeightRangeDataResponse.data.data.daysAgoData
+                    );
+                    setWeightDataOld(
+                        WeightRangeDataResponse.data.data.prevDaysAgoData
+                    );
                 } else {
                     console.error(
                         "Weight API request failed with status:",
-                        weightResponse.status
+                        WeightRangeDataResponse.status
                     );
                 }
 
@@ -88,6 +107,8 @@ export default function Stats() {
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -106,13 +127,7 @@ export default function Stats() {
                 max: max(glucoseArr),
             });
         } else {
-            setGlucoseStats({
-                mean: 0,
-                median: 0,
-                mode: [0],
-                min: 0,
-                max: 0,
-            });
+            setGlucoseStats(statsObj);
         }
     }, [glucoseData]);
 
@@ -128,13 +143,7 @@ export default function Stats() {
                 max: max(weightArr),
             });
         } else {
-            setWeightStats({
-                mean: 0,
-                median: 0,
-                mode: [0],
-                min: 0,
-                max: 0,
-            });
+            setWeightStats(statsObj);
         }
     }, [weightData]);
 
@@ -150,6 +159,11 @@ export default function Stats() {
             const insulinsStatsObj = {};
 
             Object.keys(insulinsArrObj).forEach((key) => {
+                const tempData = insulinData.filter(
+                    (data) => data.name === key
+                );
+                const daily = getDailyInsulinValues(tempData);
+
                 insulinsStatsObj[key] = {
                     mean: mean(insulinsArrObj[key]),
                     median: median(insulinsArrObj[key]),
@@ -157,6 +171,7 @@ export default function Stats() {
                     min: min(insulinsArrObj[key]),
                     max: max(insulinsArrObj[key]),
                     sum: sum(insulinsArrObj[key]),
+                    dailyAvg: mean(daily),
                 };
             });
 
@@ -165,6 +180,46 @@ export default function Stats() {
             setInsulinStats({});
         }
     }, [insulinData]);
+
+    useEffect(() => {
+        if (glucoseDataOld.length > 0) {
+            const glucoseArr = glucoseDataOld.map((data) => data.value);
+
+            setGlucoseStatsOld({
+                mean: mean(glucoseArr),
+                median: median(glucoseArr),
+                mode: mode(glucoseArr),
+                min: min(glucoseArr),
+                max: max(glucoseArr),
+            });
+        } else {
+            setGlucoseStatsOld(statsObj);
+        }
+    }, [glucoseDataOld]);
+
+    useEffect(() => {
+        if (weightDataOld.length > 0) {
+            const weightArr = weightDataOld.map((data) => data.value);
+
+            setWeightStatsOld({
+                mean: mean(weightArr),
+                median: median(weightArr),
+                mode: mode(weightArr),
+                min: min(weightArr),
+                max: max(weightArr),
+            });
+        } else {
+            setWeightStatsOld(statsObj);
+        }
+    }, [weightDataOld]);
+
+    if (isLoading === true) {
+        return (
+            <div className="h-full flex justify-center items-center">
+                <span className="loading loading-spinner size-10 lg:size-12 text-primary"></span>
+            </div>
+        );
+    }
 
     return (
         <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
@@ -184,191 +239,284 @@ export default function Stats() {
                         <option value={365 * 100}>All</option>
                     </select>
                 </div>
-                <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
-                    <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
-                        Glucose:
-                    </h2>
-                    <table className="table table-auto">
-                        <thead>
-                            <tr className="bg-secondary">
-                                <th
-                                    className={`${TdStyle.ThStyle} rounded-tl-lg`}
-                                >
-                                    Param
-                                </th>
-                                <th
-                                    className={`${TdStyle.ThStyle} rounded-tr-lg`}
-                                >
-                                    Value
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Mean:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {glucoseStats.mean.toFixed(2)}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Median:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {glucoseStats.median.toFixed(2)}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Mode:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {glucoseStats.mode.toString()}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Min:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {glucoseStats.min}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Max:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {glucoseStats.max}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
-                    <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
-                        Weight:
-                    </h2>
-                    <table className="table table-auto">
-                        <thead>
-                            <tr className="bg-secondary">
-                                <th
-                                    className={`${TdStyle.ThStyle} rounded-tl-lg`}
-                                >
-                                    Param
-                                </th>
-                                <th
-                                    className={`${TdStyle.ThStyle} rounded-tr-lg`}
-                                >
-                                    Value
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Mean:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {weighteStats.mean.toFixed(2)}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Median:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {weighteStats.median.toFixed(2)}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Mode:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {weighteStats.mode.toString()}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Min:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {weighteStats.min}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td className={TdStyle.TdStyle2}>Max:</td>
-                                <td className={TdStyle.TdStyle2}>
-                                    {weighteStats.max}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <GlucoseTile
+                    TdStyle={TdStyle}
+                    glucoseStats={glucoseStats}
+                    glucoseStatsOld={glucoseStatsOld}
+                />
+
+                <WeightTile
+                    TdStyle={TdStyle}
+                    weightStats={weightStats}
+                    weightStatsOld={weightStatsOld}
+                />
+
                 {insulinData.length > 0
                     ? Object.entries(insulinStats).map((data, index) => (
-                          <div
-                              className="bg-white p-3 xl:p-6 shadow-md rounded-xl"
+                          <InsulinTile
                               key={index}
-                          >
-                              <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
-                                  Insulin: {data[0]}
-                              </h2>
-                              <table className="table table-auto">
-                                  <thead>
-                                      <tr className="bg-secondary">
-                                          <th
-                                              className={`${TdStyle.ThStyle} rounded-tl-lg`}
-                                          >
-                                              Param
-                                          </th>
-                                          <th
-                                              className={`${TdStyle.ThStyle} rounded-tr-lg`}
-                                          >
-                                              Value
-                                          </th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      <tr>
-                                          <td className={TdStyle.TdStyle2}>
-                                              Mean:
-                                          </td>
-                                          <td className={TdStyle.TdStyle2}>
-                                              {data[1].mean.toFixed(2)}
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td className={TdStyle.TdStyle2}>
-                                              Median:
-                                          </td>
-                                          <td className={TdStyle.TdStyle2}>
-                                              {data[1].median.toFixed(2)}
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td className={TdStyle.TdStyle2}>
-                                              Mode:
-                                          </td>
-                                          <td className={TdStyle.TdStyle2}>
-                                              {data[1].mode.toString()}
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td className={TdStyle.TdStyle2}>
-                                              Min:
-                                          </td>
-                                          <td className={TdStyle.TdStyle2}>
-                                              {data[1].min}
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td className={TdStyle.TdStyle2}>
-                                              Max:
-                                          </td>
-                                          <td className={TdStyle.TdStyle2}>
-                                              {data[1].max}
-                                          </td>
-                                      </tr>
-                                      <tr>
-                                          <td className={TdStyle.TdStyle2}>
-                                              Total:
-                                          </td>
-                                          <td className={TdStyle.TdStyle2}>
-                                              {data[1].sum}
-                                          </td>
-                                      </tr>
-                                  </tbody>
-                              </table>
-                          </div>
+                              TdStyle={TdStyle}
+                              data={data}
+                          />
                       ))
                     : ""}
             </div>
+        </div>
+    );
+}
+
+export function GlucoseTile({ TdStyle, glucoseStats, glucoseStatsOld }) {
+    return (
+        <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
+            <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
+                Glucose:
+            </h2>
+            <table className="table table-auto">
+                <thead>
+                    <tr className="bg-secondary">
+                        <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
+                            Param
+                        </th>
+                        <th className={`${TdStyle.ThStyle}`}>Current</th>
+                        <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
+                            Previous
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Mean:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.mean.toFixed(2)}
+                        </td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.mean > glucoseStatsOld.mean ? (
+                                <span className="text-green-500 ml-2">
+                                    {glucoseStatsOld.mean.toFixed(2) + " ↓"}
+                                </span>
+                            ) : (
+                                <span className="text-red-500 ml-2">
+                                    {glucoseStatsOld.mean.toFixed(2) + " ↑"}
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Median:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.median.toFixed(2)}
+                        </td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.median > glucoseStatsOld.median ? (
+                                <span className="text-green-500 ml-2">
+                                    {glucoseStatsOld.median.toFixed(2) + " ↓"}
+                                </span>
+                            ) : (
+                                <span className="text-red-500 ml-2">
+                                    {glucoseStatsOld.median.toFixed(2) + " ↑"}
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Mode:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.mode.toString()}
+                        </td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStatsOld.mode.toString()}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Min:</td>
+                        <td className={TdStyle.TdStyle2}>{glucoseStats.min}</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.min > glucoseStatsOld.min ? (
+                                <span className="text-green-500 ml-2">
+                                    {glucoseStatsOld.min.toFixed(2) + " ↓"}
+                                </span>
+                            ) : (
+                                <span className="text-red-500 ml-2">
+                                    {glucoseStatsOld.min.toFixed(2) + " ↑"}
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Max:</td>
+                        <td className={TdStyle.TdStyle2}>{glucoseStats.max}</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.max > glucoseStatsOld.max ? (
+                                <span className="text-green-500 ml-2">
+                                    {glucoseStatsOld.max.toFixed(2) + " ↓"}
+                                </span>
+                            ) : (
+                                <span className="text-red-500 ml-2">
+                                    {glucoseStatsOld.max.toFixed(2) + " ↑"}
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+export function WeightTile({ TdStyle, weightStats, weightStatsOld }) {
+    return (
+        <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
+            <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
+                Weight:
+            </h2>
+            <table className="table table-auto">
+                <thead>
+                    <tr className="bg-secondary">
+                        <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
+                            Param
+                        </th>
+                        <th className={`${TdStyle.ThStyle}`}>Current</th>
+                        <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
+                            Previous
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Mean:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStats.mean.toFixed(2)}
+                        </td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStats.mean > weightStatsOld.mean ? (
+                                <span className="text-green-500 ml-2">
+                                    {weightStatsOld.mean.toFixed(2) + " ↓"}
+                                </span>
+                            ) : (
+                                <span className="text-red-500 ml-2">
+                                    {weightStatsOld.mean.toFixed(2) + " ↑"}
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Median:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStats.median.toFixed(2)}
+                        </td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStats.median > weightStatsOld.median ? (
+                                <span className="text-green-500 ml-2">
+                                    {weightStatsOld.median.toFixed(2) + " ↓"}
+                                </span>
+                            ) : (
+                                <span className="text-red-500 ml-2">
+                                    {weightStatsOld.median.toFixed(2) + " ↑"}
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Mode:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStats.mode.toString()}
+                        </td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStatsOld.mode.toString()}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Min:</td>
+                        <td className={TdStyle.TdStyle2}>{weightStats.min}</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStats.min > weightStatsOld.min ? (
+                                <span className="text-green-500 ml-2">
+                                    {weightStatsOld.min.toFixed(2) + " ↓"}
+                                </span>
+                            ) : (
+                                <span className="text-red-500 ml-2">
+                                    {weightStatsOld.min.toFixed(2) + " ↑"}
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Max:</td>
+                        <td className={TdStyle.TdStyle2}>{weightStats.max}</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStats.max > weightStatsOld.max ? (
+                                <span className="text-green-500 ml-2">
+                                    {weightStatsOld.max.toFixed(2) + " ↓"}
+                                </span>
+                            ) : (
+                                <span className="text-red-500 ml-2">
+                                    {weightStatsOld.max.toFixed(2) + " ↑"}
+                                </span>
+                            )}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
+export function InsulinTile({ TdStyle, data }) {
+    return (
+        <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
+            <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
+                Insulin: {data[0]}
+            </h2>
+            <table className="table table-auto">
+                <thead>
+                    <tr className="bg-secondary">
+                        <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
+                            Param
+                        </th>
+                        <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
+                            Value
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Mean:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {data[1].mean.toFixed(2)}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Median:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {data[1].median.toFixed(2)}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Mode:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {data[1].mode.toString()}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Min:</td>
+                        <td className={TdStyle.TdStyle2}>{data[1].min}</td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Max:</td>
+                        <td className={TdStyle.TdStyle2}>{data[1].max}</td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Daily Avg:</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {data[1].dailyAvg.toFixed(2)}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={TdStyle.TdStyle2}>Total:</td>
+                        <td className={TdStyle.TdStyle2}>{data[1].sum}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     );
 }
