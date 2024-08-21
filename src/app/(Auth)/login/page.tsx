@@ -1,6 +1,6 @@
 "use client";
 import notify from "@/helpers/notify";
-import { randomGradient, randomGradient2 } from "@/helpers/randomGradient";
+import { randomGradient, randomGradient2, randomLinearGradient } from "@/helpers/randomGradient";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -12,6 +12,7 @@ export default function LogIn() {
         email: "",
         password: "",
     });
+    const [gradientArray, setGradientArray] = useState(randomGradient2(12));
 
     const handleInputChange = (event: {
         target: { name: string; value: string };
@@ -29,7 +30,7 @@ export default function LogIn() {
             const response = await axios.post("/api/users/login/", formData);
             if (response.status === 200) {
                 notify("Login Successful!", "success");
-                router.push("/");
+                router.push("/dashboard");
                 router.refresh();
             }
         } catch (error) {
@@ -41,7 +42,7 @@ export default function LogIn() {
         <motion.div
             className="h-full bg-primary-ring"
             animate={{
-                background: randomGradient2(12),
+                background: gradientArray,
                 // backgroundColor: ["#E0E0E0", "#E0E0E0", "#E0E0E0", "#E0E0E0", "#E0E0E0", "#E0E0E0"]
             }}
             transition={{

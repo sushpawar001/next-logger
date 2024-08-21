@@ -15,7 +15,7 @@ export function middleware(request) {
 
     if (isPublicPath && token) {
       // if user is logged in, redirect to home
-        return NextResponse.redirect(new URL("/", request.nextUrl));
+        return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
     }
 
     if (!isPublicPath && !token) {
