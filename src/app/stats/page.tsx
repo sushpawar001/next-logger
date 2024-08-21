@@ -265,7 +265,18 @@ export default function Stats() {
     );
 }
 
-export function GlucoseTile({ TdStyle, glucoseStats, glucoseStatsOld }) {
+function GlucoseTile({
+    TdStyle,
+    glucoseStats,
+    glucoseStatsOld,
+}: {
+    TdStyle: {
+        ThStyle: string;
+        TdStyle2: string;
+    };
+    glucoseStats: statsObjType;
+    glucoseStatsOld: statsObjType;
+}) {
     return (
         <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
             <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
@@ -363,7 +374,18 @@ export function GlucoseTile({ TdStyle, glucoseStats, glucoseStatsOld }) {
     );
 }
 
-export function WeightTile({ TdStyle, weightStats, weightStatsOld }) {
+function WeightTile({
+    TdStyle,
+    weightStats,
+    weightStatsOld,
+}: {
+    TdStyle: {
+        ThStyle: string;
+        TdStyle2: string;
+    };
+    weightStats: statsObjType;
+    weightStatsOld: statsObjType;
+}) {
     return (
         <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
             <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
@@ -461,59 +483,69 @@ export function WeightTile({ TdStyle, weightStats, weightStatsOld }) {
     );
 }
 
-export function InsulinTile({ TdStyle, data }) {
+function InsulinTile(props) {
     return (
         <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
             <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
-                Insulin: {data[0]}
+                Insulin: {props.data[0]}
             </h2>
             <table className="table table-auto">
                 <thead>
                     <tr className="bg-secondary">
-                        <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
+                        <th
+                            className={`${props.TdStyle.ThStyle} rounded-tl-lg`}
+                        >
                             Param
                         </th>
-                        <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
+                        <th
+                            className={`${props.TdStyle.ThStyle} rounded-tr-lg`}
+                        >
                             Value
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td className={TdStyle.TdStyle2}>Mean:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {data[1].mean.toFixed(2)}
+                        <td className={props.TdStyle.TdStyle2}>Mean:</td>
+                        <td className={props.TdStyle.TdStyle2}>
+                            {props.data[1].mean.toFixed(2)}
                         </td>
                     </tr>
                     <tr>
-                        <td className={TdStyle.TdStyle2}>Median:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {data[1].median.toFixed(2)}
+                        <td className={props.TdStyle.TdStyle2}>Median:</td>
+                        <td className={props.TdStyle.TdStyle2}>
+                            {props.data[1].median.toFixed(2)}
                         </td>
                     </tr>
                     <tr>
-                        <td className={TdStyle.TdStyle2}>Mode:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {data[1].mode.toString()}
+                        <td className={props.TdStyle.TdStyle2}>Mode:</td>
+                        <td className={props.TdStyle.TdStyle2}>
+                            {props.data[1].mode.toString()}
                         </td>
                     </tr>
                     <tr>
-                        <td className={TdStyle.TdStyle2}>Min:</td>
-                        <td className={TdStyle.TdStyle2}>{data[1].min}</td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Max:</td>
-                        <td className={TdStyle.TdStyle2}>{data[1].max}</td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Daily Avg:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {data[1].dailyAvg.toFixed(2)}
+                        <td className={props.TdStyle.TdStyle2}>Min:</td>
+                        <td className={props.TdStyle.TdStyle2}>
+                            {props.data[1].min}
                         </td>
                     </tr>
                     <tr>
-                        <td className={TdStyle.TdStyle2}>Total:</td>
-                        <td className={TdStyle.TdStyle2}>{data[1].sum}</td>
+                        <td className={props.TdStyle.TdStyle2}>Max:</td>
+                        <td className={props.TdStyle.TdStyle2}>
+                            {props.data[1].max}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={props.TdStyle.TdStyle2}>Daily Avg:</td>
+                        <td className={props.TdStyle.TdStyle2}>
+                            {props.data[1].dailyAvg.toFixed(2)}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td className={props.TdStyle.TdStyle2}>Total:</td>
+                        <td className={props.TdStyle.TdStyle2}>
+                            {props.data[1].sum}
+                        </td>
                     </tr>
                 </tbody>
             </table>

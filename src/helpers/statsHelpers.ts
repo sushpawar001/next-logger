@@ -1,4 +1,4 @@
-import { insulin, glucose } from "@/types/models";
+import { insulin } from "@/types/models";
 
 export function getDailyInsulinValues(valuesArray: insulin[]): number[] {
     const dates = {};

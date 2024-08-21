@@ -7,6 +7,8 @@ import {
     faUser,
     faTape,
     faChartSimple,
+    faArrowRightToBracket,
+    faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 
 export function HouseIcon({ className = "" }) {
@@ -33,4 +35,12 @@ export function TapeIcon({ className = "" }) {
 
 export function ChartIcon({ className = "" }) {
     return <FontAwesomeIcon icon={faChartSimple} className={className || ""} />;
+}
+
+export function LoginIcon({ className = "" }) {
+    return <FontAwesomeIcon icon={faArrowRightToBracket} className={className || ""} />;
+}
+
+export function SignUpIcon({ className = "" }) {
+    return <FontAwesomeIcon icon={faUserPlus} className={className || ""} />;
 }

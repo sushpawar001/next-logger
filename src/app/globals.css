@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.gradient {
+    background: linear-gradient(140deg, rgb(224, 224, 224), rgb(94, 74, 227));
+}
+
+.pattern {
+    background: radial-gradient(
+            circle at 25% 25%,
+            #5e4ae3 20%,
+            transparent 21%,
+            transparent 100%
+        ),
+        radial-gradient(circle at 75% 75%, #5e4ae3 15%, transparent 16%);
+    background-size: 3em 3em;
+}

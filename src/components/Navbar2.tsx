@@ -7,6 +7,8 @@ import {
     ProfileIcon,
     TapeIcon,
     ChartIcon,
+    SignUpIcon,
+    LoginIcon,
 } from "@/helpers/iconHelpers";
 import { ReactNode, useRef } from "react";
 import Link from "next/link";
@@ -135,14 +137,14 @@ export default function Navbar2({
                     </div>
                     <div className="flex-1">{children}</div>
                 </div>
-                <div className="drawer-side">
+                <div className="drawer-side block lg:hidden">
                     <label
                         htmlFor="my-drawer-3"
                         aria-label="close sidebar"
                         className="drawer-overlay"
                     ></label>
                     <ul className="menu p-4 w-80 min-h-full bg-secondary text-white">
-                        <IconList onClickFn={toggleDrawer} />
+                        {token ? <IconList onClickFn={toggleDrawer} /> : <LogOutIconList onClickFn={toggleDrawer} />}
                     </ul>
                 </div>
             </div>
@@ -238,5 +240,20 @@ const IconList = ({ onClickFn }: { onClickFn?: VoidFunction }) => (
         >
             <p className="my-auto">Measurement</p>
         </ListItem>
+    </>
+);
+
+const LogOutIconList = ({ onClickFn }: { onClickFn?: VoidFunction }) => (
+    // Icon list when user in logged out state
+    <>
+    <ListItem NavLink="/" icon={<HouseIcon />} onClickFn={onClickFn}>
+        <p className="my-auto">Home</p>
+    </ListItem>
+    <ListItem NavLink="/" icon={<LoginIcon />} onClickFn={onClickFn}>
+        <p className="my-auto">Log in</p>
+    </ListItem>
+    <ListItem NavLink="/" icon={<SignUpIcon />} onClickFn={onClickFn}>
+        <p className="my-auto">Sign up</p>
+    </ListItem>
     </>
 );
