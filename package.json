@@ -28,7 +28,7 @@
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18",
-    "react-toastify": "^9.1.3",
+    "react-hot-toast": "^2.4.1",
     "recharts": "^2.12.7",
     "tailgrids": "^2.1.0"
   },
