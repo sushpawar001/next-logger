@@ -3,7 +3,11 @@
 @tailwind utilities;
 
 .gradient {
-    background: linear-gradient(140deg, rgb(224, 224, 224), rgb(94, 74, 227));
+    background: radial-gradient(
+        circle at 30% 65%,
+        rgb(94, 74, 227),
+        rgb(32, 33, 37)
+    );
 }
 
 .pattern {

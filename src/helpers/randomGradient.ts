@@ -17,9 +17,14 @@ export function randomGradient(num: number): string[] {
 }
 
 export function randomGradient2(num: number): string[] {
-    const gradients = [];
+    let gradients = [];
+    const firstElem = `radial-gradient(
+        circle at 30% 65%,
+        rgb(94, 74, 227),
+        rgb(32, 33, 37)
+    )`;
 
-    for (let index = 0; index < num - 1; index++) {
+    for (let index = 0; index < num; index++) {
         gradients.push(
             `radial-gradient(circle at ${Math.floor(
                 Math.random() * 100
@@ -29,7 +34,7 @@ export function randomGradient2(num: number): string[] {
         );
     }
 
-    for (let index = 0; index < num - 1; index++) {
+    for (let index = 0; index < num; index++) {
         gradients.push(
             `radial-gradient(circle at ${Math.floor(
                 Math.random() * 100
@@ -39,8 +44,8 @@ export function randomGradient2(num: number): string[] {
         );
     }
     gradients.sort(() => Math.random() - 0.5);
-    const gradientsCopy = gradients.slice(0, num);
-    gradientsCopy.push(gradients[0]);
+    const gradientsCopy = [firstElem,...gradients.slice(0, num-2), gradients[0]];
+
     return gradientsCopy;
 }
 

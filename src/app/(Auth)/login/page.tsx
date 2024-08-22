@@ -1,6 +1,6 @@
 "use client";
 import notify from "@/helpers/notify";
-import { randomGradient, randomGradient2, randomLinearGradient } from "@/helpers/randomGradient";
+import { randomGradient2 } from "@/helpers/randomGradient";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -40,7 +40,7 @@ export default function LogIn() {
     };
     return (
         <motion.div
-            className="h-full bg-primary-ring"
+            className="h-full gradient"
             animate={{
                 background: gradientArray,
                 // backgroundColor: ["#E0E0E0", "#E0E0E0", "#E0E0E0", "#E0E0E0", "#E0E0E0", "#E0E0E0"]
@@ -51,7 +51,7 @@ export default function LogIn() {
             }}
         >
             <div className="h-full flex justify-center items-center backdrop-blur-sm py-10 px-5 md:px-20">
-                <div className="mx-auto w-full max-w-lg rounded-xl bg-white px-4 md:px-10 py-10 md:py-16 text-center shadow-md">
+                <div className="mx-auto w-full max-w-lg rounded-xl bg-white px-4 md:px-10 py-10 md:py-16 text-center shadow-lg">
                     <div className="mb-6 text-xl md:text-3xl font-bold">
                         <h1 className="text-secondary">Login</h1>
                     </div>
