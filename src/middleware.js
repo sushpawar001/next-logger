@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 
 export function middleware(request) {
     const path = request.nextUrl.pathname;
-    const allowed = ["/load"];
-    const isPublicPath = path === "/login" || path === "/signup" || path === "/";
+    const allowed = ["/load", "/"];
+    const isPublicPath = path === "/login" || path === "/signup";
 
     const token = request.cookies.get("token")?.value || "";
     console.log("isPublicPath", path, isPublicPath);

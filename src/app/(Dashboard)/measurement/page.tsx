@@ -1,14 +1,14 @@
 "use client";
 import MeasurementAdd from "@/components/MeasurementAdd";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import notify from "@/helpers/notify";
 import axios from "axios";
-import { motion } from "framer-motion";
 import formatDate from "@/helpers/formatDate";
 import Link from "next/link";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import CombinedMeasurementChart from "@/components/MeasurementChart";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
+import PopUpModal from "@/components/PopUpModal";
 
 
 const dataInputs = [
@@ -194,7 +194,7 @@ function TableRow(props) {
                     >
                         Edit
                     </Link>
-                    <Modal
+                    <PopUpModal
                         delete={() => {
                             props.delete(_id);
                         }}
@@ -202,102 +202,5 @@ function TableRow(props) {
                 </div>
             </td>
         </tr>
-    );
-}
-
-function Modal(props: { delete: () => void }) {
-    const [modalOpen, setModalOpen] = useState(false);
-    const trigger = useRef(null);
-    const modal = useRef(null);
-
-    const variants = {
-        open: { opacity: 1, scale: 1 },
-        closed: { opacity: 0, scale: 0.6 },
-    };
-
-    // close on click outside
-    useEffect(() => {
-        const clickHandler = ({ target }) => {
-            if (!modal.current) return;
-            if (
-                !modalOpen ||
-                modal.current.contains(target) ||
-                trigger.current.contains(target)
-            )
-                return;
-            setModalOpen(false);
-        };
-        document.addEventListener("click", clickHandler);
-        return () => document.removeEventListener("click", clickHandler);
-    });
-
-    // close if the esc key is pressed
-    useEffect(() => {
-        const keyHandler = ({ keyCode }) => {
-            if (!modalOpen || keyCode !== 27) return;
-            setModalOpen(false);
-        };
-        document.addEventListener("keydown", keyHandler);
-        return () => document.removeEventListener("keydown", keyHandler);
-    });
-
-    return (
-        <>
-            <button
-                ref={trigger}
-                onClick={() => setModalOpen(true)}
-                className={TdStyle.TdButton2}
-            >
-                Delete
-            </button>
-            {/* modal  */}
-            <div
-                className={`fixed left-0 top-0 flex h-full min-h-screen w-full items-center justify-center bg-dark/90 px-4 py-5 z-50 ${
-                    modalOpen ? "block" : "hidden"
-                }`}
-            >
-                <motion.div
-                    animate={modalOpen ? "open" : "closed"}
-                    variants={variants}
-                    transition={{
-                        type: "spring",
-                        duration: 0.3,
-                        stiffness: 100,
-                    }}
-                    ref={modal}
-                    onFocus={() => setModalOpen(true)}
-                    onBlur={() => setModalOpen(false)}
-                    className="w-full max-w-[500px] rounded-[20px] bg-white px-8 py-12 text-center md:px-[70px] md:py-[60px]"
-                >
-                    <h3 className="pb-[18px] text-xl font-semibold text-secondary dark:text-white sm:text-2xl">
-                        Do you really want to delete this?
-                    </h3>
-                    <span
-                        className={`mx-auto mb-6 inline-block h-1 w-[90px] rounded bg-primary`}
-                    ></span>
-                    <div className="-mx-3 flex flex-wrap">
-                        <div className="w-1/2 px-3">
-                            <button
-                                className="block w-full rounded-xl border-primary bg-primary p-3 text-center text-base font-medium text-white transition hover:bg-primary-dark"
-                                onClick={() => setModalOpen(false)}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                        <div className="w-1/2 px-3">
-                            <button
-                                className="block w-full rounded-xl bg-red-600 border border-stroke p-3 text-center text-base font-medium transition hover:border-red-800 hover:bg-red-800 text-white"
-                                onClick={() => {
-                                    props.delete();
-                                    setModalOpen(false);
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
-                    </div>
-                </motion.div>
-            </div>
-        </>
     );
 }

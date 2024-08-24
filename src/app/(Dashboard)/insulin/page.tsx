@@ -6,6 +6,7 @@ import axios from "axios";
 import Link from "next/link";
 import InsulinAdd from "@/components/InsulinAdd";
 import InsulinChartSeparate from "@/components/InsulinChartSeparate";
+import PopUpModal from "@/components/PopUpModal";
 
 const TdStyle = {
   ThStyle: `w-1/6 lg:min-w-[100px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
@@ -133,7 +134,7 @@ function TableRow(props: { data: insulinEntryType; delete: (arg0: string) => voi
           <Link href={`/insulin/${_id}`} className={TdStyle.TdButton}>
             Edit
           </Link>
-          <Modal
+          <PopUpModal
             delete={() => {
               props.delete(_id);
             }}
@@ -141,91 +142,5 @@ function TableRow(props: { data: insulinEntryType; delete: (arg0: string) => voi
         </div>
       </td>
     </tr>
-  );
-}
-
-function Modal(props: { delete: () => void; }) {
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const trigger = useRef(null);
-  const modal = useRef(null);
-
-  // close on click outside
-  useEffect(() => {
-    const clickHandler = ({ target }) => {
-      if (!modal.current) return;
-      if (
-        !modalOpen ||
-        modal.current.contains(target) ||
-        trigger.current.contains(target)
-      )
-        return;
-      setModalOpen(false);
-    };
-    document.addEventListener("click", clickHandler);
-    return () => document.removeEventListener("click", clickHandler);
-  });
-
-  // close if the esc key is pressed
-  useEffect(() => {
-    const keyHandler = ({ keyCode }) => {
-      if (!modalOpen || keyCode !== 27) return;
-      setModalOpen(false);
-    };
-    document.addEventListener("keydown", keyHandler);
-    return () => document.removeEventListener("keydown", keyHandler);
-  });
-
-  return (
-    <>
-      <button
-        ref={trigger}
-        onClick={() => setModalOpen(true)}
-        className={TdStyle.TdButton2}
-      >
-        Delete
-      </button>
-      {/* modal  */}
-      <div
-        className={`fixed left-0 top-0 flex h-full min-h-screen w-full items-center justify-center bg-dark/90 px-4 py-5 ${
-          modalOpen ? "block" : "hidden"
-        }`}
-      >
-        <div
-          ref={modal}
-          onFocus={() => setModalOpen(true)}
-          onBlur={() => setModalOpen(false)}
-          className="w-full max-w-[500px] rounded-[20px] bg-white px-8 py-12 text-center md:px-[70px] md:py-[60px]"
-        >
-          <h3 className="pb-[18px] text-xl font-semibold text-secondary sm:text-2xl">
-            Do you really want to delete this?
-          </h3>
-          <span
-            className={`mx-auto mb-6 inline-block h-1 w-[90px] rounded bg-primary`}
-          ></span>
-          <div className="-mx-3 flex flex-wrap">
-            <div className="w-1/2 px-3">
-              <button
-                className="block w-full rounded-xl border-primary-dark bg-primary p-3 text-center text-base font-medium text-white transition hover:bg-primary-dark"
-                onClick={() => setModalOpen(false)}
-              >
-                Cancel
-              </button>
-            </div>
-            <div className="w-1/2 px-3">
-              <button
-                className="block w-full rounded-xl bg-red-600 border border-stroke p-3 text-center text-base font-medium transition hover:border-red-800 hover:bg-red-800 text-white"
-                onClick={() => {
-                  props.delete();
-                  setModalOpen(false);
-                }}
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
   );
 }
