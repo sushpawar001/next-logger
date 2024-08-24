@@ -199,7 +199,7 @@ const ListItem = ({
 
 const IconList = ({ onClickFn }: { onClickFn?: VoidFunction }) => (
     <>
-        <ListItem NavLink="/" icon={<HouseIcon />} onClickFn={onClickFn}>
+        <ListItem NavLink="/dashboard" icon={<HouseIcon />} onClickFn={onClickFn}>
             <p className="my-auto">Home</p>
         </ListItem>
         <ListItem

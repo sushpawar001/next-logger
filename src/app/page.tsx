@@ -1,13 +1,15 @@
-"use client";
-import Link from "next/link";
-import React from "react";
+import HeroSection from "@/components/HomePageComponents/HeroSection";
+import FeaturesSection from "@/components/HomePageComponents/FeaturesSection";
+import DonateSection from "@/components/HomePageComponents/DonateSection";
+import SecurityPrivacySection from "@/components/HomePageComponents/SecurityPrivacySection";
 
-export default function Dashboard() {
-    
+export default function HomePage() {
     return (
-        <div className="h-screen flex flex-col gap-2 justify-center items-center bg-background py-5 px-5 md:px-20">
-            <h1 className="text-3xl">HomePage</h1>
-            <Link href="/dashboard"><p>Dashboard</p></Link>
+        <div>
+            <HeroSection />
+            <FeaturesSection />
+            <SecurityPrivacySection />
+            <DonateSection />
         </div>
     );
 }

@@ -20,3 +20,15 @@
         radial-gradient(circle at 75% 75%, #5e4ae3 15%, transparent 16%);
     background-size: 3em 3em;
 }
+
+.hero-gradient {
+    background: linear-gradient(135deg, #f7f9fc 0%, #e0e5ff 100%);
+}
+
+.hero-gradient-reverse {
+    background: linear-gradient(135deg, #e0e5ff 0%, #f7f9fc 100%);
+}
+
+.btn-gradient {
+    background: linear-gradient(135deg, #503ac8 0%, #8384f6 100%);
+}
