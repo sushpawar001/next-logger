@@ -72,6 +72,7 @@ export default function SignUp() {
                                 name="password"
                                 value={formData.password}
                                 onChange={handleInputChange}
+                                minLength={8}
                                 className="w-full rounded-xl border border-stroke bg-transparent p-2.5 md:px-5 md:py-3 text-body-color outline-none focus:border-primary-ring focus-visible:shadow-none"
                             />
                         </div>
