@@ -83,7 +83,13 @@ export default function LogIn() {
                         >
                             Login
                         </button>
-                        <div className="mt-2 text-sm flex flex-col lg:flex-row md:text-start justify-between">
+                        <p className="mt-2 text-sm">
+                            Don&apos;t have an account?{" "}
+                            <Link href="/signup" className="text-primary">
+                                Signup
+                            </Link>
+                        </p>
+                        {/* <div className="mt-2 text-sm flex flex-col lg:flex-row md:text-start justify-between">
                             <p>
                                 Don&apos;t have an account?{" "}
                                 <Link href="/signup" className="text-primary">
@@ -98,7 +104,7 @@ export default function LogIn() {
                                     Forget password?
                                 </Link>
                             </p>
-                        </div>
+                        </div> */}
                     </form>
                 </div>
             </div>

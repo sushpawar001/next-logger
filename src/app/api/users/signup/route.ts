@@ -23,28 +23,29 @@ export async function POST(request) {
         const hashpass = await bcryptjs.hash(password, 11);
 
         const user = await User.create({ email, password: hashpass });
-        const user_id = user._id;
+        
+        // const user_id = user._id;
 
-        const hashedToken = await bcryptjs.hash(user_id.toString(), 10);
+        // const hashedToken = await bcryptjs.hash(user_id.toString(), 10);
 
-        await User.findByIdAndUpdate(user_id, {
-            verifyToken: hashedToken,
-            verifyTokenExpiry: Date.now() + 3600000,
-        });
+        // await User.findByIdAndUpdate(user_id, {
+        //     verifyToken: hashedToken,
+        //     verifyTokenExpiry: Date.now() + 3600000,
+        // });
 
-        const { data, error } = await resend.emails.send({
-            from: "FitDose <fitdose@resend.dev>",
-            to: [email],
-            subject: "Verify your email",
-            react: VerifyEmailTemplate({
-                email: email,
-                hashedToken: hashedToken,
-            }),
-        });
+        // const { data, error } = await resend.emails.send({
+        //     from: "FitDose <fitdose@resend.dev>",
+        //     to: [email],
+        //     subject: "Verify your email",
+        //     react: VerifyEmailTemplate({
+        //         email: email,
+        //         hashedToken: hashedToken,
+        //     }),
+        // });
 
-        if (error) {
-            return NextResponse.json({ error }, { status: 500 });
-        }
+        // if (error) {
+        //     return NextResponse.json({ error }, { status: 500 });
+        // }
 
 
         return NextResponse.json({
