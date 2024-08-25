@@ -332,10 +332,10 @@ function GlucoseTile({
                     <tr>
                         <td className={TdStyle.TdStyle2}>Mode:</td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.mode.toString()}
+                            {glucoseStats.mode.length > 2 ? glucoseStats.mode.slice(0, 2).toString() + "..." : glucoseStats.mode.toString()}
                         </td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStatsOld.mode.toString()}
+                            {glucoseStatsOld.mode.length > 2 ? glucoseStatsOld.mode.slice(0, 2).toString() + "..." : glucoseStatsOld.mode.toString()}
                         </td>
                     </tr>
                     <tr>
@@ -441,10 +441,10 @@ function WeightTile({
                     <tr>
                         <td className={TdStyle.TdStyle2}>Mode:</td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStats.mode.toString()}
+                            {weightStats.mode.length > 2 ? weightStats.mode.slice(0, 2).toString() + "..." : weightStats.mode.toString()}
                         </td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStatsOld.mode.toString()}
+                            {weightStatsOld.mode.length > 2 ? weightStatsOld.mode.slice(0, 2).toString() + "..." : weightStatsOld.mode.toString()}
                         </td>
                     </tr>
                     <tr>
