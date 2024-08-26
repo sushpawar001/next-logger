@@ -1,6 +1,13 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
+// import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+const MotionDiv = dynamic(
+    () => import("framer-motion").then((mod) => mod.motion.div),
+    {
+        ssr: false,
+    }
+);
 
 export default function AnimatedCard({
     icon,
@@ -12,7 +19,7 @@ export default function AnimatedCard({
     description: string;
 }) {
     return (
-        <motion.div
+        <MotionDiv
             className="bg-white py-5 px-7 drop-shadow-md rounded-lg"
             initial={{ translateY: 100 }}
             whileInView={{ translateY: 0 }}
@@ -28,6 +35,6 @@ export default function AnimatedCard({
             </div>
             <h3 className="text-lg lg:text-2xl font-bold py-4">{heading}</h3>
             <p>{description}</p>
-        </motion.div>
+        </MotionDiv>
     );
 }
