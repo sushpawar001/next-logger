@@ -9,7 +9,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import CombinedMeasurementChart from "@/components/MeasurementChart";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
 import PopUpModal from "@/components/PopUpModal";
-
+import MeasurementChartNew from "@/components/MeasurementChartNew";
 
 const dataInputs = [
     "Arms",
@@ -33,7 +33,7 @@ const TdStyle = {
 
 export default function MeasurementsPage() {
     const [measurementData, setMeasurementData] = useState([]);
-    const [daysOfData, setDaysOfData] = useState(7);
+    const [daysOfData, setDaysOfData] = useState(14);
     const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 500 });
 
@@ -93,10 +93,12 @@ export default function MeasurementsPage() {
                         setData={setMeasurementData}
                         className="order-2 md:order-1"
                     />
-                    <CombinedMeasurementChart
-                        data={measurementData}
-                        className="col-span-1 md:col-span-2 max-w-full p-5 min-h-96 md:min-h-0 order-1 md:order-2"
-                    />
+                    <div className="col-span-1 md:col-span-2 w-full p-2.5 md:p-5 min-h-80 md:min-h-0 order-1 md:order-2 rounded-xl bg-white shadow-md">
+                        <MeasurementChartNew
+                            fetch={false}
+                            data={measurementData}
+                        />
+                    </div>
                 </div>
                 <div className="bg-white p-4 rounded-xl shadow-md">
                     <div className="flex flex-wrap">

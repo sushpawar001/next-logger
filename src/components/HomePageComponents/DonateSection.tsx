@@ -1,3 +1,4 @@
+import Link from "next/link";
 import React from "react";
 
 export default function DonateSection() {
@@ -24,8 +25,12 @@ export default function DonateSection() {
             <div className="container flex-shrink flex justify-between py-3 border-t text-sm lg:text-base w-11/12 lg:w-full">
                 <p className="text-left">© Designed by Sushant Pawar</p>
                 <div className="flex gap-2 md:gap-5 text-center">
-                    <p>Terms of Service</p>
-                    <p>Privacy Policy</p>
+                    <Link href="/terms-service" className="hover:underline">
+                        Terms of Service
+                    </Link>
+                    <Link href="/privacy-policy" className="hover:underline">
+                        Privacy Policy
+                    </Link>
                 </div>
             </div>
         </div>

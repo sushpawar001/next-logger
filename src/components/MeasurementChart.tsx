@@ -30,6 +30,7 @@ export default function CombinedMeasurementChart({ data, className = "" }) {
     };
 
     useEffect(() => {
+        console.log(data);
         setReverseData(data.slice().reverse());
     }, [data]);
 

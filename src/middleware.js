@@ -3,8 +3,16 @@ import { NextResponse } from "next/server";
 export function middleware(request) {
     const path = request.nextUrl.pathname;
     const allowed = ["/load", "/"];
-    
-    const publicPaths = ["/login", "/signup", "/verify", "/forget-password", "/reset-password"];
+
+    const publicPaths = [
+        "/login",
+        "/signup",
+        "/verify",
+        "/forget-password",
+        "/reset-password",
+        "/privacy-policy",
+        "/terms-service",
+    ];
     const isPublicPath = publicPaths.includes(path);
 
     const token = request.cookies.get("token")?.value || "";
@@ -16,12 +24,12 @@ export function middleware(request) {
     }
 
     if (isPublicPath && token) {
-      // if user is logged in, redirect to home
+        // if user is logged in, redirect to home
         return NextResponse.redirect(new URL("/dashboard", request.nextUrl));
     }
 
     if (!isPublicPath && !token) {
-      // if user is not logged in, redirect to login
+        // if user is not logged in, redirect to login
         return NextResponse.redirect(new URL("/login", request.nextUrl));
     }
 }

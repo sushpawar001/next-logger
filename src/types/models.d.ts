@@ -18,3 +18,16 @@ export interface glucose {
     createdAt?: Date;
     _id?: string;
 }
+
+export interface measurement {
+    _id?: string;
+    arms: number;
+    chest: number;
+    abdomen: number;
+    waist: number;
+    hip: number;
+    thighs: number;
+    calves: number;
+    user: string;
+    createdAt?: Date;
+}
