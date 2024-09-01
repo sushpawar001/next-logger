@@ -6,7 +6,6 @@ import axios from "axios";
 import formatDate from "@/helpers/formatDate";
 import Link from "next/link";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import CombinedMeasurementChart from "@/components/MeasurementChart";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
 import PopUpModal from "@/components/PopUpModal";
 import MeasurementChartNew from "@/components/MeasurementChartNew";

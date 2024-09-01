@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export function middleware(request) {
     const path = request.nextUrl.pathname;
-    const allowed = ["/load", "/"];
+    const allowed = ["/load", "/", "/privacy-policy", "/terms-service"];
 
     const publicPaths = [
         "/login",
@@ -10,8 +10,6 @@ export function middleware(request) {
         "/verify",
         "/forget-password",
         "/reset-password",
-        "/privacy-policy",
-        "/terms-service",
     ];
     const isPublicPath = publicPaths.includes(path);
 
