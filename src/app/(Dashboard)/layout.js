@@ -1,5 +1,6 @@
 import getToken from "@/helpers/getToken";
 import Navbar2 from "@/components/Navbar2";
+import NavbarClerk from "@/components/NavbarClerk";
 
 export const metadata = {
     title: "FitDose",
@@ -8,5 +9,5 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
     const token = getToken();
-    return <Navbar2 token={token}>{children}</Navbar2>;
+    return <NavbarClerk token={token}>{children}</NavbarClerk>;
 }

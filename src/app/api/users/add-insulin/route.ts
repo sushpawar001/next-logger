@@ -1,15 +1,15 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import InsulinType from "@/models/insulinTypeModel";
 import User from "@/models/userModel";
-import { NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { NextResponse, NextRequest } from "next/server";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   try {
     const { name } = await request.json();
-    const user = getUserFromToken(request);
+    const user = await getUserObjectId();
 
     const insulin = await InsulinType.findOne({ name });
     if (!insulin) {

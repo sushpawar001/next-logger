@@ -1,19 +1,17 @@
 import { connectDB } from "@/dbConfig/connectDB";
-import Measurements from "@/models/measurementsModel";
-import { NextRequest, NextResponse } from "next/server";
+import Glucose from "@/models/glucoseModel";
+import { NextResponse, NextRequest } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         const user = await getUserObjectId();
-        const data = await Measurements.find({ user: user }).sort({
-            createdAt: -1,
-        });
+        const data = await Glucose.find({ user: user }).sort({ createdAt: -1 });
         return NextResponse.json({ data: data });
     } catch (error) {
-        console.log("Error getting Measurements " + error);
+        console.log("Error getting Glucose " + error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

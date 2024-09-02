@@ -1,6 +1,6 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import User from "@/models/userModel";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import bcryptjs from "bcryptjs";
 import { Resend } from "resend";
 import { VerifyEmailTemplate } from "@/components/Resend/VerifyEmailTemplate";

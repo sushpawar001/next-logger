@@ -1,11 +1,11 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import User from "@/models/userModel";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import bcryptjs from "bcryptjs"
 import jwt from "jsonwebtoken";
 
 connectDB();
-
+// Deprecated
 export async function POST(request) {
     try {
         const body = await request.json();

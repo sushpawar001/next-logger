@@ -1,13 +1,13 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import Measurements from "@/models/measurementsModel";
 import { NextRequest, NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
 export async function DELETE(request: NextRequest, { params }: any) {
     try {
-        const user = getUserFromToken(request);
+        const user = await getUserObjectId();
         const data = await Measurements.findOneAndDelete({ _id: params.id, user: user });
         console.log("RouteData: ", data)
         return NextResponse.json({ message: "Data deleted", data: data })

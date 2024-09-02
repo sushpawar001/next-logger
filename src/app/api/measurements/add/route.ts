@@ -1,7 +1,7 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import Measurements from "@/models/measurementsModel";
 import { NextRequest, NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { arms, chest, abdomen, waist, hip, thighs, calves } = body.measurements;
-        const user = getUserFromToken(request);
+        const user = await getUserObjectId();
         const entry = await Measurements.create({
             arms,
             chest,

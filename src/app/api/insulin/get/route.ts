@@ -1,13 +1,13 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import Insulin from "@/models/insulinModel";
-import { NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { NextResponse, NextRequest } from "next/server";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function GET(request) {
+export async function GET(request: NextRequest) {
     try {
-        const user = getUserFromToken(request);
+        const user = await getUserObjectId();
         const data = await Insulin.find({ user: user }).sort({ createdAt: -1 });
         return NextResponse.json({ data: data })
 

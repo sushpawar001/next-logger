@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-
+import { NextResponse, NextRequest } from "next/server";
+// Deprecated
 export async function GET(request) {
     try {
         const token = request.cookies.get('token')?.value || ''

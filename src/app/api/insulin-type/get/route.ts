@@ -1,10 +1,10 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import InsulinType from "@/models/insulinTypeModel";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 connectDB();
 
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   try {
     const data = await InsulinType.find({});
     return NextResponse.json({ data: data });

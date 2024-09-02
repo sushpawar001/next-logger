@@ -1,15 +1,15 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import Weight from "@/models/weightModel";
-import { NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { NextResponse, NextRequest } from "next/server";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { value } = body;
-        const user = getUserFromToken(request);
+        const user = await getUserObjectId();
         const entry = await Weight.create({ value, user });
         return NextResponse.json({ entry, message: "Weight entry added!" })
 

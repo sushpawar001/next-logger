@@ -1,15 +1,15 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import Glucose from "@/models/glucoseModel";
-import { NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { NextResponse, NextRequest } from "next/server";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function PUT(request, { params }) {
+export async function PUT(request: NextRequest, { params }) {
     try {
         const body = await request.json();
         body.createdAt = new Date(body.createdAt);
-        const user = getUserFromToken(request);
+        const user = await getUserObjectId();
         const data = await Glucose.findOneAndUpdate({ _id: params.id, user: user }, body, {
             new: true
         });

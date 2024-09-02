@@ -1,14 +1,14 @@
 import { connectDB } from "@/dbConfig/connectDB";
-import { NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { NextResponse, NextRequest } from "next/server";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 import Weight from "@/models/weightModel";
 
 
 connectDB();
 
-export async function GET(request, { params }) {
+export async function GET(request: NextRequest, { params }) {
     try {
-        const user = getUserFromToken(request);
+        const user = await getUserObjectId();
         const data = await Weight.findOne({ _id: params.id, user: user });
         return NextResponse.json({ data: data })
 

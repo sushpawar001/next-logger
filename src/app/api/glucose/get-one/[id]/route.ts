@@ -1,13 +1,13 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import Glucose from "@/models/glucoseModel";
-import { NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { NextResponse, NextRequest } from "next/server";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function GET(request, { params }) {
+export async function GET(request: NextRequest, { params }) {
     try {
-        const user = getUserFromToken(request);
+        const user = await getUserObjectId();
         const data = await Glucose.findOne({ _id: params.id, user: user });
         return NextResponse.json({ data: data })
 

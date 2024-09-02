@@ -1,13 +1,13 @@
 import { connectDB } from "@/dbConfig/connectDB";
-import { NextResponse } from "next/server";
-import getUserFromToken from "@/helpers/getUserFromToken";
+import { NextResponse, NextRequest } from "next/server";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
 import Weight from "@/models/weightModel";
 
 connectDB();
 
-export async function DELETE(request, { params }) {
+export async function DELETE(request: NextRequest, { params }) {
     try {
-        const user = getUserFromToken(request);
+        const user = await getUserObjectId();
         const data = await Weight.findOneAndDelete({ _id: params.id, user: user });
         return NextResponse.json({ message: "Data deleted", data: data })
 
