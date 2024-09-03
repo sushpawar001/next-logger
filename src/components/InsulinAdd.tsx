@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import notify from "@/helpers/notify";
 import axios from "axios";
+import InsulinType from "@/models/insulinTypeModel"; // import to avoid error
 
 export default function InsulinAdd(props) {
     const [insulin, setInsulin] = useState("");
