@@ -1,5 +1,5 @@
 "use client";
-import MeasurementAdd from "@/components/MeasurementAdd";
+import MeasurementAdd from "@/components/DashboardInputs/MeasurementAdd";
 import { useEffect, useState } from "react";
 import notify from "@/helpers/notify";
 import axios from "axios";
@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
 import PopUpModal from "@/components/PopUpModal";
-import MeasurementChartNew from "@/components/MeasurementChartNew";
+import MeasurementChartNew from "@/components/Charts/MeasurementChartNew";
 
 const dataInputs = [
     "Arms",

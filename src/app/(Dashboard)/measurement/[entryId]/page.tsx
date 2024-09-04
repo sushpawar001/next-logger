@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import notify from "@/helpers/notify";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { useRouter } from "next/navigation";
-import { MeasurementInput } from "@/components/MeasurementAdd";
+import { MeasurementInput } from "@/components/DashboardInputs/MeasurementAdd";
 
 const dataInputs = [
     "arms",

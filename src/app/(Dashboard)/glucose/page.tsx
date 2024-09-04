@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import GlucoseAdd from "@/components/GlucoseAdd";
-import GlucoseChart from "@/components/GlucoseChart";
+import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
+import GlucoseChart from "@/components/Charts/GlucoseChart";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import axios from "axios";

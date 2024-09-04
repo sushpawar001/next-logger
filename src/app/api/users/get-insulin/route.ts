@@ -19,8 +19,7 @@ export async function GET(request: NextRequest) {
             message: "User Insulin data",
         });
     } catch (error) {
-        console.error("Error adding insulin to user: " + error);
-        console.log(error.stack);
+        console.error("Error getting user insulin: " + error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

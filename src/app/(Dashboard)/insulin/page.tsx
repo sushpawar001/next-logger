@@ -4,8 +4,8 @@ import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
-import InsulinAdd from "@/components/InsulinAdd";
-import InsulinChartSeparate from "@/components/InsulinChartSeparate";
+import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
+import InsulinChartSeparate from "@/components/Charts/InsulinChartSeparate";
 import PopUpModal from "@/components/PopUpModal";
 
 const TdStyle = {

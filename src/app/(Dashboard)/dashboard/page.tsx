@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { glucose, weight } from "@/types/models";
-import WeightAdd from "@/components/WeightAdd";
-import GlucoseChart from "@/components/GlucoseChart";
-import WeightChart from "@/components/WeightChart";
-import GlucoseAdd from "@/components/GlucoseAdd";
-import InsulinAdd from "@/components/InsulinAdd";
+import WeightAdd from "@/components/DashboardInputs/WeightAdd";
+import GlucoseChart from "@/components/Charts/GlucoseChart";
+import WeightChart from "@/components/Charts/WeightChart";
+import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
+import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
 
 export default function Dashboard() {
     const [glucoseData, setGlucoseData] = useState<glucose[]>([]);

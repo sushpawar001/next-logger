@@ -4,8 +4,8 @@ import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
-import WeightAdd from "@/components/WeightAdd";
-import WeightChart from "@/components/WeightChart";
+import WeightAdd from "@/components/DashboardInputs/WeightAdd";
+import WeightChart from "@/components/Charts/WeightChart";
 import PopUpModal from "@/components/PopUpModal";
 
 const TdStyle = {

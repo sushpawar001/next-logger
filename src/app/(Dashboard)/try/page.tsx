@@ -1,6 +1,6 @@
 import React from "react";
-import GlucoseChart from "@/components/GlucoseChart";
-import GlucoseAdd from "@/components/GlucoseAdd";
+import GlucoseChart from "@/components/Charts/GlucoseChart";
+import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 
 export default function page() {
     return (

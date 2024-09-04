@@ -1,7 +1,7 @@
 "use client";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import InsulinTypeAdd from "@/components/InsulinTypeAdd";
+import InsulinTypeAdd from "@/components/DashboardInputs/InsulinTypeAdd";
 import UserDetails from "@/components/UserDetails";
 
 type InsulinType = {
