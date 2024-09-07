@@ -15,8 +15,6 @@ export async function GET(request: NextRequest, { params }) {
 
         let prevDaysAgo = new Date();
         prevDaysAgo.setDate(daysAgo.getDate() - days * 2);
-        // console.log("daysAgo", daysAgo);
-        // console.log("prevDaysAgo", prevDaysAgo);
 
         const data = await Glucose.find({
             user: user,
@@ -27,8 +25,6 @@ export async function GET(request: NextRequest, { params }) {
         const prevDaysAgoData = data.filter(
             (d) => d.createdAt < daysAgo && d.createdAt > prevDaysAgo
         );
-        // console.log("daysAgoData:", daysAgoData);
-        // console.log("prevDaysAgoData:", prevDaysAgoData);
         return NextResponse.json({ data: { daysAgoData, prevDaysAgoData } });
     } catch (error) {
         console.log("Error getting Glucose " + error);

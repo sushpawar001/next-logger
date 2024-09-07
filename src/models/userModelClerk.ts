@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema(
             required: true,
             unique: true,
         },
+        layoutSettings: {
+            type: String,
+            enum: ["diabetes", "fitness"],
+            default: "diabetes",
+        },
     },
     { timestamps: true }
 );

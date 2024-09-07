@@ -12,7 +12,7 @@ export default function RootLayout({ children }) {
     const token = getToken();
     return (
         <ClerkProvider>
-            <NavbarClerk token={token}>{children}</NavbarClerk>
+            <NavbarClerk >{children}</NavbarClerk>
         </ClerkProvider>
     );
 }

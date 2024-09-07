@@ -13,7 +13,6 @@ export async function PUT(request: NextRequest, { params }) {
         const data = await Glucose.findOneAndUpdate({ _id: params.id, user: user }, body, {
             new: true
         });
-        console.log("RouteData: ", data)
         return NextResponse.json({ message: "Data updated", data: data })
 
     } catch (error) {

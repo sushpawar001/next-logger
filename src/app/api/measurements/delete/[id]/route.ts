@@ -9,7 +9,6 @@ export async function DELETE(request: NextRequest, { params }: any) {
     try {
         const user = await getUserObjectId();
         const data = await Measurements.findOneAndDelete({ _id: params.id, user: user });
-        console.log("RouteData: ", data)
         return NextResponse.json({ message: "Data deleted", data: data })
 
     } catch (error) {

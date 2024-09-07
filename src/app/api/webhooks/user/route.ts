@@ -11,7 +11,6 @@ connectDB();
 
 export async function POST(request: NextRequest) {
     try {
-        console.log("webhook hit!")
         const body = await request.json();
         const { data } = body;
         const requestType = body.type;

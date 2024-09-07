@@ -8,6 +8,12 @@ export interface insulinName {
     name: string;
 }
 
+export interface InsulinNameType {
+    _id: string;
+    name: string;
+    createdAt: string;
+}
+
 export interface weight {
     value: number;
     createdAt?: Date;

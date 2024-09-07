@@ -13,7 +13,6 @@ export async function PUT(request: NextRequest, { params }) {
         const data = await Measurements.findOneAndUpdate({ _id: params.id, user: user }, body, {
             new: true
         });
-        console.log("RouteData: ", data)
         return NextResponse.json({ message: "Measurements Data updated", data: data })
 
     } catch (error) {

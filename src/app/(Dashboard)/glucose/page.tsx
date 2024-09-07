@@ -8,7 +8,6 @@ import axios from "axios";
 import Link from "next/link";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { motion } from "framer-motion";
 import PopUpModal from "@/components/PopUpModal";
 
 const TdStyle = {
