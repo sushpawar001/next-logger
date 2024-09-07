@@ -30,7 +30,6 @@ export default function EditEntry({ params }) {
         try {
             data.createdAt = new Date(data.createdAt).toISOString()
             const response = await axios.put(`/api/glucose/update/${params.entryId}`, data)
-            console.log(response);
             notify(response.data.message, 'success')
             router.push('/glucose/');
         } catch (error) {

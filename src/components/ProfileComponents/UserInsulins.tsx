@@ -62,7 +62,7 @@ export default function UserInsulins({
         <div
             className={`p-5 md:p-7 rounded-xl bg-white shadow-md ${className}`}
         >
-            <div className="flex items-center gap-2 font-bold text-2xl text-secondary mb-6">
+            <div className="flex items-center gap-2 font-bold text-xl md:text-2xl text-secondary mb-4 md:mb-6">
                 <FaSyringe className="text-xl" />
                 <h2>Your Insulins</h2>
             </div>
@@ -84,7 +84,7 @@ export default function UserInsulins({
                 </select>
                 <button
                     type="submit"
-                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
+                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-2/5 lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
                     disabled={isSubmitting || !isChanged}
                 >
                     {isSubmitting ? (
@@ -98,7 +98,7 @@ export default function UserInsulins({
                 {userInsulins.map((data) => (
                     <div
                         key={data._id}
-                        className="text-sm text-center text-white bg-secondary hover:bg-secondary/90 py-1 px-2 rounded-full flex items-center justify-center gap-1 w-fit"
+                        className="text-sm text-center text-white bg-secondary hover:bg-secondary/90 py-0.5 px-2.5 rounded-full flex items-center justify-center gap-1 w-fit"
                     >
                         <p>{data.name}</p>
                         <button

@@ -56,7 +56,6 @@ export default function EditEntry({ params }) {
                 `/api/measurements/update/${params.entryId}`,
                 data
             );
-            console.log(response);
             notify(response.data.message, "success");
             router.push("/measurement/");
         } catch (error) {

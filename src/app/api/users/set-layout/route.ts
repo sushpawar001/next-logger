@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             user: updatedUser,
-            message: "User layout settings updated successfully",
+            message: "Layout settings updated!",
         });
     } catch (error) {
         console.log("Error setting user layout settings: " + error);

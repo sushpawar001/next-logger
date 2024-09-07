@@ -1,4 +1,5 @@
 import { getDashboardLayout, setDashboardLayoutLocal } from "@/helpers/getDashboardLayout";
+import notify from "@/helpers/notify";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaUserGear, FaPlus } from "react-icons/fa6";
@@ -37,6 +38,7 @@ export default function DashboardPreferences({
             setDashboardLayoutLocal(layoutSettings);
             setIsSubmitting(false);
             setIsChanged(false);
+            notify(response.data.message, "success");
         }
     };
 
@@ -44,7 +46,7 @@ export default function DashboardPreferences({
         <div
             className={`p-5 md:p-7 rounded-xl bg-white shadow-md ${className}`}
         >
-            <div className="flex items-center gap-2 font-bold text-2xl text-secondary mb-6">
+            <div className="flex items-center gap-2 font-bold text-xl md:text-2xl text-secondary mb-4 md:mb-6">
                 <FaUserGear className="text-xl" />
                 <h2>Dashboard Preferences</h2>
             </div>

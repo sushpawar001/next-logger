@@ -215,8 +215,9 @@ export default function Stats() {
 
     if (isLoading === true) {
         return (
-            <div className="h-full flex justify-center items-center">
-                <span className="loading loading-spinner size-10 lg:size-12 text-primary"></span>
+            <div className="w-full h-full flex justify-center items-center font-bold text-secondary text-xl gap-2">
+                <p>Loading</p>
+                <span className="loading-dots loading size-10"></span>
             </div>
         );
     }
