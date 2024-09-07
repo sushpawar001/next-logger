@@ -1,8 +1,9 @@
 import axios from "axios";
-import React, { useEffect, useState, SetStateAction } from "react";
+import React, { useEffect, useState, SetStateAction, useRef } from "react";
 import { FaSyringe } from "react-icons/fa";
 import type { InsulinNameType } from "@/types/models";
 import notify from "@/helpers/notify";
+import autoAnimate from "@formkit/auto-animate";
 
 export default function UserInsulins({
     className = "",
@@ -18,6 +19,7 @@ export default function UserInsulins({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isChanged, setIsChanged] = useState(false);
     const [selectedInsulin, setSelectedInsulin] = useState("");
+    const parent = useRef(null);
 
     const submitInsulin = async (e) => {
         e.preventDefault();
@@ -58,6 +60,10 @@ export default function UserInsulins({
         setIsChanged(true);
     };
 
+    useEffect(() => {
+        parent.current && autoAnimate(parent.current);
+    }, [parent]);
+
     return (
         <div
             className={`p-5 md:p-7 rounded-xl bg-white shadow-md ${className}`}
@@ -94,7 +100,7 @@ export default function UserInsulins({
                     )}
                 </button>
             </form>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1" ref={parent}>
                 {userInsulins.map((data) => (
                     <div
                         key={data._id}
