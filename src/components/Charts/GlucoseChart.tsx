@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
     Chart as ChartJS,
     LinearScale,
@@ -58,7 +58,7 @@ export default function GlucoseChartTime(props: {
 }) {
     const [glucose, setGlucose] = useState([]);
     const daysOfData = props.days || 7;
-    const getGlucose = async () => {
+    const getGlucose = useCallback(async () => {
         try {
             const response = await axios.get(`/api/glucose/get/${daysOfData}/`);
             if (response.status === 200) {
@@ -73,7 +73,7 @@ export default function GlucoseChartTime(props: {
         } catch (error) {
             console.log(error);
         }
-    };
+    }, [daysOfData]);
     const data: ChartData<"line"> = {
         labels: glucose.map((dataElem) => dataElem.createdAt),
         datasets: [
@@ -91,7 +91,7 @@ export default function GlucoseChartTime(props: {
         } else {
             getGlucose();
         }
-    }, [props.data, props.fetch]);
+    }, [getGlucose, props.data, props.fetch]);
 
     return <Line options={options} data={data} />;
 }

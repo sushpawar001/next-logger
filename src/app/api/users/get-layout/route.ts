@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
         const user = await getUserObjectId();
         const data = await ClerkUser.findById(user);
         return NextResponse.json({
-            data: "diabetes",
+            data: data.layoutSettings || "",
             message: "User layout settings",
         });
     } catch (error) {

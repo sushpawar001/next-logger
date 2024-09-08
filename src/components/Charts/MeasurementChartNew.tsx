@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
     Chart as ChartJS,
     LinearScale,
@@ -71,7 +71,7 @@ export default function MeasurementChartNew(props: {
 }) {
     const [measurementData, setMeasurementData] = useState<measurement[]>([]);
     const daysOfData = props.days || 14;
-    const getMeasurementData = async () => {
+    const getMeasurementData = useCallback(async () => {
         try {
             const response = await axios.get(`/api/measurements/get/${daysOfData}/`);
             if (response.status === 200) {
@@ -86,7 +86,7 @@ export default function MeasurementChartNew(props: {
         } catch (error) {
             console.log(error);
         }
-    };
+    }, [daysOfData]);
     const data: ChartData<"line"> = {
         labels: measurementData.map((dataElem) => dataElem.createdAt),
         datasets: [
@@ -105,7 +105,7 @@ export default function MeasurementChartNew(props: {
         } else {
             getMeasurementData();
         }
-    }, [props.data, props.fetch]);
+    }, [getMeasurementData, props.data, props.fetch]);
 
     return <Line options={options} data={data} />;
 }

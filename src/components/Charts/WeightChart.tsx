@@ -97,7 +97,7 @@ export default function WeightChart(props: {
         } else {
             getWeight();
         }
-    }, [props.data, props.fetch]);
+    }, [getWeight, props.data, props.fetch]);
 
     return <Line options={options} data={data} />;
 }

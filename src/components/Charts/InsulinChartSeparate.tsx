@@ -52,22 +52,25 @@ export const options: ChartOptions<"line"> = {
 export default function InsulinChartSeparate(props) {
     const [insulin, setInsulin] = useState<insulin[]>([]);
     const daysOfData = props.days || 7;
-    const getInsulin = async () => {
-        try {
-            const response = await axios.get(`/api/insulin/get/${daysOfData}/`);
-            if (response.status === 200) {
-                let insulinData = response.data.data.reverse();
-                setInsulin(insulinData);
-            } else {
-                console.error(
-                    "API request failed with status:",
-                    response.status
-                );
+    const getInsulin = useCallback(
+        async () => {
+            try {
+                const response = await axios.get(`/api/insulin/get/${daysOfData}/`);
+                if (response.status === 200) {
+                    let insulinData = response.data.data.reverse();
+                    setInsulin(insulinData);
+                } else {
+                    console.error(
+                        "API request failed with status:",
+                        response.status
+                    );
+                }
+            } catch (error) {
+                console.log(error);
             }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+        },
+        [daysOfData]
+    );
 
     const aggregateInsulinData = useCallback(
         (insulin: insulin[], allInsulins: string[]) => {
@@ -135,7 +138,7 @@ export default function InsulinChartSeparate(props) {
         } else {
             getInsulin();
         }
-    }, [props.data]);
+    }, [getInsulin, props.data]);
 
     const allInsulins: string[] = getUniqueInsulins(insulin);
     const aggregatedData = aggregateInsulinData(insulin, allInsulins);

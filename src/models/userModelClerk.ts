@@ -13,6 +13,9 @@ const userSchema = new mongoose.Schema(
                 ref: "insulintype",
             },
         ],
+        password: {
+            type: String,
+        },
         clerkUserId: {
             type: String,
             required: true,

@@ -23,6 +23,7 @@ export async function POST(request: NextRequest) {
 
                 const user = await ClerkUser.create({
                     email: email,
+                    password: "ClerkUser",
                     clerkUserId: id,
                 });
 
