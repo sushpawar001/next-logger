@@ -10,7 +10,7 @@ export default function SecurityPrivacySection() {
                         Security & Privacy
                     </h2>
                     <p>
-                        Your health data is sensitive. We prioritize your
+                        Your privacy is our top priority. We prioritize your
                         privacy and employ industry-leading security measures to
                         keep your information safe and confidential.
                     </p>

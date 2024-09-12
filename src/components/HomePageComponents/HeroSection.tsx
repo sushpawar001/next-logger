@@ -50,21 +50,21 @@ export default function HeroSection() {
                     </div>
                     <div className="flex flex-col justify-center gap-4 md:gap-6">
                         <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-secondary">
-                            Empower Your Health with{" "}
+                            Take Control of Your Health with{" "}
                             <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
-                                Precise Tracking
+                                Precision Data Tracking
                             </span>
                         </h1>
                         <p>
-                            Our platform helps you monitor your blood glucose,
-                            insulin dosages, and body metrics seamlessly.
+                            Effortlessly manage insulin, blood glucose, and
+                            fitness metrics—designed for better health.
                         </p>
                         <Link href="/signup">
                             <button
-                                className="rounded-md md:rounded-xl px-5 py-1.5 lg:py-2.5 text-sm lg:text-base font-semibold transition duration-500 w-1/2 md:w-1/3 hover:-translate-y-1 bg-gradient-to-r from-primary-ring to-primary-dark text-white"
+                                className="rounded-md md:rounded-xl px-5 py-1.5 lg:py-2.5 text-sm lg:text-base font-semibold transition duration-500 w-fit md:w-1/3 hover:-translate-y-1 bg-gradient-to-r from-primary-ring to-primary-dark text-white"
                                 onClick={null}
                             >
-                                Sign Up Now
+                                Join Now for Free
                             </button>
                         </Link>
                     </div>
