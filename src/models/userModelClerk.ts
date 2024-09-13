@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema(
             enum: ["diabetes", "fitness"],
             default: "diabetes",
         },
+        trialExpiry: {
+            type: Date,
+            default: Date.now() + 30 * 24 * 60 * 60 * 1000,
+        },
     },
     { timestamps: true }
 );
