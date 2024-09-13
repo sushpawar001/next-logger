@@ -25,6 +25,8 @@ export async function POST(request: NextRequest) {
                     email: email,
                     password: "ClerkUser",
                     clerkUserId: id,
+                    trialExpiry: Date.now() + 30 * 24 * 60 * 60 * 1000,
+                    layoutSettings: "diabetes",
                 });
 
                 if (user) {
