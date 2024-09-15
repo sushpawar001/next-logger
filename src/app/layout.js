@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,8 +16,8 @@ export default function RootLayout({ children }) {
             <body className={inter.className}>
                 {children}
                 <Toaster position="bottom-right" reverseOrder={false} />
-                <GoogleAnalytics gaId={process.env.GA_ID} />
             </body>
+            <GoogleAnalytics gaId={process.env.GA_ID} />
         </html>
     );
 }
