@@ -32,7 +32,7 @@ const TdStyle = {
 
 export default function MeasurementsPage() {
     const [measurementData, setMeasurementData] = useState([]);
-    const [daysOfData, setDaysOfData] = useState(14);
+    const [daysOfData, setDaysOfData] = useState(30);
     const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 500 });
 

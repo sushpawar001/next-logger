@@ -289,9 +289,9 @@ function GlucoseTile({
                         <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
                             Param
                         </th>
-                        <th className={`${TdStyle.ThStyle}`}>Current</th>
+                        <th className={`${TdStyle.ThStyle}`}>Previous</th>
                         <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
-                            Previous
+                            Current
                         </th>
                     </tr>
                 </thead>
@@ -299,16 +299,16 @@ function GlucoseTile({
                     <tr>
                         <td className={TdStyle.TdStyle2}>Mean:</td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.mean.toFixed(2)}
+                            {glucoseStatsOld.mean.toFixed(2)}
                         </td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.mean > glucoseStatsOld.mean ? (
+                            {glucoseStats.mean < glucoseStatsOld.mean ? (
                                 <span className="text-green-500 ml-2">
-                                    {glucoseStatsOld.mean.toFixed(2) + " ↓"}
+                                    {glucoseStats.mean.toFixed(2) + " ↓"}
                                 </span>
                             ) : (
                                 <span className="text-red-500 ml-2">
-                                    {glucoseStatsOld.mean.toFixed(2) + " ↑"}
+                                    {glucoseStats.mean.toFixed(2) + " ↑"}
                                 </span>
                             )}
                         </td>
@@ -316,16 +316,16 @@ function GlucoseTile({
                     <tr>
                         <td className={TdStyle.TdStyle2}>Median:</td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.median.toFixed(2)}
+                            {glucoseStatsOld.median.toFixed(2)}
                         </td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.median > glucoseStatsOld.median ? (
+                            {glucoseStats.median < glucoseStatsOld.median ? (
                                 <span className="text-green-500 ml-2">
-                                    {glucoseStatsOld.median.toFixed(2) + " ↓"}
+                                    {glucoseStats.median.toFixed(2) + " ↓"}
                                 </span>
                             ) : (
                                 <span className="text-red-500 ml-2">
-                                    {glucoseStatsOld.median.toFixed(2) + " ↑"}
+                                    {glucoseStats.median.toFixed(2) + " ↑"}
                                 </span>
                             )}
                         </td>
@@ -333,38 +333,48 @@ function GlucoseTile({
                     <tr>
                         <td className={TdStyle.TdStyle2}>Mode:</td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.mode.length > 2 ? glucoseStats.mode.slice(0, 2).toString() + "..." : glucoseStats.mode.toString()}
+                            {glucoseStatsOld.mode.length > 2
+                                ? glucoseStatsOld.mode.slice(0, 2).toString() +
+                                  "..."
+                                : glucoseStatsOld.mode.toString()}
                         </td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStatsOld.mode.length > 2 ? glucoseStatsOld.mode.slice(0, 2).toString() + "..." : glucoseStatsOld.mode.toString()}
+                            {glucoseStats.mode.length > 2
+                                ? glucoseStats.mode.slice(0, 2).toString() +
+                                  "..."
+                                : glucoseStats.mode.toString()}
                         </td>
                     </tr>
                     <tr>
                         <td className={TdStyle.TdStyle2}>Min:</td>
-                        <td className={TdStyle.TdStyle2}>{glucoseStats.min}</td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.min > glucoseStatsOld.min ? (
+                            {glucoseStatsOld.min}
+                        </td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.min < glucoseStatsOld.min ? (
                                 <span className="text-green-500 ml-2">
-                                    {glucoseStatsOld.min.toFixed(2) + " ↓"}
+                                    {glucoseStats.min.toFixed(2) + " ↓"}
                                 </span>
                             ) : (
                                 <span className="text-red-500 ml-2">
-                                    {glucoseStatsOld.min.toFixed(2) + " ↑"}
+                                    {glucoseStats.min.toFixed(2) + " ↑"}
                                 </span>
                             )}
                         </td>
                     </tr>
                     <tr>
                         <td className={TdStyle.TdStyle2}>Max:</td>
-                        <td className={TdStyle.TdStyle2}>{glucoseStats.max}</td>
                         <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.max > glucoseStatsOld.max ? (
+                            {glucoseStatsOld.max}
+                        </td>
+                        <td className={TdStyle.TdStyle2}>
+                            {glucoseStats.max < glucoseStatsOld.max ? (
                                 <span className="text-green-500 ml-2">
-                                    {glucoseStatsOld.max.toFixed(2) + " ↓"}
+                                    {glucoseStats.max.toFixed(2) + " ↓"}
                                 </span>
                             ) : (
                                 <span className="text-red-500 ml-2">
-                                    {glucoseStatsOld.max.toFixed(2) + " ↑"}
+                                    {glucoseStats.max.toFixed(2) + " ↑"}
                                 </span>
                             )}
                         </td>
@@ -398,9 +408,9 @@ function WeightTile({
                         <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
                             Param
                         </th>
-                        <th className={`${TdStyle.ThStyle}`}>Current</th>
+                        <th className={`${TdStyle.ThStyle}`}>Previous</th>
                         <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
-                            Previous
+                            Current
                         </th>
                     </tr>
                 </thead>
@@ -408,16 +418,16 @@ function WeightTile({
                     <tr>
                         <td className={TdStyle.TdStyle2}>Mean:</td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStats.mean.toFixed(2)}
+                            {weightStatsOld.mean.toFixed(2)}
                         </td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStats.mean > weightStatsOld.mean ? (
+                            {weightStats.mean < weightStatsOld.mean ? (
                                 <span className="text-green-500 ml-2">
-                                    {weightStatsOld.mean.toFixed(2) + " ↓"}
+                                    {weightStats.mean.toFixed(2) + " ↓"}
                                 </span>
                             ) : (
                                 <span className="text-red-500 ml-2">
-                                    {weightStatsOld.mean.toFixed(2) + " ↑"}
+                                    {weightStats.mean.toFixed(2) + " ↑"}
                                 </span>
                             )}
                         </td>
@@ -425,16 +435,16 @@ function WeightTile({
                     <tr>
                         <td className={TdStyle.TdStyle2}>Median:</td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStats.median.toFixed(2)}
+                            {weightStatsOld.median.toFixed(2)}
                         </td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStats.median > weightStatsOld.median ? (
+                            {weightStats.median < weightStatsOld.median ? (
                                 <span className="text-green-500 ml-2">
-                                    {weightStatsOld.median.toFixed(2) + " ↓"}
+                                    {weightStats.median.toFixed(2) + " ↓"}
                                 </span>
                             ) : (
                                 <span className="text-red-500 ml-2">
-                                    {weightStatsOld.median.toFixed(2) + " ↑"}
+                                    {weightStats.median.toFixed(2) + " ↑"}
                                 </span>
                             )}
                         </td>
@@ -442,38 +452,44 @@ function WeightTile({
                     <tr>
                         <td className={TdStyle.TdStyle2}>Mode:</td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStats.mode.length > 2 ? weightStats.mode.slice(0, 2).toString() + "..." : weightStats.mode.toString()}
+                            {weightStatsOld.mode.length > 2
+                                ? weightStatsOld.mode.slice(0, 2).toString() +
+                                  "..."
+                                : weightStatsOld.mode.toString()}
                         </td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStatsOld.mode.length > 2 ? weightStatsOld.mode.slice(0, 2).toString() + "..." : weightStatsOld.mode.toString()}
+                            {weightStats.mode.length > 2
+                                ? weightStats.mode.slice(0, 2).toString() +
+                                  "..."
+                                : weightStats.mode.toString()}
                         </td>
                     </tr>
                     <tr>
                         <td className={TdStyle.TdStyle2}>Min:</td>
-                        <td className={TdStyle.TdStyle2}>{weightStats.min}</td>
+                        <td className={TdStyle.TdStyle2}>{weightStatsOld.min}</td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStats.min > weightStatsOld.min ? (
+                            {weightStats.min < weightStatsOld.min ? (
                                 <span className="text-green-500 ml-2">
-                                    {weightStatsOld.min.toFixed(2) + " ↓"}
+                                    {weightStats.min.toFixed(2) + " ↓"}
                                 </span>
                             ) : (
                                 <span className="text-red-500 ml-2">
-                                    {weightStatsOld.min.toFixed(2) + " ↑"}
+                                    {weightStats.min.toFixed(2) + " ↑"}
                                 </span>
                             )}
                         </td>
                     </tr>
                     <tr>
                         <td className={TdStyle.TdStyle2}>Max:</td>
-                        <td className={TdStyle.TdStyle2}>{weightStats.max}</td>
+                        <td className={TdStyle.TdStyle2}>{weightStatsOld.max}</td>
                         <td className={TdStyle.TdStyle2}>
-                            {weightStats.max > weightStatsOld.max ? (
+                            {weightStats.max < weightStatsOld.max ? (
                                 <span className="text-green-500 ml-2">
-                                    {weightStatsOld.max.toFixed(2) + " ↓"}
+                                    {weightStats.max.toFixed(2) + " ↓"}
                                 </span>
                             ) : (
                                 <span className="text-red-500 ml-2">
-                                    {weightStatsOld.max.toFixed(2) + " ↑"}
+                                    {weightStats.max.toFixed(2) + " ↑"}
                                 </span>
                             )}
                         </td>

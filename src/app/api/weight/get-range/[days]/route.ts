@@ -12,9 +12,11 @@ export async function GET(request: NextRequest, { params }) {
 
         let daysAgo = new Date();
         daysAgo.setDate(daysAgo.getDate() - days);
+        daysAgo.setHours(0, 0, 0, 0);
 
         let prevDaysAgo = new Date();
-        prevDaysAgo.setDate(daysAgo.getDate() - days * 2);
+        prevDaysAgo.setDate(prevDaysAgo.getDate() - days * 2);
+        prevDaysAgo.setHours(0, 0, 0, 0);
 
         const data = await Weight.find({
             user: user,
