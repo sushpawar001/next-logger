@@ -4,6 +4,9 @@ import axios from "axios";
 import { mean, median, mode, min, max, sum } from "mathjs";
 import { glucose, weight, insulin } from "@/types/models";
 import { getDailyInsulinValues } from "@/helpers/statsHelpers";
+import { FaChartLine } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface statsObjType {
     mean: number;
@@ -23,6 +26,7 @@ const statsObj = {
 };
 
 export default function Stats() {
+    const router = useRouter();
     const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
     const [glucoseDataOld, setGlucoseDataOld] = useState<glucose[]>([]);
     const [weightData, setWeightData] = useState<weight[]>([]);
@@ -225,12 +229,12 @@ export default function Stats() {
     return (
         <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
             <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5">
-                <div className="bg-white p-2 xl:p-4 shadow-md md:col-span-2 rounded-xl">
+                <div className="bg-white p-2 xl:p-4 shadow-md md:col-span-2 rounded-xl flex gap-1.5 lg:gap-3">
                     <select
                         id="daysOfDataInput"
                         value={daysOfData}
                         onChange={changeDaysOfData}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-full p-2.5"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-3/5 lg:w-4/5 p-2.5"
                     >
                         <option defaultValue="7">7</option>
                         <option>14</option>
@@ -239,6 +243,13 @@ export default function Stats() {
                         <option>365</option>
                         <option value={365 * 100}>All</option>
                     </select>
+                    <Link
+                        href="/charts"
+                        className="inline-flex items-center px-1.5 md:px-3 py-2 text-xs md:text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-primary-dark focus:outline-none w-2/5 lg:w-1/5 gap-2"
+                    >
+                        <FaChartLine className="text-xl" />
+                        See Charts
+                    </Link>
                 </div>
                 <GlucoseTile
                     TdStyle={TdStyle}
@@ -466,7 +477,9 @@ function WeightTile({
                     </tr>
                     <tr>
                         <td className={TdStyle.TdStyle2}>Min:</td>
-                        <td className={TdStyle.TdStyle2}>{weightStatsOld.min}</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStatsOld.min}
+                        </td>
                         <td className={TdStyle.TdStyle2}>
                             {weightStats.min < weightStatsOld.min ? (
                                 <span className="text-green-500 ml-2">
@@ -481,7 +494,9 @@ function WeightTile({
                     </tr>
                     <tr>
                         <td className={TdStyle.TdStyle2}>Max:</td>
-                        <td className={TdStyle.TdStyle2}>{weightStatsOld.max}</td>
+                        <td className={TdStyle.TdStyle2}>
+                            {weightStatsOld.max}
+                        </td>
                         <td className={TdStyle.TdStyle2}>
                             {weightStats.max < weightStatsOld.max ? (
                                 <span className="text-green-500 ml-2">

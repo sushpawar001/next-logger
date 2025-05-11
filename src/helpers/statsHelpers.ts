@@ -15,3 +15,18 @@ export function getDailyInsulinValues(valuesArray: insulin[]): number[] {
     }
     return Object.values(dates);
 }
+
+export function simpleMovingAverage(arr: number[], period: number): number[] {
+    const result = [];
+    for (let i = 0; i <= arr.length - period; i++) {
+        const window = arr.slice(i, i + period);
+        const avg = window.reduce((sum, val) => sum + val, 0) / period;
+        result.push(avg);
+    }
+    if (result.length < arr.length) {
+        const myArray = new Array(arr.length - result.length);
+        myArray.fill(null);
+        return myArray.concat(result);
+    }
+    return result;
+}
