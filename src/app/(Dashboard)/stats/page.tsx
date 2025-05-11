@@ -3,10 +3,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { mean, median, mode, min, max, sum } from "mathjs";
 import { glucose, weight, insulin } from "@/types/models";
-import { getDailyInsulinValues } from "@/helpers/statsHelpers";
-import { FaChartLine } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { getDailyInsulinValues, getHba1cValue } from "@/helpers/statsHelpers";
+import { FaChartLine, FaInfoCircle } from "react-icons/fa";
+import { LuInfo } from "react-icons/lu";
 import Link from "next/link";
+import { set } from "mongoose";
 
 interface statsObjType {
     mean: number;
@@ -26,7 +27,6 @@ const statsObj = {
 };
 
 export default function Stats() {
-    const router = useRouter();
     const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
     const [glucoseDataOld, setGlucoseDataOld] = useState<glucose[]>([]);
     const [weightData, setWeightData] = useState<weight[]>([]);
@@ -35,6 +35,9 @@ export default function Stats() {
     const [daysOfData, setDaysOfData] = useState(7);
     const [isLoading, setIsLoading] = useState(false);
     const [glucoseStats, setGlucoseStats] = useState<statsObjType>(statsObj);
+    const [estHbA1c, setEstHbA1c] = useState(0);
+    const [riskLevel, setRiskLevel] = useState("normal");
+    const [riskText, setRiskText] = useState("Normal");
 
     const [glucoseStatsOld, setGlucoseStatsOld] =
         useState<statsObjType>(statsObj);
@@ -130,6 +133,17 @@ export default function Stats() {
                 min: min(glucoseArr),
                 max: max(glucoseArr),
             });
+
+            const hba1c = getHba1cValue(mean(glucoseArr));
+            setEstHbA1c(hba1c);
+
+            if (hba1c >= 8.5) {
+                setRiskLevel("high");
+                setRiskText("High Risk");
+            } else if (hba1c >= 7) {
+                setRiskLevel("moderate");
+                setRiskText("Moderate Risk");
+            }
         } else {
             setGlucoseStats(statsObj);
         }
@@ -228,7 +242,7 @@ export default function Stats() {
 
     return (
         <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
-            <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5">
+            <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                 <div className="bg-white p-2 xl:p-4 shadow-md md:col-span-2 rounded-xl flex gap-1.5 lg:gap-3">
                     <select
                         id="daysOfDataInput"
@@ -245,11 +259,51 @@ export default function Stats() {
                     </select>
                     <Link
                         href="/charts"
-                        className="inline-flex items-center px-1.5 md:px-3 py-2 text-xs md:text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-primary-dark focus:outline-none w-2/5 lg:w-1/5 gap-2"
+                        className="inline-flex items-center px-1.5 md:px-3 py-2 text-xs md:text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-primary-dark focus:outline-none w-2/5 lg:w-1/5 gap-2 justify-center"
                     >
                         <FaChartLine className="text-xl" />
                         See Charts
                     </Link>
+                </div>
+                <div className="bg-white shadow-md md:col-span-2 rounded-xl md:flex gap-1">
+                    <div
+                        className={`w-full md:w-1/4 p-2 xl:p-4 rounded-t-xl md:rounded-l-xl md:rounded-tr-none  ${
+                            riskLevel === "high"
+                                ? "bg-red-50 text-red-900"
+                                : riskLevel === "moderate"
+                                ? "bg-amber-50 text-amber-900"
+                                : "bg-green-50 text-green-900"
+                        }`}
+                    >
+                        <div className="flex gap-2 font-semibold">
+                            <h2 className="text-sm xl:text-base">
+                                Estimated HbA1c
+                            </h2>
+                            <p
+                                className={`text-xs my-auto px-3 py-0.5 rounded-full ${
+                                    riskLevel === "high"
+                                        ? "bg-red-100 text-red-900"
+                                        : riskLevel === "moderate"
+                                        ? "bg-amber-100 text-amber-900"
+                                        : "bg-green-100 text-green-900"
+                                }`}
+                            >
+                                {riskText}
+                            </p>
+                        </div>
+                        <h2 className="text-xl xl:text-3xl font-bold ">
+                            {estHbA1c}%
+                        </h2>
+                    </div>
+
+                    <div className="w-full md:w-3/4 m-auto p-3 xl:p-4 text-gray-500 flex gap-2.5">
+                        <LuInfo className="m-auto text-xl" />
+                        <p className="text-xs md:text-sm">
+                            Estimated HbA1c is based on your average glucose
+                            levels. Minimum 3 months of data required for better
+                            estimates.
+                        </p>
+                    </div>
                 </div>
                 <GlucoseTile
                     TdStyle={TdStyle}

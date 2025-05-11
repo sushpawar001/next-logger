@@ -30,3 +30,7 @@ export function simpleMovingAverage(arr: number[], period: number): number[] {
     }
     return result;
 }
+
+export function getHba1cValue(averageGlucose: number): number {
+    return Math.round((averageGlucose + 46.7) / 28.7);
+}
