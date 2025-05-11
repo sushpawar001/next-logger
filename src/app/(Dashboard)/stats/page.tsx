@@ -243,27 +243,37 @@ export default function Stats() {
     return (
         <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
             <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
-                <div className="bg-white p-2 xl:p-4 shadow-md md:col-span-2 rounded-xl flex gap-1.5 lg:gap-3">
-                    <select
-                        id="daysOfDataInput"
-                        value={daysOfData}
-                        onChange={changeDaysOfData}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-3/5 lg:w-4/5 p-2.5"
-                    >
-                        <option defaultValue="7">7</option>
-                        <option>14</option>
-                        <option>30</option>
-                        <option>90</option>
-                        <option>365</option>
-                        <option value={365 * 100}>All</option>
-                    </select>
-                    <Link
-                        href="/charts"
-                        className="inline-flex items-center px-1.5 md:px-3 py-2 text-xs md:text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-primary-dark focus:outline-none w-2/5 lg:w-1/5 gap-2 justify-center"
-                    >
-                        <FaChartLine className="text-xl" />
-                        See Charts
-                    </Link>
+                <div className="md:col-span-2 w-full flex flex-col md:flex-row gap-2 md:gap-3">
+                    <div className="md:w-1/2 rounded-xl flex flex-col gap-0.5 bg-white shadow-md p-2.5">
+                        <h2 className="font-bold text-gray-900 my-auto text-xl">
+                            Analytics Overview
+                        </h2>
+                        <p className="text-gray-500 text-sm">
+                            Track your health metrics over time
+                        </p>
+                    </div>
+                    <div className="bg-white p-2 shadow-md rounded-xl flex gap-1 lg:gap-2 md:w-1/2">
+                        <select
+                            id="daysOfDataInput"
+                            value={daysOfData}
+                            onChange={changeDaysOfData}
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-3/5 p-2.5"
+                        >
+                            <option defaultValue="7">7</option>
+                            <option>14</option>
+                            <option>30</option>
+                            <option>90</option>
+                            <option>365</option>
+                            <option value={365 * 100}>All</option>
+                        </select>
+                        <Link
+                            href="/charts"
+                            className="inline-flex items-center px-1.5 md:px-3 py-2 text-xs md:text-sm font-medium text-center text-white bg-primary rounded-lg hover:bg-primary-dark focus:outline-none w-2/5 gap-2 justify-center"
+                        >
+                            <FaChartLine className="text-xl" />
+                            See Charts
+                        </Link>
+                    </div>
                 </div>
                 <div className="bg-white shadow-md md:col-span-2 rounded-xl md:flex gap-1">
                     <div
@@ -344,8 +354,8 @@ function GlucoseTile({
     glucoseStatsOld: statsObjType;
 }) {
     return (
-        <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
-            <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
+        <div className="bg-white p-2 xl:p-4 shadow-md rounded-xl">
+            <h2 className="mb-2 text-lg xl:text-xl font-medium text-gray-900">
                 Glucose:
             </h2>
             <table className="table table-auto">
@@ -463,8 +473,8 @@ function WeightTile({
     weightStatsOld: statsObjType;
 }) {
     return (
-        <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
-            <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
+        <div className="bg-white p-2 xl:p-4 shadow-md rounded-xl">
+            <h2 className="mb-2 text-lg xl:text-xl font-medium text-gray-900">
                 Weight:
             </h2>
             <table className="table table-auto">
@@ -571,8 +581,8 @@ function WeightTile({
 
 function InsulinTile(props) {
     return (
-        <div className="bg-white p-3 xl:p-6 shadow-md rounded-xl">
-            <h2 className="mb-3 text-lg xl:text-xl font-medium text-gray-900">
+        <div className="bg-white p-2 xl:p-4 shadow-md rounded-xl">
+            <h2 className="mb-2 text-lg xl:text-xl font-medium text-gray-900">
                 Insulin: {props.data[0]}
             </h2>
             <table className="table table-auto">
