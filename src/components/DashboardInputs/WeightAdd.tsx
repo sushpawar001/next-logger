@@ -51,7 +51,7 @@ export default function WeightAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-5 xl:p-6 rounded-lg bg-white shadow-md"
+            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white shadow-md"
             onSubmit={submitForm}
         >
             <div className="flex flex-col gap-3">
@@ -64,7 +64,7 @@ export default function WeightAdd(props) {
                 <input
                     type="number"
                     id="weight"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full px-2.5 py-2"
                     placeholder="72 kg"
                     value={weight}
                     onChange={changeWeight}
@@ -75,7 +75,7 @@ export default function WeightAdd(props) {
                     <input
                         type="datetime-local"
                         id="glucoseDate"
-                        className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 placeholder:text-red-500 md:w-2/3"
+                        className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full px-2.5 py-2 placeholder:text-red-500 md:w-2/3"
                         value={DatetimeLocalFormat(selectedDate)}
                         // value={selectedDate}
                         onChange={(e) => {
@@ -87,7 +87,7 @@ export default function WeightAdd(props) {
                         id="glucose_tag"
                         value={""}
                         onChange={() => {}}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 invalid:text-gray-400 md:w-1/3"
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full px-2.5 py-2 invalid:text-gray-400 md:w-1/3"
                         required
                     >
                         <option value="" disabled>
@@ -100,7 +100,7 @@ export default function WeightAdd(props) {
                 </div>
                 <button
                     type="submit"
-                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2.5 text-center transition duration-300"
+                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition duration-300"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
