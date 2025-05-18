@@ -56,7 +56,7 @@ export default function GlucoseAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-5 md:p-7 rounded-lg bg-white shadow-md"
+            className="max-w-full mx-auto p-5 md:p-6 rounded-lg bg-white shadow-md"
             onSubmit={submitForm}
         >
             <div className="flex flex-col gap-3">

@@ -2,10 +2,12 @@
 import notify from "@/helpers/notify";
 import axios from "axios";
 import React, { useState } from "react";
-
+import { DatetimeLocalFormat } from "@/helpers/formatDate";
+const dataArray = [{ _id: 1, name: "test" }];
 export default function WeightAdd(props) {
     const [weight, setWeight] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
     const changeWeight = (event: { target: { value: string } }) => {
         setWeight(event.target.value);
@@ -49,29 +51,56 @@ export default function WeightAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-5 xl:p-7 rounded-xl bg-white shadow-md"
+            className="max-w-full mx-auto p-5 xl:p-6 rounded-lg bg-white shadow-md"
             onSubmit={submitForm}
         >
-            <label
-                htmlFor="weight"
-                className="block mb-2 text-sm font-medium text-secondary dark:text-white"
-            >
-                Your Body Weight (kg)
-            </label>
-            <div className="flex flex-col md:flex-row gap-2">
+            <div className="flex flex-col gap-3">
+                <label
+                    htmlFor="weight"
+                    className="block text-sm font-medium text-secondary dark:text-white"
+                >
+                    Your Body Weight (kg)
+                </label>
                 <input
                     type="number"
                     id="weight"
-                    className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full lg:w-4/5 p-2.5"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                     placeholder="72 kg"
                     value={weight}
                     onChange={changeWeight}
                     step="any"
                     required
                 />
+                <div className="flex flex-col md:flex-row gap-3">
+                    <input
+                        type="datetime-local"
+                        id="glucoseDate"
+                        className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 placeholder:text-red-500 md:w-2/3"
+                        value={DatetimeLocalFormat(selectedDate)}
+                        // value={selectedDate}
+                        onChange={(e) => {
+                            setSelectedDate(new Date(e.target.value));
+                        }}
+                        required
+                    />
+                    <select
+                        id="glucose_tag"
+                        value={""}
+                        onChange={() => {}}
+                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 invalid:text-gray-400 md:w-1/3"
+                        required
+                    >
+                        <option value="" disabled>
+                            Select Tag
+                        </option>
+                        {dataArray.map((data) => (
+                            <option key={data._id}>{data.name}</option>
+                        ))}
+                    </select>
+                </div>
                 <button
                     type="submit"
-                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full lg:w-1/5 py-2.5 text-center transition duration-300"
+                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2.5 text-center transition duration-300"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
