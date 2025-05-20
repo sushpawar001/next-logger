@@ -154,7 +154,7 @@ export default function LoadCalc() {
           <input
             type="number"
             id="Load"
-            className="bg-gray-50 border border-stone-400  text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+            className="bg-gray-50 border border-stone-400  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
             value={Load}
             onChange={changeLoad}
             min={0}
@@ -174,7 +174,7 @@ export default function LoadCalc() {
           <input
             type="text"
             id="availablePlates"
-            className="bg-gray-50 border border-stone-400  text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+            className="bg-gray-50 border border-stone-400  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
             value={availablePlatesInput}
             onChange={changeAvailablePlates}
             required
@@ -191,7 +191,7 @@ export default function LoadCalc() {
           <input
             type="number"
             id="barWeight"
-            className="bg-gray-50 border border-stone-400 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+            className="bg-gray-50 border border-stone-400 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
             value={barWeight}
             onChange={changeBarWeight}
             min={0}
@@ -216,7 +216,7 @@ const Switcher = ({
 
   return (
     <>
-      <label className="w-full border border-primary inline-flex cursor-pointer select-none items-center justify-center rounded-xl bg-white">
+      <label className="w-full border border-primary inline-flex cursor-pointer select-none items-center justify-center rounded-lg bg-white">
         <input
           type="checkbox"
           className="sr-only"

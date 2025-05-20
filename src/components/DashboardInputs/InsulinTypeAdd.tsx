@@ -90,7 +90,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
   return (
     <>
       <form
-        className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow mb-3 md:mb-5"
+        className="max-w-full mx-auto p-5 md:p-7 rounded-lg bg-white shadow mb-3 md:mb-5"
         onSubmit={submitUserInsulin}
       >
         <label
@@ -104,7 +104,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
             id="insulinType"
             value={insulinType}
             onChange={changeInsulinType}
-            className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 invalid:text-gray-400"
+            className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 invalid:text-gray-400"
             required
           >
             <option value="" disabled>
@@ -118,14 +118,14 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
           </select>
           <button
             type="submit"
-            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300"
+            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300"
           >
             Submit
           </button>
         </div>
       </form>
       <form
-        className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow"
+        className="max-w-full mx-auto p-5 md:p-7 rounded-lg bg-white shadow"
         onSubmit={submitNewInsulin}
       >
         <label
@@ -138,7 +138,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
           <input
             type="text"
             id="newInsulinType"
-            className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+            className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
             placeholder="Actrapid"
             value={newInsulinType}
             onChange={changeNewInsulinType}
@@ -146,7 +146,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
           />
           <button
             type="submit"
-            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300"
+            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300"
           >
             Submit
           </button>

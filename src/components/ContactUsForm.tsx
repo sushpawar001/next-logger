@@ -56,7 +56,7 @@ export default function ContactUsForm() {
                     <input
                         type="text"
                         id="name"
-                        className="bg-gray-50 border border-stone-400  text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                        className="bg-gray-50 border border-stone-400  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                         placeholder="John Doe"
                         required
                         onChange={handleChange}
@@ -72,7 +72,7 @@ export default function ContactUsForm() {
                     <input
                         type="email"
                         id="email"
-                        className="bg-gray-50 border border-stone-400  text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                        className="bg-gray-50 border border-stone-400  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                         placeholder="john.doe@me.com"
                         required
                         onChange={handleChange}
@@ -87,7 +87,7 @@ export default function ContactUsForm() {
                     </label>
                     <textarea
                         id="message"
-                        className="bg-gray-50 border border-stone-400  text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                        className="bg-gray-50 border border-stone-400  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                         placeholder="Write your message here..."
                         rows={4}
                         required
@@ -97,7 +97,7 @@ export default function ContactUsForm() {
                 <div className="col-span-1 md:col-span-2 flex">
                     <button
                         type="submit"
-                        className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full py-2.5 text-center transition duration-300 mx-auto"
+                        className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2.5 text-center transition duration-300 mx-auto"
                     >
                         Submit
                     </button>

@@ -61,7 +61,7 @@ export default function AddNewInsulin({
 
     return (
         <div
-            className={`p-5 md:p-7 rounded-xl bg-white shadow ${className}`}
+            className={`p-5 md:p-7 rounded-lg bg-white shadow ${className}`}
         >
             <div className="flex items-center gap-2 font-bold text-xl md:text-2xl text-secondary mb-4 md:mb-6">
                 <FaPlus className="text-xl" />
@@ -71,7 +71,7 @@ export default function AddNewInsulin({
                 <input
                     type="text"
                     id="insulin"
-                    className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                    className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                     placeholder="Enter new insulin name"
                     value={newInsulinType}
                     onChange={changeNewInsulinType}
@@ -79,7 +79,7 @@ export default function AddNewInsulin({
                 />
                 <button
                     type="submit"
-                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-2/5 lg:w-1/5 py-2.5 text-center transition duration-300"
+                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-2/5 lg:w-1/5 py-2.5 text-center transition duration-300"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (

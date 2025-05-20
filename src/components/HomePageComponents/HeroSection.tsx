@@ -19,7 +19,7 @@ export default function HeroSection() {
                         <div>
                             <Link href="/login">
                                 <button
-                                    className="rounded-md md:rounded-xl px-5 lg:my-auto py-1 lg:py-2 text-sm lg:text-base font-semibold text-secondary transition  duration-500 h-full w-full hover:scale-105 hover:border-primary hover:text-primary-dark hover:outline outline-1"
+                                    className="rounded-md md:rounded-lg px-5 lg:my-auto py-1 lg:py-2 text-sm lg:text-base font-semibold text-secondary transition  duration-500 h-full w-full hover:scale-105 hover:border-primary hover:text-primary-dark hover:outline outline-1"
                                     onClick={null}
                                 >
                                     Log in
@@ -29,7 +29,7 @@ export default function HeroSection() {
                         <div>
                             <Link href="/signup">
                                 <button
-                                    className="rounded-md md:rounded-xl px-5 lg:my-auto py-1 lg:py-2 text-sm lg:text-base font-semibold transition duration-500 h-full w-full hover:-translate-y-1 bg-primary hover:bg-primary-dark hover:outline-primary-dark text-white"
+                                    className="rounded-md md:rounded-lg px-5 lg:my-auto py-1 lg:py-2 text-sm lg:text-base font-semibold transition duration-500 h-full w-full hover:-translate-y-1 bg-primary hover:bg-primary-dark hover:outline-primary-dark text-white"
                                     onClick={null}
                                 >
                                     Sign up
@@ -61,7 +61,7 @@ export default function HeroSection() {
                         </p>
                         <Link href="/signup">
                             <button
-                                className="rounded-md md:rounded-xl px-5 py-1.5 lg:py-2.5 text-sm lg:text-base font-semibold transition duration-500 w-fit md:w-1/3 hover:-translate-y-1 bg-gradient-to-r from-primary-ring to-primary-dark text-white"
+                                className="rounded-md md:rounded-lg px-5 py-1.5 lg:py-2.5 text-sm lg:text-base font-semibold transition duration-500 w-fit md:w-1/3 hover:-translate-y-1 bg-gradient-to-r from-primary-ring to-primary-dark text-white"
                                 onClick={null}
                             >
                                 Join Now for Free

@@ -92,14 +92,14 @@ export default function MeasurementsPage() {
                         setData={setMeasurementData}
                         className="order-2 md:order-1"
                     />
-                    <div className="col-span-1 md:col-span-2 w-full p-2.5 md:p-5 min-h-80 md:min-h-0 order-1 md:order-2 rounded-xl bg-white shadow">
+                    <div className="col-span-1 md:col-span-2 w-full p-2.5 md:p-5 min-h-80 md:min-h-0 order-1 md:order-2 rounded-lg bg-white shadow">
                         <MeasurementChartNew
                             fetch={false}
                             data={measurementData}
                         />
                     </div>
                 </div>
-                <div className="bg-white p-4 rounded-xl shadow">
+                <div className="bg-white p-4 rounded-lg shadow">
                     <div className="flex flex-wrap">
                         <div className="max-w-full w-full overflow-x-auto rounded-lg">
                             <div className="mb-2 grid grid-cols-2">
@@ -110,7 +110,7 @@ export default function MeasurementsPage() {
                                     id="daysOfDataInput"
                                     value={daysOfData}
                                     onChange={changeDaysOfData}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-full p-2.5"
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-full p-2.5"
                                 >
                                     <option defaultValue="7">7</option>
                                     <option>14</option>

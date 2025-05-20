@@ -44,7 +44,7 @@ export default function EditEntry({ params }) {
 
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
-            <div className="bg-white p-6 rounded-xl shadow w-full max-w-md">
+            <div className="bg-white p-6 rounded-lg shadow w-full max-w-md">
                 <h3 className="text-center mb-5 font-semibold text-lg text-gray-900">
                     Edit Weight:
                 </h3>
@@ -60,7 +60,7 @@ export default function EditEntry({ params }) {
                             <input
                                 type="number"
                                 id="weightUpdate"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-full p-2.5 focus:outline"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-full p-2.5 focus:outline"
                                 value={data.value}
                                 onChange={changeValue}
                                 required
@@ -76,7 +76,7 @@ export default function EditEntry({ params }) {
                             <input
                                 type="datetime-local"
                                 id="weightDate"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-full p-2.5 focus:outline"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-full p-2.5 focus:outline"
                                 value={data.createdAt}
                                 onChange={changeDate}
                                 required
@@ -84,7 +84,7 @@ export default function EditEntry({ params }) {
                         </div>
                         <button
                             type="submit"
-                            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                         >
                             Submit
                         </button>

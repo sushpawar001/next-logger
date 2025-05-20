@@ -9,7 +9,7 @@ const LoadingSkeleton = () => (
                 <h3 className="my-auto ml-1">
                   <Skeleton className="w-[120px] max-w-full" />
                 </h3>
-                <div className="border border-gray-300 focus:border-primary block w-full p-1.5 rounded-xl">
+                <div className="border border-gray-300 focus:border-primary block w-full p-1.5 rounded-lg">
                   <Skeleton className="w-[200px] max-w-full" />
                 </div>
               </div>
@@ -232,7 +232,7 @@ const LoadingSkeleton = () => (
               <Skeleton className="w-[144px] max-w-full" />
             </label>
             <div className="flex flex-col md:flex-row gap-2">
-              <div className="border rounded-xl border-stone-400 focus:border-primary-ring block w-full p-2.5">
+              <div className="border rounded-lg border-stone-400 focus:border-primary-ring block w-full p-2.5">
                 <Skeleton className="w-[64px] max-w-full" />
               </div>
               <div className="w-full sm:w-auto px-5 py-2.5">

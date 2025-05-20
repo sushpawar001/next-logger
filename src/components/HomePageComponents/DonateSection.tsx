@@ -14,7 +14,7 @@ export default function DonateSection() {
                 </p>
                 <div className="mt-4 md:mt-6 lg::mt-8">
                     <button
-                        className="rounded-md md:rounded-xl px-5 lg:my-auto py-1.5 lg:py-2.5 text-sm lg:text-base font-semibold transition duration-500 w-2/3 lg:w-1/5 hover:-translate-y-1 bg-secondary text-white"
+                        className="rounded-md md:rounded-lg px-5 lg:my-auto py-1.5 lg:py-2.5 text-sm lg:text-base font-semibold transition duration-500 w-2/3 lg:w-1/5 hover:-translate-y-1 bg-secondary text-white"
                         onClick={null}
                     >
                         Donate Now

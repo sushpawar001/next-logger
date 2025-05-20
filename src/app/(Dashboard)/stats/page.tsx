@@ -244,7 +244,7 @@ export default function Stats() {
         <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
             <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                 <div className="md:col-span-2 w-full flex flex-col md:flex-row gap-2 md:gap-3">
-                    <div className="md:w-1/2 rounded-xl flex flex-col gap-0.5 bg-white shadow p-2.5">
+                    <div className="md:w-1/2 rounded-lg flex flex-col gap-0.5 bg-white shadow p-2.5">
                         <h2 className="font-bold text-gray-900 my-auto text-xl">
                             Analytics Overview
                         </h2>
@@ -252,12 +252,12 @@ export default function Stats() {
                             Track your health metrics over time
                         </p>
                     </div>
-                    <div className="bg-white p-2 shadow rounded-xl flex gap-1 lg:gap-2 md:w-1/2">
+                    <div className="bg-white p-2 shadow rounded-lg flex gap-1 lg:gap-2 md:w-1/2">
                         <select
                             id="daysOfDataInput"
                             value={daysOfData}
                             onChange={changeDaysOfData}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-3/5 p-2.5"
+                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-3/5 p-2.5"
                         >
                             <option defaultValue="7">7</option>
                             <option>14</option>
@@ -275,7 +275,7 @@ export default function Stats() {
                         </Link>
                     </div>
                 </div>
-                <div className="bg-white shadow md:col-span-2 rounded-xl md:flex gap-1">
+                <div className="bg-white shadow md:col-span-2 rounded-lg md:flex gap-1">
                     <div
                         className={`w-full md:w-1/4 p-2 xl:p-4 rounded-t-xl md:rounded-l-xl md:rounded-tr-none  ${
                             riskLevel === "high"
@@ -354,7 +354,7 @@ function GlucoseTile({
     glucoseStatsOld: statsObjType;
 }) {
     return (
-        <div className="bg-white p-2 xl:p-4 shadow rounded-xl">
+        <div className="bg-white p-2 xl:p-4 shadow rounded-lg">
             <h2 className="mb-2 text-lg xl:text-xl font-medium text-gray-900">
                 Glucose:
             </h2>
@@ -473,7 +473,7 @@ function WeightTile({
     weightStatsOld: statsObjType;
 }) {
     return (
-        <div className="bg-white p-2 xl:p-4 shadow rounded-xl">
+        <div className="bg-white p-2 xl:p-4 shadow rounded-lg">
             <h2 className="mb-2 text-lg xl:text-xl font-medium text-gray-900">
                 Weight:
             </h2>
@@ -581,7 +581,7 @@ function WeightTile({
 
 function InsulinTile(props) {
     return (
-        <div className="bg-white p-2 xl:p-4 shadow rounded-xl">
+        <div className="bg-white p-2 xl:p-4 shadow rounded-lg">
             <h2 className="mb-2 text-lg xl:text-xl font-medium text-gray-900">
                 Insulin: {props.data[0]}
             </h2>

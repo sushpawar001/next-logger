@@ -48,7 +48,7 @@ export default function EditEntry({ params }) {
 
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
-            <div className="bg-white p-5 rounded-xl shadow w-full max-w-md">
+            <div className="bg-white p-5 rounded-lg shadow w-full max-w-md">
                 <h3 className="text-center mb-5 font-semibold text-lg text-gray-900">
                     Edit insulin entry
                 </h3>
@@ -64,7 +64,7 @@ export default function EditEntry({ params }) {
                             <input
                                 type="number"
                                 id="insulinUpdate"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-full p-2.5"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-full p-2.5"
                                 value={data.units}
                                 onChange={changeValue}
                                 required
@@ -82,7 +82,7 @@ export default function EditEntry({ params }) {
                                 id="insulinType"
                                 value={data.name}
                                 onChange={changeInsulinType}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-full p-2.5"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-full p-2.5"
                                 required
                             >
                                 <option value="">Select Type</option>
@@ -100,7 +100,7 @@ export default function EditEntry({ params }) {
                             <input
                                 type="datetime-local"
                                 id="insulinDate"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary block w-full p-2.5"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-full p-2.5"
                                 value={data.createdAt}
                                 onChange={changeDate}
                                 required
@@ -109,7 +109,7 @@ export default function EditEntry({ params }) {
 
                         <button
                             type="submit"
-                            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center"
+                            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center"
                         >
                             Submit
                         </button>

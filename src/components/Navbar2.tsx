@@ -96,7 +96,7 @@ export default function Navbar2({
                                         <ul className="block lg:flex">
                                             <IconList />
                                             <button
-                                                className="rounded-xl lg:ml-6 outline outline-1 outline-white px-2.5 xl:px-5 my-2 lg:my-auto py-2 text-sm xl:text-base font-medium text-white transition ease-in-out duration-500 w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
+                                                className="rounded-lg lg:ml-6 outline outline-1 outline-white px-2.5 xl:px-5 my-2 lg:my-auto py-2 text-sm xl:text-base font-medium text-white transition ease-in-out duration-500 w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                                                 onClick={logOut}
                                             >
                                                 Log Out
@@ -105,7 +105,7 @@ export default function Navbar2({
                                     ) : (
                                         <div className="block lg:flex">
                                             <button
-                                                className="rounded-xl lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
+                                                className="rounded-lg lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                                                 onClick={logIn}
                                             >
                                                 Log in
@@ -116,7 +116,7 @@ export default function Navbar2({
                                 <div className="order-3 lg:hidden min-w-fit">
                                     {token ? (
                                         <button
-                                            className="rounded-xl lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
+                                            className="rounded-lg lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                                             onClick={logOut}
                                         >
                                             Log Out
@@ -124,7 +124,7 @@ export default function Navbar2({
                                     ) : (
                                         <div className="block lg:flex">
                                             <button
-                                                className="rounded-xl lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
+                                                className="rounded-lg lg:ml-6 outline outline-1 outline-white px-5 my-2 lg:my-auto py-2 text-base font-medium text-white transition ease-in-out duration-500 h-full w-full hover:scale-105 hover:bg-primary hover:outline-primary-dark"
                                                 onClick={logIn}
                                             >
                                                 Log in

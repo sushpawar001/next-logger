@@ -90,7 +90,7 @@ export default function PopUpModal(props: { delete: () => void }) {
                     <div className="-mx-3 flex flex-wrap">
                         <div className="w-1/2 px-3">
                             <button
-                                className="block w-full rounded-xl border-primary bg-primary p-3 text-center text-base font-medium text-white transition hover:bg-primary-dark"
+                                className="block w-full rounded-lg border-primary bg-primary p-3 text-center text-base font-medium text-white transition hover:bg-primary-dark"
                                 onClick={() => setModalOpen(false)}
                             >
                                 Cancel
@@ -98,7 +98,7 @@ export default function PopUpModal(props: { delete: () => void }) {
                         </div>
                         <div className="w-1/2 px-3">
                             <button
-                                className="block w-full rounded-xl bg-red-600 border border-stroke p-3 text-center text-base font-medium transition hover:border-red-800 hover:bg-red-800 text-white"
+                                className="block w-full rounded-lg bg-red-600 border border-stroke p-3 text-center text-base font-medium transition hover:border-red-800 hover:bg-red-800 text-white"
                                 onClick={() => {
                                     props.delete();
                                     setModalOpen(false);

@@ -60,9 +60,9 @@ export default function WeightPage() {
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div className="bg-white p-4 rounded-xl shadow order-1 md:order-first">
+                <div className="bg-white p-4 rounded-lg shadow order-1 md:order-first">
                     <div className="flex flex-wrap">
-                        <div className="w-full overflow-x-auto rounded-xl">
+                        <div className="w-full overflow-x-auto rounded-lg">
                             <div className="mb-2 grid grid-cols-2">
                                 <h3 className="my-auto ml-1 text-lg font-medium text-gray-900">
                                     Weight History
@@ -71,7 +71,7 @@ export default function WeightPage() {
                                     id="daysOfDataInput"
                                     value={daysOfData}
                                     onChange={changeDaysOfData}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                                 >
                                     <option defaultValue="7">7</option>
                                     <option>14</option>

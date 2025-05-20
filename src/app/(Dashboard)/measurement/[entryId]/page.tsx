@@ -66,7 +66,7 @@ export default function EditEntry({ params }) {
 
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
-            <div className="bg-white p-6 rounded-xl shadow w-full max-w-md">
+            <div className="bg-white p-6 rounded-lg shadow w-full max-w-md">
                 <form onSubmit={submitForm}>
                     <h3 className="text-center mb-5 font-semibold text-lg text-gray-900">
                         Edit insulin entry
@@ -91,14 +91,14 @@ export default function EditEntry({ params }) {
                         <input
                             type="datetime-local"
                             id="glucoseDate"
-                            className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-xl focus:ring-primary-ring focus:border-primary-ring block w-full p-2 col-span-3"
+                            className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2 col-span-3"
                             value={data.createdAt}
                             onChange={changeDate}
                             required
                         />
                         <button
                             type="submit"
-                            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-xl text-sm w-full sm:w-auto px-5 py-2.5 text-center col-span-4"
+                            className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center col-span-4"
                         >
                             Submit
                         </button>
