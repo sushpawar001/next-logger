@@ -20,7 +20,7 @@ export default function AnimatedCard({
 }) {
     return (
         <MotionDiv
-            className="bg-white py-5 px-7 drop-shadow-md rounded-lg"
+            className="bg-white py-5 px-7 drop-shadow rounded-lg"
             initial={{ translateY: 100 }}
             whileInView={{ translateY: 0 }}
             viewport={{ once: true }}

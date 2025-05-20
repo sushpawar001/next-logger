@@ -15,7 +15,7 @@ export default function ChartPage() {
             <div className="flex flex-col max-w-screen-xl mx-auto h-full">
                 <div className="grid md:grid-cols-2 gap-2 md:gap-3 h-full">
                     <div className="md:col-span-2 w-full flex gap-2 md:gap-3">
-                        <div className="md:w-3/5 rounded-xl flex flex-col gap-0.5 bg-white shadow-md p-2.5">
+                        <div className="md:w-3/5 rounded-xl flex flex-col gap-0.5 bg-white shadow p-2.5">
                             <h2 className="font-bold text-gray-900 my-auto text-xl">
                                 Analytics Overview
                             </h2>
@@ -23,7 +23,7 @@ export default function ChartPage() {
                                 Track your health metrics over time
                             </p>
                         </div>
-                        <div className="md:w-2/5 rounded-xl flex gap-2 md:gap-3 bg-white shadow-md p-2.5">
+                        <div className="md:w-2/5 rounded-xl flex gap-2 md:gap-3 bg-white shadow p-2.5">
                             <label className="my-auto ml-1 font-medium text-gray-900 w-2/5">
                                 Select Duration
                             </label>
@@ -42,16 +42,16 @@ export default function ChartPage() {
                             </select>
                         </div>
                     </div>
-                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-xl bg-white shadow-md h-96">
+                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-xl bg-white shadow h-96">
                         <AdvWeightChart fetch={true} days={daysOfData} />
                     </div>
-                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-xl bg-white shadow-md h-96">
+                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-xl bg-white shadow h-96">
                         <AdvInsulinChartSeparate
                             fetch={true}
                             days={daysOfData}
                         />
                     </div>
-                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-xl bg-white shadow-md h-96">
+                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-xl bg-white shadow h-96">
                         <AdvGlucoseChart fetch={true} days={daysOfData} />
                     </div>
                 </div>

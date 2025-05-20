@@ -40,7 +40,7 @@ export default function EditEntry({ params }) {
 
     return (
         <section className='h-full flex justify-center items-center bg-background p-5'>
-            <div className='bg-white p-6 rounded-xl shadow-md w-full max-w-md'>
+            <div className='bg-white p-6 rounded-xl shadow w-full max-w-md'>
                 <form onSubmit={submitForm}>
                     <h3 className='text-center mb-5 font-semibold text-lg text-gray-900'>Edit insulin entry</h3>
                     <div className='flex flex-col gap-3'>

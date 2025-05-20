@@ -51,7 +51,7 @@ export default function WeightAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white shadow-md"
+            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white shadow"
             onSubmit={submitForm}
         >
             <div className="flex flex-col gap-3">

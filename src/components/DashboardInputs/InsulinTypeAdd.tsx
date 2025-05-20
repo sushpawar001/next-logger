@@ -90,7 +90,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
   return (
     <>
       <form
-        className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow-md mb-3 md:mb-5"
+        className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow mb-3 md:mb-5"
         onSubmit={submitUserInsulin}
       >
         <label
@@ -125,7 +125,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
         </div>
       </form>
       <form
-        className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow-md"
+        className="max-w-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow"
         onSubmit={submitNewInsulin}
       >
         <label

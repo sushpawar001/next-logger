@@ -2,7 +2,7 @@ const LoadingSkeleton = () => (
   <>
     <section className="bg-background h-full flex justify-center items-center p-5">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-        <div className="p-4 shadow-md order-1 md:order-first bg-white">
+        <div className="p-4 shadow order-1 md:order-first bg-white">
           <div className="flex flex-wrap">
             <div className="max-w-full overflow-x-auto">
               <div className="mb-2 grid grid-cols-2">
@@ -224,10 +224,10 @@ const LoadingSkeleton = () => (
           </div>
         </div>
         <div>
-          <div className="mb-4 md:mb-6 mx-auto px-10 py-5 shadow-md h-72 bg-white">
+          <div className="mb-4 md:mb-6 mx-auto px-10 py-5 shadow h-72 bg-white">
             <canvas height="272" width="329"></canvas>
           </div>
-          <form className="max-w-full mx-auto p-5 md:p-7 shadow-md bg-white">
+          <form className="max-w-full mx-auto p-5 md:p-7 shadow bg-white">
             <label className="block mb-2">
               <Skeleton className="w-[144px] max-w-full" />
             </label>

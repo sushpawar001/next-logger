@@ -9,7 +9,7 @@ type InsulinType = {
 export default function UserDetails(props: { data: InsulinType[] }) {
   const { data } = props;
   return (
-    <div className="max-w-full h-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow-md">
+    <div className="max-w-full h-full mx-auto p-5 md:p-7 rounded-xl bg-white shadow">
       <h2 className="block mb-2 text-base font-medium text-secondary">
         Your Insulins:
       </h2>

@@ -7,6 +7,7 @@ import React, { useState } from "react";
 const dataArray = [{ _id: 1, name: "test" }];
 export default function GlucoseAdd(props) {
     const [glucose, setGlucose] = useState("");
+    const [sendTime, setSendTime] = useState(false);
     const [tags, setTags] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -56,7 +57,7 @@ export default function GlucoseAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white shadow-md"
+            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white shadow"
             onSubmit={submitForm}
         >
             <div className="flex flex-col gap-3">
@@ -84,6 +85,8 @@ export default function GlucoseAdd(props) {
                         // value={selectedDate}
                         onChange={(e) => {
                             setSelectedDate(new Date(e.target.value));
+                            setSendTime(true);
+                            console.log("sending time")
                         }}
                         required
                     />

@@ -44,7 +44,7 @@ export default function DashboardPreferences({
 
     return (
         <div
-            className={`p-5 md:p-7 rounded-xl bg-white shadow-md ${className}`}
+            className={`p-5 md:p-7 rounded-xl bg-white shadow ${className}`}
         >
             <div className="flex items-center gap-2 font-bold text-xl md:text-2xl text-secondary mb-4 md:mb-6">
                 <FaUserGear className="text-xl" />

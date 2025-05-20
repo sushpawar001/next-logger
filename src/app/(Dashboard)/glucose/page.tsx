@@ -72,7 +72,7 @@ export default function GlucosePage() {
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div className="bg-white p-4 rounded-xl shadow-md order-1 md:order-first">
+                <div className="bg-white p-4 rounded-xl shadow order-1 md:order-first">
                     <div className="flex flex-wrap">
                         <div className="max-w-full overflow-x-auto rounded-lg">
                             <div className="mb-2 grid grid-cols-2">
@@ -131,7 +131,7 @@ export default function GlucosePage() {
                     </div>
                 </div>
                 <div>
-                    <div className="mb-4 md:mb-6 mx-auto px-10 py-5 rounded-xl bg-white shadow-md h-72">
+                    <div className="mb-4 md:mb-6 mx-auto px-10 py-5 rounded-xl bg-white shadow h-72">
                         <GlucoseChart data={glucoseData} fetch={false} />
                     </div>
                     <GlucoseAdd data={glucoseData} setData={setGlucoseData} />

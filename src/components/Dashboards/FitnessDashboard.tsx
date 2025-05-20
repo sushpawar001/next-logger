@@ -52,7 +52,7 @@ export default function FitnessDashboard() {
                 <div className="flex flex-col max-w-screen-xl mx-auto h-full">
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 p-4 h-full">
                         <div className="col-span-2 rounded h-full flex flex-col gap-4">
-                            <div className="p-4 md:px-6 rounded-xl bg-white shadow-md h-1/2 flex flex-col">
+                            <div className="p-4 md:px-6 rounded-xl bg-white shadow h-1/2 flex flex-col">
                                 <h3 className="block mb-1 p-0 text-sm font-medium text-secondary">
                                     Weight history
                                 </h3>
@@ -63,7 +63,7 @@ export default function FitnessDashboard() {
                                     />
                                 </div>
                             </div>
-                            <div className="p-4 md:px-6 rounded-xl bg-white shadow-md h-1/2 flex flex-col">
+                            <div className="p-4 md:px-6 rounded-xl bg-white shadow h-1/2 flex flex-col">
                                 <h3 className="block p-0 mb-1 text-sm font-medium text-secondary">
                                     Measurement history
                                 </h3>

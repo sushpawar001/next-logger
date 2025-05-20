@@ -110,7 +110,7 @@ export default function MeasurementAdd({data = null, setData = null, className =
     };
     return (
         <form
-            className={`max-w-full p-5 md:p-7 rounded-xl bg-white shadow-md flex items-center justify-center ${className}`}
+            className={`max-w-full p-5 md:p-7 rounded-xl bg-white shadow flex items-center justify-center ${className}`}
             onSubmit={submitForm}
         >
             <div className="grid grid-cols-4 gap-2.5 w-full">
