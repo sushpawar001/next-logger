@@ -8,43 +8,43 @@ const MeasurementPageSkeleton = () => (
                             <label className="block my-auto mr-2">
                                 <Skeleton className="w-[32px] max-w-full" />
                             </label>
-                            <div className="border border-stone-400 focus:border-primary-ring block w-full p-2 col-span-3">
+                            <div className="border border-gray-300 focus:border-primary-ring block w-full p-2 col-span-3">
                                 <Skeleton className="w-[32px] max-w-full" />
                             </div>
                             <label className="block my-auto mr-2">
                                 <Skeleton className="w-[40px] max-w-full" />
                             </label>
-                            <div className="border border-stone-400 focus:border-primary-ring block w-full p-2 col-span-3">
+                            <div className="border border-gray-300 focus:border-primary-ring block w-full p-2 col-span-3">
                                 <Skeleton className="w-[40px] max-w-full" />
                             </div>
                             <label className="block my-auto mr-2">
                                 <Skeleton className="w-[56px] max-w-full" />
                             </label>
-                            <div className="border border-stone-400 focus:border-primary-ring block w-full p-2 col-span-3">
+                            <div className="border border-gray-300 focus:border-primary-ring block w-full p-2 col-span-3">
                                 <Skeleton className="w-[56px] max-w-full" />
                             </div>
                             <label className="block my-auto mr-2">
                                 <Skeleton className="w-[40px] max-w-full" />
                             </label>
-                            <div className="border border-stone-400 focus:border-primary-ring block w-full p-2 col-span-3">
+                            <div className="border border-gray-300 focus:border-primary-ring block w-full p-2 col-span-3">
                                 <Skeleton className="w-[40px] max-w-full" />
                             </div>
                             <label className="block my-auto mr-2">
                                 <Skeleton className="w-[24px] max-w-full" />
                             </label>
-                            <div className="border border-stone-400 focus:border-primary-ring block w-full p-2 col-span-3">
+                            <div className="border border-gray-300 focus:border-primary-ring block w-full p-2 col-span-3">
                                 <Skeleton className="w-[24px] max-w-full" />
                             </div>
                             <label className="block my-auto mr-2">
                                 <Skeleton className="w-[48px] max-w-full" />
                             </label>
-                            <div className="border border-stone-400 focus:border-primary-ring block w-full p-2 col-span-3">
+                            <div className="border border-gray-300 focus:border-primary-ring block w-full p-2 col-span-3">
                                 <Skeleton className="w-[48px] max-w-full" />
                             </div>
                             <label className="block my-auto mr-2">
                                 <Skeleton className="w-[48px] max-w-full" />
                             </label>
-                            <div className="border border-stone-400 focus:border-primary-ring block w-full p-2 col-span-3">
+                            <div className="border border-gray-300 focus:border-primary-ring block w-full p-2 col-span-3">
                                 <Skeleton className="w-[48px] max-w-full" />
                             </div>
                             <div className="col-span-4 grid grid-cols-4 gap-1">

@@ -71,7 +71,7 @@ export default function AddNewInsulin({
                 <input
                     type="text"
                     id="insulin"
-                    className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
                     placeholder="Enter new insulin name"
                     value={newInsulinType}
                     onChange={changeNewInsulinType}

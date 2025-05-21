@@ -232,7 +232,7 @@ const LoadingSkeleton = () => (
               <Skeleton className="w-[144px] max-w-full" />
             </label>
             <div className="flex flex-col md:flex-row gap-2">
-              <div className="border rounded-lg border-stone-400 focus:border-primary-ring block w-full p-2.5">
+              <div className="border rounded-lg border-gray-300 focus:border-primary-ring block w-full p-2.5">
                 <Skeleton className="w-[64px] max-w-full" />
               </div>
               <div className="w-full sm:w-auto px-5 py-2.5">

@@ -104,7 +104,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
             id="insulinType"
             value={insulinType}
             onChange={changeInsulinType}
-            className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 invalid:text-gray-400"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 invalid:text-gray-400"
             required
           >
             <option value="" disabled>
@@ -138,7 +138,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
           <input
             type="text"
             id="newInsulinType"
-            className="bg-gray-50 border border-stone-400 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
             placeholder="Actrapid"
             value={newInsulinType}
             onChange={changeNewInsulinType}

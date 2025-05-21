@@ -179,7 +179,7 @@ export function MeasurementInput({
                 min={0}
                 id={id}
                 name={id}
-                className="bg-gray-50 border border-stone-400  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2 col-span-3"
+                className="bg-gray-50 border border-gray-300  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2 col-span-3"
                 placeholder={LabelText}
                 value={value}
                 onChange={onChange}
