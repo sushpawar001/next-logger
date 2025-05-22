@@ -35,6 +35,10 @@ const measurementSchema = new mongoose.Schema(
             ref: "users",
             required: true,
         },
+        tag: {
+            type: String,
+            default: null,
+        },
         createdAt: { type: Date, default: Date.now },
     },
     { timestamps: false }
