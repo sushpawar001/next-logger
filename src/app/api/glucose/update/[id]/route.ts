@@ -8,15 +8,24 @@ connectDB();
 export async function PUT(request: NextRequest, { params }) {
     try {
         const body = await request.json();
-        body.createdAt = new Date(body.createdAt);
+        const { value, createdAt, tag } = body;
         const user = await getUserObjectId();
-        const data = await Glucose.findOneAndUpdate({ _id: params.id, user: user }, body, {
-            new: true
-        });
-        return NextResponse.json({ message: "Data updated", data: data })
+
+        // Build update payload
+        const updatePayload: any = {};
+        if (value !== undefined) updatePayload.value = value;
+        if (tag !== undefined) updatePayload.tag = tag;
+        if (createdAt !== undefined) updatePayload.createdAt = new Date(createdAt);
+
+        const data = await Glucose.findOneAndUpdate(
+            { _id: params.id, user: user },
+            updatePayload,
+            { new: true }
+        );
+        return NextResponse.json({ message: "Data updated", data: data });
 
     } catch (error) {
-        console.log("Error getting Glucose " + error);
-        return NextResponse.json({ error: error.message }, { status: 500 })
+        console.log("Error updating Glucose " + error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
