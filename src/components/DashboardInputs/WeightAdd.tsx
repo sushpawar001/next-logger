@@ -3,12 +3,23 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import React, { useState } from "react";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
-const dataArray = [{ _id: 1, name: "test" }];
+import { entryTags } from "@/constants/constants";
+
 export default function WeightAdd(props) {
     const [weight, setWeight] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [sendTime, setSendTime] = useState(false);
+    const [selectTag, setSelectTag] = useState<string>(null);
 
+    const handleTagChange = (event: { target: { value: string } }) => {
+        setSelectTag(event.target.value);
+    };
+
+    const handleDateChange = (event: { target: { value: string } }) => {
+        setSendTime(true);
+        setSelectedDate(new Date(event.target.value));
+    };
     const changeWeight = (event: { target: { value: string } }) => {
         setWeight(event.target.value);
     };
@@ -77,24 +88,19 @@ export default function WeightAdd(props) {
                         id="glucoseDate"
                         className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full px-2.5 py-2 placeholder:text-red-500 md:w-2/3"
                         value={DatetimeLocalFormat(selectedDate)}
-                        // value={selectedDate}
-                        onChange={(e) => {
-                            setSelectedDate(new Date(e.target.value));
-                        }}
-                        required
+                        onChange={handleDateChange}
                     />
                     <select
-                        id="glucose_tag"
-                        value={""}
-                        onChange={() => {}}
+                        id="insulin_tag"
+                        value={selectTag ?? ""}
+                        onChange={handleTagChange}
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full px-2.5 py-2 invalid:text-gray-400 md:w-1/3"
-                        required
                     >
                         <option value="" disabled>
                             Select Tag
                         </option>
-                        {dataArray.map((data) => (
-                            <option key={data._id}>{data.name}</option>
+                        {entryTags.map((data) => (
+                            <option key={data}>{data}</option>
                         ))}
                     </select>
                 </div>
