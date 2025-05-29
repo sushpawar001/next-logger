@@ -70,13 +70,13 @@ export default function GlucoseAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white shadow"
+            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg border border-purple-100 transition-all duration-300"
             onSubmit={submitForm}
         >
             <div className="flex flex-col gap-3">
                 <label
                     htmlFor="glucose"
-                    className="block text-sm font-medium text-secondary dark:text-white"
+                    className="block text-sm font-medium text-gray-900"
                 >
                     Your Blood Glucose
                 </label>
@@ -114,7 +114,7 @@ export default function GlucoseAdd(props) {
                 </div>
                 <button
                     type="submit"
-                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition duration-300"
+                    className="text-white bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (

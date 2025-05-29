@@ -7,6 +7,8 @@ import GlucoseChart from "@/components/Charts/GlucoseChart";
 import WeightChart from "@/components/Charts/WeightChart";
 import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
+import { InputFormCard } from "../DashboardInputs/InputFormCard";
+import { Droplets, Weight, Syringe } from "lucide-react"
 
 export default function DiabetesDashboard() {
     const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
@@ -70,10 +72,35 @@ export default function DiabetesDashboard() {
 
                 <div className="w-full md:col-span-2">
                     <div className="">
-                        <GlucoseAdd
+                        {/* <GlucoseAdd
                             data={glucoseData}
                             setData={setGlucoseData}
-                        />
+                        /> */}
+                        <InputFormCard
+                title="Blood Glucose"
+                icon={Droplets}
+                gradient="bg-gradient-to-br from-blue-500 to-blue-600"
+                fields={[
+                  {
+                    label: "Glucose Level",
+                    type: "input",
+                    placeholder: "98 mg/dl",
+                    value: "98",
+                  },
+                  {
+                    label: "Date & Time",
+                    type: "datetime",
+                    value: "2025-05-27T11:52",
+                  },
+                  {
+                    label: "Measurement Type",
+                    type: "select",
+                    placeholder: "Select Type",
+                    options: ["Fasting", "Post-meal", "Random", "Bedtime"],
+                    value: "Fasting",
+                  },
+                ]}
+              />
                     </div>
                 </div>
                 <div className="w-full md:col-span-2">

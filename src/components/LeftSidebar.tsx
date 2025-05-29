@@ -1,17 +1,5 @@
 "use client";
-import {
-    HouseIcon,
-    GlucoseIcon,
-    WeightScaleIcon,
-    SyringeIcon,
-    ProfileIcon,
-    TapeIcon,
-    ChartIcon,
-    SignUpIcon,
-    LoginIcon,
-} from "@/helpers/iconHelpers";
-import { ReactNode, useRef } from "react";
-import Link from "next/link";
+import { useRef } from "react";
 import { usePathname } from "next/navigation";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import {
@@ -30,7 +18,6 @@ import {
     SidebarContent,
     SidebarGroup,
     SidebarGroupContent,
-    SidebarGroupLabel,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -78,13 +65,6 @@ const menuItems = [
 ];
 
 export default function LeftSidebar() {
-    // export default function LeftNavbar({ children }: { children: ReactNode }) {
-    const drawerRef = useRef<HTMLInputElement>(null);
-    const toggleDrawer = () => {
-        if (drawerRef.current) {
-            drawerRef.current.click();
-        }
-    };
     const currentRoute = usePathname();
 
     return (
@@ -172,98 +152,3 @@ export default function LeftSidebar() {
         </Sidebar>
     );
 }
-
-const ListItem = ({
-    children,
-    NavLink,
-    icon,
-    onClickFn,
-}: {
-    children: ReactNode;
-    NavLink: string;
-    icon: ReactNode;
-    onClickFn?: VoidFunction;
-}) => {
-    const currentRoute = usePathname();
-    const nonActiveStyle =
-        "text-right flex py-2 text-sm xl:text-base font-medium text-white lg:ml-4 xl:ml-6 lg:inline-flex hover:underline underline-offset-8 group";
-    const activeStyle =
-        "underline text-right flex py-2 text-sm xl:text-base font-medium text-white lg:ml-4 xl:ml-6 lg:inline-flex hover:underline underline-offset-8";
-    const activeIcon =
-        "bg-primary flex size-7 items-center justify-center my-auto mr-4 lg:mr-2 rounded-lg";
-    const nonActiveIcon =
-        "bg-grayNav flex size-7 items-center justify-center my-auto mr-4 lg:mr-2 rounded-lg group-hover:scale-[1.15] transition-transform duration-300 ease-in-out";
-    return (
-        <>
-            <li onClick={onClickFn}>
-                <Link
-                    href={NavLink}
-                    className={
-                        currentRoute === NavLink ? activeStyle : nonActiveStyle
-                    }
-                >
-                    <div
-                        className={
-                            currentRoute === NavLink
-                                ? activeIcon
-                                : nonActiveIcon
-                        }
-                    >
-                        {icon}
-                    </div>
-                    {children}
-                </Link>
-            </li>
-        </>
-    );
-};
-
-const IconList = ({ onClickFn }: { onClickFn?: VoidFunction }) => (
-    <>
-        <ListItem
-            NavLink="/dashboard"
-            icon={<HouseIcon />}
-            onClickFn={onClickFn}
-        >
-            <p className="my-auto">Home</p>
-        </ListItem>
-        <ListItem
-            NavLink="/profile"
-            icon={<ProfileIcon />}
-            onClickFn={onClickFn}
-        >
-            <p className="my-auto">Profile</p>
-        </ListItem>
-        <ListItem NavLink="/stats" icon={<ChartIcon />} onClickFn={onClickFn}>
-            <p className="my-auto">Stats</p>
-        </ListItem>
-        <ListItem
-            NavLink="/glucose"
-            icon={<GlucoseIcon />}
-            onClickFn={onClickFn}
-        >
-            <p className="my-auto">Glucose</p>
-        </ListItem>
-        <ListItem
-            NavLink="/insulin"
-            icon={<SyringeIcon />}
-            onClickFn={onClickFn}
-        >
-            <p className="my-auto">Insulin</p>
-        </ListItem>
-        <ListItem
-            NavLink="/weight"
-            icon={<WeightScaleIcon />}
-            onClickFn={onClickFn}
-        >
-            <p className="my-auto">Weight</p>
-        </ListItem>
-        <ListItem
-            NavLink="/measurement"
-            icon={<TapeIcon />}
-            onClickFn={onClickFn}
-        >
-            <p className="my-auto">Measurement</p>
-        </ListItem>
-    </>
-);
