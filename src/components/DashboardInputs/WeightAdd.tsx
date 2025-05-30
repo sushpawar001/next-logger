@@ -4,6 +4,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { entryTags } from "@/constants/constants";
+import { Droplets, Weight, Syringe } from "lucide-react";
 
 export default function WeightAdd(props) {
     const [weight, setWeight] = useState("");
@@ -62,39 +63,63 @@ export default function WeightAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white shadow"
+            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full"
             onSubmit={submitForm}
         >
-            <div className="flex flex-col gap-3">
-                <label
-                    htmlFor="weight"
-                    className="block text-sm font-medium text-secondary dark:text-white"
+            <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-6">
+                <div
+                    className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
                 >
-                    Your Body Weight (kg)
-                </label>
-                <input
-                    type="number"
-                    id="weight"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full px-2.5 py-2"
-                    placeholder="72 kg"
-                    value={weight}
-                    onChange={changeWeight}
-                    step="any"
-                    required
-                />
-                <div className="flex flex-col md:flex-row gap-3">
+                    <Weight className="h-4 w-4 text-white" />
+                </div>
+                Body Weight
+            </div>
+            <div className="flex flex-col space-y-3">
+                <div className="space-y-2">
+                    <label
+                        className="text-sm font-medium text-gray-700"
+                        htmlFor="weight"
+                    >
+                        Weight (kg)
+                    </label>
+                    <input
+                        type="number"
+                        id="weight"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10"
+                        placeholder="72 kg"
+                        value={weight}
+                        onChange={changeWeight}
+                        step="any"
+                        required
+                    />
+                </div>
+                <div className="space-y-2">
+                    <label
+                        className="text-sm font-medium text-gray-700"
+                        htmlFor="weight_date"
+                    >
+                        Date & Time
+                    </label>
                     <input
                         type="datetime-local"
-                        id="glucoseDate"
-                        className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full px-2.5 py-2 placeholder:text-red-500 md:w-2/3"
+                        id="weight_date"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10"
                         value={DatetimeLocalFormat(selectedDate)}
                         onChange={handleDateChange}
                     />
+                </div>
+                <div className="space-y-2">
+                    <label
+                        className="text-sm font-medium text-gray-700"
+                        htmlFor="weight_tag"
+                    >
+                        Measurement Tag
+                    </label>
                     <select
-                        id="insulin_tag"
+                        id="weight_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full px-2.5 py-2 invalid:text-gray-400 md:w-1/3"
+                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10"
                     >
                         <option value="" disabled>
                             Select Tag
@@ -106,7 +131,7 @@ export default function WeightAdd(props) {
                 </div>
                 <button
                     type="submit"
-                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition duration-300"
+                    className="text-white bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (

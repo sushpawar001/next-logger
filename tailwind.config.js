@@ -27,6 +27,7 @@ module.exports = {
                     foreground: "hsl(var(--secondary-foreground))",
                 },
                 background: "hsl(var(--background))",
+                backgroundold: "#E0E0E0",
                 grayNav: "#39383d",
                 foreground: "hsl(var(--foreground))",
                 card: {

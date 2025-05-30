@@ -1,14 +1,12 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { glucose, weight } from "@/types/models";
-import WeightAdd from "@/components/DashboardInputs/WeightAdd";
 import GlucoseChart from "@/components/Charts/GlucoseChart";
 import WeightChart from "@/components/Charts/WeightChart";
 import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
-import { InputFormCard } from "../DashboardInputs/InputFormCard";
-import { Droplets, Weight, Syringe } from "lucide-react"
+import WeightAdd from "@/components/DashboardInputs/WeightAdd";
+import { glucose, weight } from "@/types/models";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 export default function DiabetesDashboard() {
     const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
@@ -47,8 +45,8 @@ export default function DiabetesDashboard() {
     }, []);
 
     return (
-        <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
-            <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-6 gap-3 md:gap-5">
+        <div className="h-full flex justify-center items-center bg-backgroundold py-5 px-5 md:px-10">
+            <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-6 gap-3 md:gap-5 bg-gray-300">
                 <div className="w-full md:col-span-3">
                     <div className="p-4 md:px-6 rounded-lg bg-white shadow">
                         <h3 className="block p-0 text-sm font-medium text-secondary mb-1">
@@ -71,47 +69,13 @@ export default function DiabetesDashboard() {
                 </div>
 
                 <div className="w-full md:col-span-2">
-                    <div className="">
-                        {/* <GlucoseAdd
-                            data={glucoseData}
-                            setData={setGlucoseData}
-                        /> */}
-                        <InputFormCard
-                title="Blood Glucose"
-                icon={Droplets}
-                gradient="bg-gradient-to-br from-blue-500 to-blue-600"
-                fields={[
-                  {
-                    label: "Glucose Level",
-                    type: "input",
-                    placeholder: "98 mg/dl",
-                    value: "98",
-                  },
-                  {
-                    label: "Date & Time",
-                    type: "datetime",
-                    value: "2025-05-27T11:52",
-                  },
-                  {
-                    label: "Measurement Type",
-                    type: "select",
-                    placeholder: "Select Type",
-                    options: ["Fasting", "Post-meal", "Random", "Bedtime"],
-                    value: "Fasting",
-                  },
-                ]}
-              />
-                    </div>
+                    <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
                 </div>
                 <div className="w-full md:col-span-2">
-                    <div className="">
-                        <InsulinAdd />
-                    </div>
+                    <InsulinAdd />
                 </div>
                 <div className="w-full md:col-span-2">
-                    <div>
-                        <WeightAdd data={weightData} setData={setWeightData} />
-                    </div>
+                    <WeightAdd data={weightData} setData={setWeightData} />
                 </div>
             </div>
         </div>

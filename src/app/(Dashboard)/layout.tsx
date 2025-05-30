@@ -30,7 +30,7 @@ export default function RootLayout({ children }) {
                         </div>
                     </header>
                 </SidebarInset> */}
-                <main>{children}</main>
+                <main className="w-full">{children}</main>
             </SidebarProvider>
         </ClerkProvider>
     );
