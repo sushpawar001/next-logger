@@ -33,7 +33,7 @@ export default function ProfilePage() {
         <div className="h-full bg-background py-5 px-5">
             <div className="flex flex-col max-w-screen-lg mx-auto justify-center h-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <DashboardPreferences className="col-span-1 md:col-span-2" />
+                    {/* <DashboardPreferences className="col-span-1 md:col-span-2" /> */}
                     <UserInsulins
                         className="col-span-1"
                         allAvailableInsulins={allAvailableInsulins}
