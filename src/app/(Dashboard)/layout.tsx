@@ -8,6 +8,7 @@ import {
     SidebarTrigger,
     SidebarInset,
 } from "@/components/ui/sidebar";
+import { DashboardHeader } from "@/components/DashboardHeader";
 export const metadata = {
     title: "FitDose",
     description: "Your daily logger!",
@@ -19,7 +20,9 @@ export default function RootLayout({ children }) {
         <ClerkProvider>
             <SidebarProvider>
                 <LeftSidebar />
-                {/* <SidebarInset>
+                <SidebarInset>
+                    <DashboardHeader />
+                    {/* <SidebarInset>
                     <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 ">
                         <SidebarTrigger className="-ml-1" />
                         <div className="h-4 w-px bg-sidebar-border" />
@@ -30,7 +33,8 @@ export default function RootLayout({ children }) {
                         </div>
                     </header>
                 </SidebarInset> */}
-                <main className="w-full">{children}</main>
+                    <main className="w-full">{children}</main>
+                </SidebarInset>
             </SidebarProvider>
         </ClerkProvider>
     );

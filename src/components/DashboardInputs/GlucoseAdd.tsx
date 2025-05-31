@@ -74,10 +74,10 @@ export default function GlucoseAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full"
+            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full shadow"
             onSubmit={submitForm}
         >
-            <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-6">
+            <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                 <div
                     className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
                 >
