@@ -95,8 +95,8 @@ export default function AdvGlucoseChart(props: {
                     glucose.map((dataElem) => dataElem.value),
                     maInterval
                 ),
-                borderColor: "#08415C",
-                backgroundColor: "#08415C50",
+                borderColor: "#1f2937",
+                backgroundColor: "#1f293750",
                 pointRadius: 0,
             },
         ],

@@ -89,8 +89,8 @@ export default function AdvWeightChart(props: {
                 {
                     label: "Weight",
                     data: weight.map((dataElem) => dataElem.value),
-                    borderColor: "#f77f00",
-                    backgroundColor: "#f77f0050",
+                    borderColor: "#F97316",
+                    backgroundColor: "#F9731650",
                     pointRadius: 0,
                 },
                 {
@@ -99,8 +99,8 @@ export default function AdvWeightChart(props: {
                         weight.map((dataElem) => dataElem.value),
                         maInterval
                     ),
-                    borderColor: "#1E000E",
-                    backgroundColor: "#1E000E50",
+                    borderColor: "#1f2937",
+                    backgroundColor: "#1f293750",
                     pointRadius: 0,
                 },
             ],
