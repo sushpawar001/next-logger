@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
                         </div>
                     </header>
                 </SidebarInset> */}
-                    <main className="w-full">{children}</main>
+                    <main className="w-full h-full">{children}</main>
                 </SidebarInset>
             </SidebarProvider>
         </ClerkProvider>

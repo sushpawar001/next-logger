@@ -131,7 +131,7 @@ export default function WeightAdd(props) {
                 </div>
                 <button
                     type="submit"
-                    className="text-white bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300"
+                    className="text-white font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300 primary-gradient"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (

@@ -61,9 +61,9 @@ export default function AddNewInsulin({
 
     return (
         <div
-            className={`p-5 md:p-7 rounded-lg bg-white shadow ${className}`}
+            className={`p-5 md:p-7 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow ${className}`}
         >
-            <div className="flex items-center gap-2 font-bold text-xl md:text-2xl text-secondary mb-4 md:mb-6">
+            <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4 md:mb-6">
                 <FaPlus className="text-xl" />
                 <h2>Add New Insulin</h2>
             </div>
@@ -71,7 +71,7 @@ export default function AddNewInsulin({
                 <input
                     type="text"
                     id="insulin"
-                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
+                    className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10"
                     placeholder="Enter new insulin name"
                     value={newInsulinType}
                     onChange={changeNewInsulinType}
@@ -79,7 +79,7 @@ export default function AddNewInsulin({
                 />
                 <button
                     type="submit"
-                    className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-2/5 lg:w-1/5 py-2.5 text-center transition duration-300"
+                    className="text-white primary-gradient focus:outline-none font-medium rounded-lg text-sm w-2/5 lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
