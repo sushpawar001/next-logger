@@ -33,6 +33,7 @@ type insulinEntryType = {
     name: string;
     createdAt: string;
     units: number;
+    tag: string;
 };
 
 export default function InsulinPage() {
@@ -172,7 +173,7 @@ export default function InsulinPage() {
                                                 <TableCell>
                                                     <div className="flex items-center justify-center gap-2">
                                                         <Link
-                                                            href={`/glucose/${entry._id}`}
+                                                            href={`/insulin/${entry._id}`}
                                                             className={
                                                                 TdStyle.TdButton
                                                             }
