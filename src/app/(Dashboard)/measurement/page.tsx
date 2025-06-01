@@ -102,7 +102,7 @@ export default function MeasurementsPage() {
                 />
                 <div className="mx-auto p-3 md:px-6 rounded-lg border border-purple-100 transition-all duration-300 shadow h-full w-full md:col-span-2 flex flex-col">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
-                        Glucose Trends
+                        Measurement Trends
                     </h3>
                     <div className="h-72 flex-grow">
                         <MeasurementChartNew
@@ -125,7 +125,7 @@ export default function MeasurementsPage() {
                             >
                                 <History className="h-4 w-4 text-white" />
                             </div>
-                            Glucose History
+                            Measurement History
                         </div>
                         <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
                             <Table>

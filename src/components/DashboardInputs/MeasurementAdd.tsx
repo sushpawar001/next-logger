@@ -1,6 +1,7 @@
 "use client";
 import notify from "@/helpers/notify";
 import axios from "axios";
+import { Ruler } from "lucide-react";
 import React, { ChangeEvent, useState } from "react";
 
 const dataInputs = [
@@ -14,7 +15,11 @@ const dataInputs = [
 ];
 
 // export default function MeasurementAdd(props) {
-export default function MeasurementAdd({data = null, setData = null, className = ""}) {
+export default function MeasurementAdd({
+    data = null,
+    setData = null,
+    className = "",
+}) {
     const [measurements, setMeasurements] = useState({
         arms: "",
         chest: "",
@@ -110,10 +115,18 @@ export default function MeasurementAdd({data = null, setData = null, className =
     };
     return (
         <form
-            className={`max-w-full p-5 md:p-7 rounded-lg bg-white shadow flex items-center justify-center ${className}`}
+            className={`max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full shadow ${className}`}
             onSubmit={submitForm}
         >
-            <div className="grid grid-cols-4 gap-2.5 w-full">
+            <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
+                <div
+                    className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
+                >
+                    <Ruler className="h-4 w-4 text-white" />
+                </div>
+                Measurement
+            </div>
+            <div className="space-y-2">
                 {dataInputs.map((input) => (
                     <MeasurementInput
                         key={input}
@@ -123,10 +136,10 @@ export default function MeasurementAdd({data = null, setData = null, className =
                         value={measurements[input]}
                     />
                 ))}
-                <div className="col-span-4 grid grid-cols-4 gap-1">
+                <div className="flex flex-col md:flex-row gap-1">
                     <button
                         type="submit"
-                        className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full px-2.5 xl:px-5 py-2 xl:py-2.5 text-center transition duration-300 col-span-3"
+                        className="text-white font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300 primary-gradient md:w-2/3"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? (
@@ -137,7 +150,7 @@ export default function MeasurementAdd({data = null, setData = null, className =
                     </button>
                     <button
                         type="reset"
-                        className="text-white bg-red-500 hover:bg-red-600 focus:ring focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm w-full xl:px-5 px-2.5 py-2 xl:py-2.5 text-center transition duration-300 col-span-1"
+                        className="text-white font-medium rounded-lg text-sm w-full md:w-1/3 py-2 text-center transition-all duration-300 bg-destructive hover:bg-destructive/90"
                         disabled={isSubmitting}
                         onClick={resetForm}
                     >
@@ -166,11 +179,8 @@ export function MeasurementInput({
 }) {
     const LabelText = label.charAt(0).toUpperCase() + label.slice(1);
     return (
-        <>
-            <label
-                htmlFor={id}
-                className="block text-sm font-medium text-secondary  my-auto mr-2"
-            >
+        <div className="space-y-1">
+            <label htmlFor={id} className="text-sm font-medium text-gray-700">
                 {LabelText}
             </label>
             <input
@@ -179,12 +189,12 @@ export function MeasurementInput({
                 min={0}
                 id={id}
                 name={id}
-                className="bg-gray-50 border border-gray-300  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2 col-span-3"
+                className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] outline-none h-9"
                 placeholder={LabelText}
                 value={value}
                 onChange={onChange}
                 required
             />
-        </>
+        </div>
     );
 }

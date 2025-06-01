@@ -87,7 +87,7 @@ export default function WeightPage() {
                 />
                 <div className="mx-auto p-4 md:px-6 md:py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow h-full w-full md:col-span-2 flex flex-col">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
-                        Glucose Trends
+                        Weight Trends
                     </h3>
                     <div className="h-72 flex-grow">
                         <WeightChart data={weightData} fetch={false} />
@@ -104,14 +104,14 @@ export default function WeightPage() {
                             >
                                 <History className="h-4 w-4 text-white" />
                             </div>
-                            Glucose History
+                            Weight History
                         </div>
                         <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
                                         <TableHead className="text-white font-medium">
-                                            Blood Glucose
+                                            Body Weight
                                         </TableHead>
                                         <TableHead className="text-white font-medium">
                                             DateTime
