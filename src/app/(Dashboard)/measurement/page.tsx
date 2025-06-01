@@ -5,11 +5,20 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import formatDate from "@/helpers/formatDate";
 import Link from "next/link";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
 import PopUpModal from "@/components/PopUpModal";
 import MeasurementChartNew from "@/components/Charts/MeasurementChartNew";
-
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
+import { History, Edit, Trash2 } from "lucide-react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 const dataInputs = [
     "Arms",
     "Chest",
@@ -45,6 +54,7 @@ export default function MeasurementsPage() {
                     .then((response) => {
                         if (response.status === 200) {
                             setMeasurementData(response.data.data);
+                            console.log(response.data.data);
                         } else {
                             console.error(
                                 "API request failed with status:",
@@ -83,125 +93,159 @@ export default function MeasurementsPage() {
         return <MeasurementPageSkeleton />;
     }
     return (
-        // <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
-        <div className="h-full bg-background py-5 px-5">
-            <div className="flex flex-col max-w-screen-xl mx-auto">
-                <div className="grid md:grid-cols-3 mb-5 gap-5">
-                    <MeasurementAdd
-                        data={measurementData}
-                        setData={setMeasurementData}
-                        className="order-2 md:order-1"
-                    />
-                    <div className="col-span-1 md:col-span-2 w-full p-2.5 md:p-5 min-h-80 md:min-h-0 order-1 md:order-2 rounded-lg bg-white shadow">
+        <section className="h-full flex justify-center items-center bg-background p-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
+                <DataPeriodSelectCard
+                    daysOfData={daysOfData}
+                    changeDaysOfData={changeDaysOfData}
+                    className="md:col-span-3"
+                />
+                <div className="mx-auto p-3 md:px-6 rounded-lg border border-purple-100 transition-all duration-300 shadow h-full w-full md:col-span-2 flex flex-col">
+                    <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
+                        Glucose Trends
+                    </h3>
+                    <div className="h-72 flex-grow">
                         <MeasurementChartNew
-                            fetch={false}
                             data={measurementData}
+                            fetch={false}
                         />
                     </div>
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow">
-                    <div className="flex flex-wrap">
-                        <div className="max-w-full w-full overflow-x-auto rounded-lg">
-                            <div className="mb-2 grid grid-cols-2">
-                                <h3 className="my-auto ml-1 text-lg font-medium text-gray-900">
-                                    Measurement History
-                                </h3>
-                                <select
-                                    id="daysOfDataInput"
-                                    value={daysOfData}
-                                    onChange={changeDaysOfData}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-full p-2.5"
-                                >
-                                    <option defaultValue="7">7</option>
-                                    <option>14</option>
-                                    <option>30</option>
-                                    <option>90</option>
-                                    <option>365</option>
-                                    <option value={365 * 100}>All</option>
-                                </select>
+                <div className="w-full">
+                    <MeasurementAdd
+                        data={measurementData}
+                        setData={setMeasurementData}
+                    />
+                </div>
+                <div className="border border-purple-100 transition-all duration-300 shadow p-4 md:px-6 rounded-lg md:col-span-3">
+                    <div className="max-w-full overflow-x-auto rounded-lg">
+                        <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
+                            <div
+                                className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
+                            >
+                                <History className="h-4 w-4 text-white" />
                             </div>
-                            <div className="max-h-96 overflow-y-auto">
-                                <table className="table-auto w-full">
-                                    <thead className="text-center bg-secondary sticky top-0 z-10">
-                                        <tr>
-                                            <th
-                                                className={`${TdStyle.ThStyleNew} rounded-tl-lg`}
+                            Glucose History
+                        </div>
+                        <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
+                                        <TableHead className="text-white font-medium">
+                                            Arms
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Chest
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Abdomen
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Waist
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Hip
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Thighs
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Calves
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            DateTime
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Tag
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium text-center">
+                                            Action
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody ref={parent}>
+                                    {measurementData.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={4}
+                                                className="text-center py-8 text-gray-500"
                                             >
-                                                {dataInputs[0]}
-                                            </th>
-                                            {dataInputs.slice(1).map((obj) => {
-                                                return (
-                                                    <th
-                                                        className={
-                                                            TdStyle.ThStyleNew
-                                                        }
-                                                        key={obj}
-                                                    >
-                                                        {obj}
-                                                    </th>
-                                                );
-                                            })}
-                                            <th className={TdStyle.ThStyle}>
-                                                {" "}
-                                                DateTime{" "}
-                                            </th>
-                                            <th
-                                                className={`${TdStyle.ThStyle} rounded-tr-lg`}
+                                                No glucose entries found for the
+                                                selected period.
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        measurementData.map((entry, index) => (
+                                            <TableRow
+                                                key={entry._id}
+                                                className={`hover:bg-purple-50 transition-colors ${
+                                                    index % 2 === 0
+                                                        ? "bg-white"
+                                                        : "bg-gray-50/50"
+                                                }`}
                                             >
-                                                {" "}
-                                                Action{" "}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody ref={parent}>
-                                        {measurementData.map((obj) => {
-                                            return (
-                                                <TableRow
-                                                    key={obj._id}
-                                                    data={obj}
-                                                    delete={deleteData}
-                                                />
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.arms}
+                                                </TableCell>
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.chest}
+                                                </TableCell>
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.abdomen}
+                                                </TableCell>
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.waist}
+                                                </TableCell>
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.hip}
+                                                </TableCell>
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.thighs}
+                                                </TableCell>
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.calves}
+                                                </TableCell>
+                                                <TableCell className="text-gray-600">
+                                                    {formatDate(
+                                                        entry.createdAt
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
+                                                        {entry.tag ?? "--"}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <Link
+                                                            href={`/glucose/${entry._id}`}
+                                                            className={
+                                                                TdStyle.TdButton
+                                                            }
+                                                        >
+                                                            <Edit className="h-5 w-5" />
+                                                        </Link>
+                                                        <PopUpModal
+                                                            delete={() => {
+                                                                deleteData(
+                                                                    entry._id
+                                                                );
+                                                            }}
+                                                            buttonContent={
+                                                                <Trash2 className="h-5 w-5" />
+                                                            }
+                                                        />
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    );
-}
-
-function TableRow(props) {
-    const { arms, chest, abdomen, waist, hip, thighs, calves, createdAt, _id } =
-        props.data;
-    return (
-        <tr>
-            <td className={TdStyle.TdStyle}>{arms}</td>
-            <td className={TdStyle.TdStyle2}>{chest}</td>
-            <td className={TdStyle.TdStyle}>{abdomen}</td>
-            <td className={TdStyle.TdStyle2}>{waist}</td>
-            <td className={TdStyle.TdStyle}>{hip}</td>
-            <td className={TdStyle.TdStyle2}>{thighs}</td>
-            <td className={TdStyle.TdStyle}>{calves}</td>
-            <td className={TdStyle.TdStyle2}>{formatDate(createdAt)}</td>
-            <td className={TdStyle.TdStyle}>
-                <div className="flex gap-2">
-                    <Link
-                        href={`/measurement/${_id}`}
-                        className={TdStyle.TdButton}
-                    >
-                        Edit
-                    </Link>
-                    <PopUpModal
-                        delete={() => {
-                            props.delete(_id);
-                        }}
-                    />
-                </div>
-            </td>
-        </tr>
+        </section>
     );
 }
