@@ -7,6 +7,18 @@ import Link from "next/link";
 import WeightAdd from "@/components/DashboardInputs/WeightAdd";
 import WeightChart from "@/components/Charts/WeightChart";
 import PopUpModal from "@/components/PopUpModal";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
+import { History, Edit, Trash2 } from "lucide-react";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 const TdStyle = {
     ThStyle: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4`,
@@ -20,6 +32,8 @@ const TdStyle = {
 export default function WeightPage() {
     const [weightData, setWeightData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(7);
+    const [loading, setLoading] = useState(true);
+    const [parent] = useAutoAnimate({ duration: 400 });
 
     useEffect(() => {
         const getWeightData = async () => {
@@ -37,6 +51,8 @@ export default function WeightPage() {
                 }
             } catch (error) {
                 console.log(error);
+            } finally {
+                setLoading(false);
             }
         };
         getWeightData();
@@ -57,95 +73,122 @@ export default function WeightPage() {
             console.log(error);
         }
     };
+
+    if (loading === true) {
+        return <LoadingSkeleton />;
+    }
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div className="bg-white p-4 rounded-lg shadow order-1 md:order-first">
-                    <div className="flex flex-wrap">
-                        <div className="w-full overflow-x-auto rounded-lg">
-                            <div className="mb-2 grid grid-cols-2">
-                                <h3 className="my-auto ml-1 text-lg font-medium text-gray-900">
-                                    Weight History
-                                </h3>
-                                <select
-                                    id="daysOfDataInput"
-                                    value={daysOfData}
-                                    onChange={changeDaysOfData}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
-                                >
-                                    <option defaultValue="7">7</option>
-                                    <option>14</option>
-                                    <option>30</option>
-                                    <option>90</option>
-                                    <option>365</option>
-                                    <option value={365 * 100}>All</option>
-                                </select>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
+                <DataPeriodSelectCard
+                    daysOfData={daysOfData}
+                    changeDaysOfData={changeDaysOfData}
+                    className="md:col-span-3"
+                />
+                <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow h-full w-full md:col-span-2">
+                    <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
+                        Glucose Trends
+                    </h3>
+                    <div className="h-72">
+                        <WeightChart data={weightData} fetch={false} />
+                    </div>
+                </div>
+                <div className="w-full">
+                    <WeightAdd data={weightData} setData={setWeightData} />
+                </div>
+                <div className="border border-purple-100 transition-all duration-300 shadow p-4 md:px-6 rounded-lg md:col-span-3">
+                    <div className="max-w-full overflow-x-auto rounded-lg">
+                        <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
+                            <div
+                                className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
+                            >
+                                <History className="h-4 w-4 text-white" />
                             </div>
-                            <div className="max-h-96 overflow-y-auto w-full">
-                                <table className="table-auto w-full">
-                                    <thead className="text-center bg-secondary sticky top-0 z-10">
-                                        <tr>
-                                            <th
-                                                className={`${TdStyle.ThStyle} rounded-tl-lg`}
+                            Glucose History
+                        </div>
+                        <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
+                                        <TableHead className="text-white font-medium">
+                                            Blood Glucose
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            DateTime
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Tag
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium text-center">
+                                            Action
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody ref={parent}>
+                                    {weightData.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={4}
+                                                className="text-center py-8 text-gray-500"
                                             >
-                                                Weight
-                                            </th>
-                                            <th className={TdStyle.ThStyle}>
-                                                DateTime
-                                            </th>
-                                            <th
-                                                className={`${TdStyle.ThStyle} rounded-tr-lg`}
+                                                No glucose entries found for the
+                                                selected period.
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        weightData.map((entry, index) => (
+                                            <TableRow
+                                                key={entry.id}
+                                                className={`hover:bg-purple-50 transition-colors ${
+                                                    index % 2 === 0
+                                                        ? "bg-white"
+                                                        : "bg-gray-50/50"
+                                                }`}
                                             >
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {weightData.map((obj) => {
-                                            return (
-                                                <TableRow
-                                                    key={obj._id}
-                                                    data={obj}
-                                                    delete={deleteData}
-                                                />
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.value} kg
+                                                </TableCell>
+                                                <TableCell className="text-gray-600">
+                                                    {formatDate(
+                                                        entry.createdAt
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
+                                                        {entry.tag ?? "--"}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <Link
+                                                            href={`/glucose/${entry._id}`}
+                                                            className={
+                                                                TdStyle.TdButton
+                                                            }
+                                                        >
+                                                            <Edit className="h-5 w-5" />
+                                                        </Link>
+                                                        <PopUpModal
+                                                            delete={() => {
+                                                                deleteData(
+                                                                    entry._id
+                                                                );
+                                                            }}
+                                                            buttonContent={
+                                                                <Trash2 className="h-5 w-5" />
+                                                            }
+                                                        />
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
                         </div>
                     </div>
                 </div>
-                <div>
-                    <div className="mb-4 md:mb-6 mx-auto px-10 py-5 rounded-md bg-white shadow h-72">
-                        <WeightChart data={weightData} fetch={false} />
-                    </div>
-                    <WeightAdd data={weightData} setData={setWeightData} />
-                </div>
             </div>
         </section>
-    );
-}
-
-function TableRow(props) {
-    const { value, createdAt, _id } = props.data;
-    return (
-        <tr>
-            <td className={TdStyle.TdStyle}>{value}</td>
-            <td className={TdStyle.TdStyle2}>{formatDate(createdAt)}</td>
-            <td className={TdStyle.TdStyle}>
-                <div className="flex gap-2 justify-center items-center">
-                    <Link href={`/weight/${_id}`} className={TdStyle.TdButton}>
-                        Edit
-                    </Link>
-                    {/* <button className={TdStyle.TdButton2} onClick={() => { props.delete(_id) }}>Delete</button> */}
-                    <PopUpModal
-                        delete={() => {
-                            props.delete(_id);
-                        }}
-                    />
-                </div>
-            </td>
-        </tr>
     );
 }

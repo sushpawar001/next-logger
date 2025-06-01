@@ -42,7 +42,6 @@ export default function GlucosePage() {
                     .then((response) => {
                         if (response.status === 200) {
                             setGlucoseData(response.data.data);
-                            console.table(response.data.data);
                         } else {
                             console.error(
                                 "API request failed with status:",
@@ -119,7 +118,7 @@ export default function GlucosePage() {
                                             DateTime
                                         </TableHead>
                                         <TableHead className="text-white font-medium">
-                                            Type
+                                            Tag
                                         </TableHead>
                                         <TableHead className="text-white font-medium text-center">
                                             Action
