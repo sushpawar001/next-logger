@@ -15,10 +15,10 @@ const TdStyle = {
     TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-sm xl:text-base`,
     TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-sm xl:text-base`,
     TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-sm xl:text-base`,
-    TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-sm xl:text-base`,
+    TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-sm xl:text-base transition-colors duration-300`,
 };
 
-export default function PopUpModal(props: { delete: () => void }) {
+export default function PopUpModal(props: { delete: () => void, buttonContent?: any }) {
     const [modalOpen, setModalOpen] = useState(false);
     const trigger = useRef(null);
     const modal = useRef(null);
@@ -60,7 +60,7 @@ export default function PopUpModal(props: { delete: () => void }) {
                 onClick={() => setModalOpen(true)}
                 className={TdStyle.TdButton2}
             >
-                Delete
+                {props.buttonContent ?? "Delete"}
             </button>
             {/* modal  */}
             <div

@@ -1,20 +1,29 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 import GlucoseChart from "@/components/Charts/GlucoseChart";
+import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
+import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
+import PopUpModal from "@/components/PopUpModal";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
-import axios from "axios";
-import Link from "next/link";
-import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import PopUpModal from "@/components/PopUpModal";
-import { Calendar } from "lucide-react";
+import axios from "axios";
+import { History, Edit, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 const TdStyle = {
     ThStyle: `lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
     TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-base`,
     TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-base`,
-    TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-base`,
+    TdButton: `inline-block px-3 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-base transition-colors duration-300`,
     TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-base`,
 };
 
@@ -33,6 +42,7 @@ export default function GlucosePage() {
                     .then((response) => {
                         if (response.status === 200) {
                             setGlucoseData(response.data.data);
+                            console.table(response.data.data);
                         } else {
                             console.error(
                                 "API request failed with status:",
@@ -75,9 +85,9 @@ export default function GlucosePage() {
                 <DataPeriodSelectCard
                     daysOfData={daysOfData}
                     changeDaysOfData={changeDaysOfData}
-                    className="col-span-3"
+                    className="md:col-span-3"
                 />
-                <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow h-full w-full col-span-2">
+                <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow h-full w-full md:col-span-2">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Glucose Trends
                     </h3>
@@ -88,113 +98,99 @@ export default function GlucosePage() {
                 <div className="w-full">
                     <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
                 </div>
-                <div className="bg-white p-4 rounded-lg shadow col-span-3">
-                    <div className="flex flex-wrap ">
-                        <div className="max-w-full overflow-x-auto rounded-lg">
-                            <div className="mb-2 grid grid-cols-2">
-                                <h3 className="my-auto ml-1 text-lg font-medium text-gray-900">
-                                    Glucose History
-                                </h3>
+                <div className="border border-purple-100 transition-all duration-300 shadow p-4 md:px-6 rounded-lg md:col-span-3">
+                    <div className="max-w-full overflow-x-auto rounded-lg">
+                        <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
+                            <div
+                                className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
+                            >
+                                <History className="h-4 w-4 text-white" />
                             </div>
-                            <table className="table-auto ">
-                                <thead className="text-center bg-secondary">
-                                    <tr>
-                                        <th
-                                            className={`${TdStyle.ThStyle} rounded-tl-lg`}
-                                        >
-                                            {" "}
-                                            Blood Glucose{" "}
-                                        </th>
-                                        <th className={TdStyle.ThStyle}>
-                                            {" "}
-                                            DateTime{" "}
-                                        </th>
-                                        <th
-                                            className={`${TdStyle.ThStyle} rounded-tr-lg`}
-                                        >
-                                            {" "}
-                                            Action{" "}
-                                        </th>
-                                    </tr>
-                                </thead>
-
-                                <tbody ref={parent}>
-                                    {glucoseData.map((obj) => {
-                                        return (
+                            Glucose History
+                        </div>
+                        <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
+                                        <TableHead className="text-white font-medium">
+                                            Blood Glucose
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            DateTime
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium">
+                                            Type
+                                        </TableHead>
+                                        <TableHead className="text-white font-medium text-center">
+                                            Action
+                                        </TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody ref={parent}>
+                                    {glucoseData.length === 0 ? (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={4}
+                                                className="text-center py-8 text-gray-500"
+                                            >
+                                                No glucose entries found for the
+                                                selected period.
+                                            </TableCell>
+                                        </TableRow>
+                                    ) : (
+                                        glucoseData.map((entry, index) => (
                                             <TableRow
-                                                key={obj._id}
-                                                data={obj}
-                                                delete={deleteData}
-                                            />
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                                                key={entry.id}
+                                                className={`hover:bg-purple-50 transition-colors ${
+                                                    index % 2 === 0
+                                                        ? "bg-white"
+                                                        : "bg-gray-50/50"
+                                                }`}
+                                            >
+                                                <TableCell className="font-medium text-gray-900">
+                                                    {entry.value} mg/dl
+                                                </TableCell>
+                                                <TableCell className="text-gray-600">
+                                                    {formatDate(
+                                                        entry.createdAt
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
+                                                        {entry.tag ?? "--"}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <Link
+                                                            href={`/glucose/${entry._id}`}
+                                                            className={
+                                                                TdStyle.TdButton
+                                                            }
+                                                        >
+                                                            <Edit className="h-5 w-5" />
+                                                        </Link>
+                                                        <PopUpModal
+                                                            delete={() => {
+                                                                deleteData(
+                                                                    entry._id
+                                                                );
+                                                            }}
+                                                            buttonContent={
+                                                                <Trash2 className="h-5 w-5" />
+                                                            }
+                                                        />
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )}
+                                </TableBody>
+                            </Table>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-    );
-}
-
-function TableRow(props) {
-    const { value, createdAt, _id } = props.data;
-    return (
-        <tr>
-            <td className={TdStyle.TdStyle}>{value}</td>
-            <td className={TdStyle.TdStyle2}>{formatDate(createdAt)}</td>
-            <td className={TdStyle.TdStyle}>
-                <div className="flex gap-2">
-                    <Link href={`/glucose/${_id}`} className={TdStyle.TdButton}>
-                        Edit
-                    </Link>
-                    <PopUpModal
-                        delete={() => {
-                            props.delete(_id);
-                        }}
-                    />
-                </div>
-            </td>
-        </tr>
-    );
-}
-
-export function DataPeriodSelectCard({
-    daysOfData,
-    changeDaysOfData,
-    className = "",
-}: {
-    daysOfData: number;
-    changeDaysOfData: (event: { target: { value: string } }) => void;
-    className?: string;
-}) {
-    return (
-        <div className={`bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow flex items-center justify-between ${className}`}>
-            <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
-                    <Calendar className="h-4 w-4 text-white" />
-                </div>
-                <div>
-                    <h3 className="font-semibold text-gray-900">Data Period</h3>
-                    <p className="text-sm text-gray-500">
-                        Select time range for analysis
-                    </p>
-                </div>
-            </div>
-            <select
-                id="daysOfDataInput"
-                value={daysOfData}
-                onChange={changeDaysOfData}
-                className="border text-gray-900 text-sm rounded-lg  block p-2.5 w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] outline-none"
-            >
-                <option defaultValue="7">7</option>
-                <option>14</option>
-                <option>30</option>
-                <option>90</option>
-                <option>365</option>
-                <option value={365 * 100}>All</option>
-            </select>
-        </div>
     );
 }
