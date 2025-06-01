@@ -100,7 +100,7 @@ export default function WeightPage() {
                     <div className="max-w-full overflow-x-auto rounded-lg">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
-                                className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
+                                className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
                             >
                                 <History className="h-4 w-4 text-white" />
                             </div>
@@ -131,7 +131,7 @@ export default function WeightPage() {
                                                 colSpan={4}
                                                 className="text-center py-8 text-gray-500"
                                             >
-                                                No glucose entries found for the
+                                                No weight entries found for the
                                                 selected period.
                                             </TableCell>
                                         </TableRow>

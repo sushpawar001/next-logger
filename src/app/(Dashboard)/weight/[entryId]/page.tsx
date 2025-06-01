@@ -83,7 +83,7 @@ export default function EditEntry({ params }) {
                         </div>
                     </div>
                     <Link
-                        href={"/glucose"}
+                        href={"/weight"}
                         className="border-purple-200 hover:bg-purple-50 hover:border-[#5E4AE3] flex items-center gap-2 border rounded-lg px-3 py-2 transition-all duration-300"
                     >
                         <ArrowLeft className="h-4 w-4 mr-2" />

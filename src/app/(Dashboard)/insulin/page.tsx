@@ -88,7 +88,7 @@ export default function InsulinPage() {
                 />
                 <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow h-full w-full md:col-span-2">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
-                        Glucose Trends
+                        Insulin Trends
                     </h3>
                     <div className="h-72">
                         <InsulinChartSeparate
@@ -104,18 +104,18 @@ export default function InsulinPage() {
                     <div className="max-w-full overflow-x-auto rounded-lg">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
-                                className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
+                                className={`p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600`}
                             >
                                 <History className="h-4 w-4 text-white" />
                             </div>
-                            Glucose History
+                            Insulin History
                         </div>
                         <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
                                         <TableHead className="text-white font-medium">
-                                            Blood Glucose
+                                            Insulin Units
                                         </TableHead>
                                         <TableHead className="text-white font-medium">
                                             DateTime
@@ -138,7 +138,7 @@ export default function InsulinPage() {
                                                 colSpan={4}
                                                 className="text-center py-8 text-gray-500"
                                             >
-                                                No glucose entries found for the
+                                                No insulin entries found for the
                                                 selected period.
                                             </TableCell>
                                         </TableRow>
