@@ -9,9 +9,9 @@ import Link from "next/link";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import PopUpModal from "@/components/PopUpModal";
-
+import { Calendar } from "lucide-react";
 const TdStyle = {
-    ThStyle: `w-1/6 lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
+    ThStyle: `lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
     TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-base`,
     TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-base`,
     TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-base`,
@@ -71,29 +71,32 @@ export default function GlucosePage() {
 
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div className="bg-white p-4 rounded-lg shadow order-1 md:order-first">
-                    <div className="flex flex-wrap">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
+                <DataPeriodSelectCard
+                    daysOfData={daysOfData}
+                    changeDaysOfData={changeDaysOfData}
+                    className="col-span-3"
+                />
+                <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow h-full w-full col-span-2">
+                    <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
+                        Glucose Trends
+                    </h3>
+                    <div className="h-72">
+                        <GlucoseChart data={glucoseData} fetch={false} />
+                    </div>
+                </div>
+                <div className="w-full">
+                    <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow col-span-3">
+                    <div className="flex flex-wrap ">
                         <div className="max-w-full overflow-x-auto rounded-lg">
                             <div className="mb-2 grid grid-cols-2">
                                 <h3 className="my-auto ml-1 text-lg font-medium text-gray-900">
                                     Glucose History
                                 </h3>
-                                <select
-                                    id="daysOfDataInput"
-                                    value={daysOfData}
-                                    onChange={changeDaysOfData}
-                                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-full p-2.5"
-                                >
-                                    <option defaultValue="7">7</option>
-                                    <option>14</option>
-                                    <option>30</option>
-                                    <option>90</option>
-                                    <option>365</option>
-                                    <option value={365 * 100}>All</option>
-                                </select>
                             </div>
-                            <table className="table-auto">
+                            <table className="table-auto ">
                                 <thead className="text-center bg-secondary">
                                     <tr>
                                         <th
@@ -130,12 +133,6 @@ export default function GlucosePage() {
                         </div>
                     </div>
                 </div>
-                <div>
-                    <div className="mb-4 md:mb-6 mx-auto px-10 py-5 rounded-lg bg-white shadow h-72">
-                        <GlucoseChart data={glucoseData} fetch={false} />
-                    </div>
-                    <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
-                </div>
             </div>
         </section>
     );
@@ -160,5 +157,44 @@ function TableRow(props) {
                 </div>
             </td>
         </tr>
+    );
+}
+
+export function DataPeriodSelectCard({
+    daysOfData,
+    changeDaysOfData,
+    className = "",
+}: {
+    daysOfData: number;
+    changeDaysOfData: (event: { target: { value: string } }) => void;
+    className?: string;
+}) {
+    return (
+        <div className={`bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow flex items-center justify-between ${className}`}>
+            <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                    <Calendar className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                    <h3 className="font-semibold text-gray-900">Data Period</h3>
+                    <p className="text-sm text-gray-500">
+                        Select time range for analysis
+                    </p>
+                </div>
+            </div>
+            <select
+                id="daysOfDataInput"
+                value={daysOfData}
+                onChange={changeDaysOfData}
+                className="border text-gray-900 text-sm rounded-lg  block p-2.5 w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] outline-none"
+            >
+                <option defaultValue="7">7</option>
+                <option>14</option>
+                <option>30</option>
+                <option>90</option>
+                <option>365</option>
+                <option value={365 * 100}>All</option>
+            </select>
+        </div>
     );
 }
