@@ -6,6 +6,7 @@ import axios from "axios";
 import formatDate from "@/helpers/formatDate";
 import Link from "next/link";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
+
 import PopUpModal from "@/components/PopUpModal";
 import MeasurementChartNew from "@/components/Charts/MeasurementChartNew";
 import {
@@ -19,6 +20,7 @@ import {
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
 import { History, Edit, Trash2 } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import MeasurementPageSkeleton2 from "@/components/MeasurementPageSkeleton2";
 const dataInputs = [
     "Arms",
     "Chest",
@@ -127,7 +129,7 @@ export default function MeasurementsPage() {
                             </div>
                             Measurement History
                         </div>
-                        <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
+                        <div className="rounded-lg border border-purple-100 overflow-y-auto w-full md:max-h-96">
                             <Table>
                                 <TableHeader>
                                     <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
