@@ -218,7 +218,7 @@ export default function MeasurementsPage() {
                                                 <TableCell>
                                                     <div className="flex items-center justify-center gap-2">
                                                         <Link
-                                                            href={`/glucose/${entry._id}`}
+                                                            href={`/measurement/${entry._id}`}
                                                             className={
                                                                 TdStyle.TdButton
                                                             }

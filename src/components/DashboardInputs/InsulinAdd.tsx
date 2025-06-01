@@ -7,7 +7,6 @@ import InsulinType from "@/models/insulinTypeModel"; // import to avoid error
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { Droplets, Weight, Syringe } from "lucide-react";
 
-const dataArray = [{ _id: 1, name: "test" }];
 export default function InsulinAdd(props) {
     const [insulin, setInsulin] = useState("");
     const [insulinType, setInsulinType] = useState("");

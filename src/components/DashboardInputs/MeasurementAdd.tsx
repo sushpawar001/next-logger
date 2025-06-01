@@ -3,6 +3,7 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import { Ruler } from "lucide-react";
 import React, { ChangeEvent, useState } from "react";
+import { entryTags } from "@/constants/constants";
 
 const dataInputs = [
     "arms",
@@ -30,6 +31,11 @@ export default function MeasurementAdd({
         calves: "",
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectTag, setSelectTag] = useState<string>(null);
+
+    const handleTagChange = (event: { target: { value: string } }) => {
+        setSelectTag(event.target.value);
+    };
 
     const changeMeasurements = (event: ChangeEvent<HTMLInputElement>) => {
         const name = event.target.name;
@@ -46,7 +52,7 @@ export default function MeasurementAdd({
         try {
             const response = await axios.post(
                 "/api/measurements/add/",
-                { measurements: measurements },
+                { measurements: measurements, tag: selectTag },
                 { withCredentials: true }
             );
             notify(response.data.message, "success");
@@ -136,6 +142,27 @@ export default function MeasurementAdd({
                         value={measurements[input]}
                     />
                 ))}
+                <div className="space-y-2">
+                    <label
+                        className="text-sm font-medium text-gray-700"
+                        htmlFor="glucose"
+                    >
+                        Measurement Tag
+                    </label>
+                    <select
+                        id="insulin_tag"
+                        value={selectTag ?? ""}
+                        onChange={handleTagChange}
+                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-9"
+                    >
+                        <option value="" disabled>
+                            Select Tag
+                        </option>
+                        {entryTags.map((data) => (
+                            <option key={data}>{data}</option>
+                        ))}
+                    </select>
+                </div>
                 <div className="flex flex-col md:flex-row gap-1">
                     <button
                         type="submit"
