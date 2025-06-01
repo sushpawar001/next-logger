@@ -161,7 +161,7 @@ export default function WeightPage() {
                                                 <TableCell>
                                                     <div className="flex items-center justify-center gap-2">
                                                         <Link
-                                                            href={`/glucose/${entry._id}`}
+                                                            href={`/weight/${entry._id}`}
                                                             className={
                                                                 TdStyle.TdButton
                                                             }

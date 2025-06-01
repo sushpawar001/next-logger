@@ -31,6 +31,8 @@ export default function WeightAdd(props) {
         try {
             const response = await axios.post("/api/weight/add/", {
                 value: weight,
+                date: sendTime ? selectedDate : null,
+                tag: selectTag,
             });
             notify(response.data.message, "success");
             setWeight("");
