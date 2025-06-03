@@ -8,7 +8,18 @@ import { FaChartLine, FaInfoCircle } from "react-icons/fa";
 import { LuInfo } from "react-icons/lu";
 import Link from "next/link";
 import { set } from "mongoose";
-import { ChartLine } from "lucide-react";
+import { ChartLine, Droplets } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { BarChart3, TrendingUp } from "lucide-react";
+import { StatsTableCard } from "@/components/StatsTableCard";
 
 interface statsObjType {
     mean: number;
@@ -27,6 +38,14 @@ const statsObj = {
     max: 0,
 };
 
+const daysOfDataOptions = [
+    { value: 7, label: "7 days" },
+    { value: 14, label: "14 days" },
+    { value: 30, label: "30 days" },
+    { value: 90, label: "90 days" },
+    { value: 365, label: "365 days" },
+    { value: 365 * 100, label: "All" },
+];
 export default function Stats() {
     const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
     const [glucoseDataOld, setGlucoseDataOld] = useState<glucose[]>([]);
@@ -58,8 +77,9 @@ export default function Stats() {
         TdStyle2: `text-dark border border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-sm xl:text-base`,
     };
 
-    const changeDaysOfData = (event: { target: { value: string } }) => {
-        const daysInput = event.target.value;
+    const changeDaysOfData = (value: string) => {
+        console.log(value);
+        const daysInput = value;
         setDaysOfData(parseInt(daysInput));
     };
 
@@ -242,43 +262,58 @@ export default function Stats() {
     }
 
     return (
-        <div className="h-full flex justify-center items-center bg-background py-5 px-5 md:px-20">
-            <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-                <div className="md:col-span-2 w-full flex flex-col md:flex-row gap-2 md:gap-3">
-                    <div className="md:w-1/2 rounded-lg flex flex-col space-y-0.5 bg-white border border-purple-100 transition-all duration-300 shadow p-2.5">
-                        <h2 className="font-bold text-gray-900 my-auto text-lg">
-                            Analytics Overview
-                        </h2>
-                        <p className="text-gray-500 text-sm">
-                            Track your health metrics over time
-                        </p>
-                    </div>
-                    <div className="bg-white border border-purple-100 transition-all duration-300 p-2 shadow rounded-lg flex gap-2 md:w-1/2">
-                        <select
-                            id="daysOfDataInput"
-                            value={daysOfData}
-                            onChange={changeDaysOfData}
-                            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block w-1/2 md:w-3/5 p-2.5"
-                        >
-                            <option defaultValue="7">7</option>
-                            <option>14</option>
-                            <option>30</option>
-                            <option>90</option>
-                            <option>365</option>
-                            <option value={365 * 100}>All</option>
-                        </select>
-                        <Link
-                            href="/charts"
-                            className="inline-flex items-center px-1.5 md:px-3 py-2 text-xs md:text-sm font-medium text-center text-white primary-gradient rounded-lg focus:outline-none w-1/2 md:w-2/5 gap-2 justify-center"
-                        >
-                            <ChartLine className="h-5 w-5 text-white"/>
-                            See Charts
-                        </Link>
-                    </div>
-                </div>
-                <div className="bg-white border border-purple-100 transition-all duration-300 shadow md:col-span-2 rounded-lg md:flex gap-1">
+        <div className="h-full flex justify-center items-center bg-background py-5 px-5 lg:px-20">
+            <div className="w-full lg:w-fit grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                <Card className="border-purple-100 shadow transition-all duration-300 lg:col-span-2">
+                    <CardContent className="p-4">
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                                    <BarChart3 className="h-5 w-5 text-white" />
+                                </div>
+                                <div>
+                                    <h1 className="text-lg font-bold text-gray-900">
+                                        Analytics Overview
+                                    </h1>
+                                    <p className="text-gray-600 lg:mt-1 text-sm">
+                                        Track your health metrics over time
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 w-full lg:w-fit">
+                                <Select
+                                    value={daysOfData.toString()}
+                                    onValueChange={changeDaysOfData}
+                                >
+                                    <SelectTrigger className="lg:w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3]">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {daysOfDataOptions.map((option) => (
+                                            <SelectItem
+                                                key={option.value}
+                                                value={option.value.toString()}
+                                            >
+                                                {option.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <Link href="/charts">
+                                    <Button
+                                        className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg"
+                                    >
+                                        <TrendingUp className="h-4 w-4 mr-2" />
+                                        See Charts
+                                    </Button>
+                                </Link>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+                <div className="bg-white border border-purple-100 transition-all duration-300 shadow lg:col-span-2 rounded-lg lg:flex gap-1">
                     <div
-                        className={`w-full md:w-1/4 p-2 xl:p-4 rounded-t-lg md:rounded-l-lg md:rounded-tr-none  ${
+                        className={`w-full lg:w-fit p-2 xl:p-4 rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none  ${
                             riskLevel === "high"
                                 ? "bg-red-50 text-red-900"
                                 : riskLevel === "moderate"
@@ -307,33 +342,39 @@ export default function Stats() {
                         </h2>
                     </div>
 
-                    <div className="w-full md:w-3/4 m-auto p-3 xl:p-4 text-gray-500 flex gap-2.5">
+                    <div className="w-full lg:w-3/4 m-auto p-3 xl:p-4 text-gray-600 flex gap-2.5">
                         <LuInfo className="m-auto text-xl" />
-                        <p className="text-xs md:text-sm">
+                        <p className="text-xs lg:text-sm">
                             Estimated HbA1c is based on your average glucose
                             levels. Minimum 3 months of data required for better
                             estimates.
                         </p>
                     </div>
                 </div>
-                <GlucoseTile
-                    TdStyle={TdStyle}
-                    glucoseStats={glucoseStats}
-                    glucoseStatsOld={glucoseStatsOld}
+                <StatsTableCard
+                    title="Glucose Statistics"
+                    icon={Droplets}
+                    gradient="bg-gradient-to-br from-blue-500 to-blue-600"
+                    newData={glucoseStats}
+                    oldData={glucoseStatsOld}
                 />
 
-                <WeightTile
-                    TdStyle={TdStyle}
-                    weightStats={weightStats}
-                    weightStatsOld={weightStatsOld}
+                <StatsTableCard
+                    title="Weight Statistics"
+                    icon={Droplets}
+                    gradient="bg-gradient-to-br from-orange-500 to-orange-600"
+                    newData={weightStats}
+                    oldData={weightStatsOld}
                 />
 
                 {insulinData.length > 0
                     ? Object.entries(insulinStats).map((data, index) => (
-                          <InsulinTile
+                          <StatsTableCard
                               key={index}
-                              TdStyle={TdStyle}
-                              data={data}
+                              title={`Insulin: ${data[0]}`}
+                              icon={Droplets}
+                              gradient="bg-gradient-to-br from-green-500 to-green-600"
+                              newData={data[1]}
                           />
                       ))
                     : ""}
