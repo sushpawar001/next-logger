@@ -12,6 +12,7 @@ import {
     Ruler,
     Activity,
     Settings,
+    TrendingUp,
 } from "lucide-react";
 import {
     Sidebar,
@@ -36,6 +37,12 @@ const menuItems = [
         title: "Profile",
         url: "/profile",
         icon: User,
+    },
+    {
+        title: "Charts",
+        url: "/charts",
+        icon: TrendingUp,
+        key: "charts",
     },
     {
         title: "Stats",
