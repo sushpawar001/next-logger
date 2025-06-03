@@ -1,4 +1,19 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
+
+export type LayoutSettingType = "diabetes" | "fitness";
+
+export interface IClerkUser {
+    email: string;
+    insulins: mongoose.Types.ObjectId[];
+    password?: string;
+    clerkUserId: string;
+    layoutSettings: LayoutSettingType;
+    trialExpiry: Date;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface IClerkUserDocument extends IClerkUser, Document {}
 
 const userSchema = new mongoose.Schema(
     {
@@ -28,12 +43,14 @@ const userSchema = new mongoose.Schema(
         },
         trialExpiry: {
             type: Date,
-            default: Date.now() + 30 * 24 * 60 * 60 * 1000,
+            default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
     },
     { timestamps: true }
 );
 
-const ClerkUser = mongoose.models.users || mongoose.model("users", userSchema);
+const ClerkUser: Model<IClerkUserDocument> =
+    (mongoose.models.users as Model<IClerkUserDocument>) ||
+    mongoose.model<IClerkUserDocument>("users", userSchema);
 
 export default ClerkUser;

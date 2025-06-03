@@ -13,5 +13,5 @@ export async function getUserObjectId(): Promise<string | null> {
         throw new Error("User not found");
     }
 
-    return user._id;
+    return user._id.toString();
 }

@@ -1,14 +1,26 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 
-const insulinTypeSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        unique: true,
-        required: true
+export interface IInsulinType {
+    name: string;
+    createdAt?: Date;
+}
+
+export interface IInsulinTypeDocument extends IInsulinType, Document {}
+
+const insulinTypeSchema = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            unique: true,
+            required: true,
+        },
+        createdAt: { type: Date, default: Date.now },
     },
-    createdAt: { type: Date, default: Date.now },
-}, { timestamps: false });
+    { timestamps: false }
+);
 
-const InsulinType = mongoose.models.insulintype || mongoose.model("insulintype", insulinTypeSchema);
+const InsulinType: Model<IInsulinTypeDocument> =
+    (mongoose.models.insulintype as Model<IInsulinTypeDocument>) ||
+    mongoose.model<IInsulinTypeDocument>("insulintype", insulinTypeSchema);
 
 export default InsulinType;

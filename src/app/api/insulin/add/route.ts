@@ -22,7 +22,8 @@ export async function POST(request: NextRequest) {
             payload["createdAt"] = date;
         }
 
-        const entry = await Insulin.create(payload);
+        const insulinDoc = new Insulin(payload);
+        const entry = await insulinDoc.save();
 
         return NextResponse.json({
             entry,

@@ -20,8 +20,8 @@ export async function POST(request: NextRequest) {
         if (date) {
             payload["createdAt"] = date;
         }
-
-        const entry = await Weight.create(payload);
+        const weightDoc = new Weight(payload);
+        const entry = await weightDoc.save();
         return NextResponse.json({ entry, message: "Weight entry added!" });
     } catch (error) {
         console.log("Error adding Weight" + error);

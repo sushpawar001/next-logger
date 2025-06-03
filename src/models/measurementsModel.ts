@@ -1,6 +1,21 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 
-const measurementSchema = new mongoose.Schema(
+interface IMeasurements {
+    arms: number;
+    chest: number;
+    abdomen: number;
+    waist: number;
+    hip: number;
+    thighs: number;
+    calves: number;
+    user: mongoose.Types.ObjectId;
+    tag?: string | null;
+    createdAt: Date;
+}
+
+interface IMeasurementsDocument extends IMeasurements, Document {}
+
+const measurementSchema = new mongoose.Schema<IMeasurementsDocument>(
     {
         arms: {
             type: Number,
@@ -31,7 +46,7 @@ const measurementSchema = new mongoose.Schema(
             required: true,
         },
         user: {
-            type: mongoose.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId,
             ref: "users",
             required: true,
         },
@@ -44,8 +59,8 @@ const measurementSchema = new mongoose.Schema(
     { timestamps: false }
 );
 
-const Measurements =
+const Measurements: Model<IMeasurementsDocument> =
     mongoose.models.measurement ||
-    mongoose.model("measurement", measurementSchema);
+    mongoose.model<IMeasurementsDocument>("measurement", measurementSchema);
 
 export default Measurements;

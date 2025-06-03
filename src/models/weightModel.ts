@@ -1,15 +1,15 @@
 import mongoose, { Document, Model } from "mongoose";
 
-export interface IGlucose {
+interface IWeight {
     value: number;
     user: mongoose.Types.ObjectId;
     tag?: string | null;
-    createdAt?: Date;
+    createdAt: Date;
 }
 
-export interface IGlucoseDocument extends IGlucose, Document {}
+interface IWeightDocument extends IWeight, Document {}
 
-const glucoseSchema = new mongoose.Schema<IGlucoseDocument>(
+const weightSchema = new mongoose.Schema<IWeightDocument>(
     {
         value: {
             type: Number,
@@ -29,8 +29,8 @@ const glucoseSchema = new mongoose.Schema<IGlucoseDocument>(
     { timestamps: false }
 );
 
-const Glucose: Model<IGlucoseDocument> =
-    (mongoose.models.glucose as Model<IGlucoseDocument>) ||
-    mongoose.model<IGlucoseDocument>("glucose", glucoseSchema);
+const Weight: Model<IWeightDocument> =
+    mongoose.models.weight ||
+    mongoose.model<IWeightDocument>("weight", weightSchema);
 
-export default Glucose;
+export default Weight;

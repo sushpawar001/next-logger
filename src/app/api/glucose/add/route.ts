@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { value, date, tag } = body;
-        console.log(date, tag);
         const user = await getUserObjectId();
 
         const payload = {
@@ -22,7 +21,9 @@ export async function POST(request: NextRequest) {
             payload["createdAt"] = date;
         }
 
-        const entry = await Glucose.create(payload);
+        const glucoseDoc = new Glucose(payload);
+        const entry = await glucoseDoc.save();
+
         return NextResponse.json({ entry, message: "Glucose Entry added!" });
     } catch (error) {
         console.log("Error adding Glucose" + error);

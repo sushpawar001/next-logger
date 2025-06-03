@@ -8,9 +8,10 @@ connectDB();
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { arms, chest, abdomen, waist, hip, thighs, calves } = body.measurements;
+        const { arms, chest, abdomen, waist, hip, thighs, calves, tag } =
+            body.measurements;
         const user = await getUserObjectId();
-        const entry = await Measurements.create({
+        const measurementsDoc = new Measurements({
             arms,
             chest,
             abdomen,
@@ -19,7 +20,9 @@ export async function POST(request: NextRequest) {
             thighs,
             calves,
             user,
+            tag,
         });
+        const entry = await measurementsDoc.save();
         return NextResponse.json({ entry, message: "Measurements added!" });
     } catch (error) {
         console.log("Error adding Measurements" + error);

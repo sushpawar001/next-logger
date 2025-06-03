@@ -1,0 +1,3 @@
+ignoredBuiltDependencies:
+  - '@clerk/shared'
+  - unrs-resolver

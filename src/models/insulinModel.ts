@@ -1,18 +1,23 @@
 import mongoose, { Document, Model } from "mongoose";
 
-export interface IGlucose {
-    value: number;
+interface IInsulin {
+    units: number;
+    name: string;
     user: mongoose.Types.ObjectId;
     tag?: string | null;
-    createdAt?: Date;
+    createdAt: Date;
 }
 
-export interface IGlucoseDocument extends IGlucose, Document {}
+interface IInsulinDocument extends IInsulin, Document {}
 
-const glucoseSchema = new mongoose.Schema<IGlucoseDocument>(
+const insulinSchema = new mongoose.Schema<IInsulinDocument>(
     {
-        value: {
+        units: {
             type: Number,
+            required: true,
+        },
+        name: {
+            type: String,
             required: true,
         },
         user: {
@@ -29,8 +34,8 @@ const glucoseSchema = new mongoose.Schema<IGlucoseDocument>(
     { timestamps: false }
 );
 
-const Glucose: Model<IGlucoseDocument> =
-    (mongoose.models.glucose as Model<IGlucoseDocument>) ||
-    mongoose.model<IGlucoseDocument>("glucose", glucoseSchema);
+const Insulin: Model<IInsulinDocument> =
+    mongoose.models.insulin ||
+    mongoose.model<IInsulinDocument>("insulin", insulinSchema);
 
-export default Glucose;
+export default Insulin;

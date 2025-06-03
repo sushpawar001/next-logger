@@ -1,6 +1,21 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+interface IUser {
+    email: string;
+    password: string;
+    insulins: mongoose.Types.ObjectId[];
+    isVerfied: boolean;
+    forgotPasswordToken?: string;
+    forgotPasswordTokenExpiry?: Date;
+    verifyToken?: string;
+    verifyTokenExpiry?: Date;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+interface IUserDocument extends IUser, Document {}
+
+const userSchema = new mongoose.Schema<IUserDocument>(
     {
         email: {
             type: String,
@@ -29,6 +44,7 @@ const userSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const User = mongoose.models.users || mongoose.model("users", userSchema);
+const User: Model<IUserDocument> =
+    mongoose.models.users || mongoose.model<IUserDocument>("users", userSchema);
 
 export default User;
