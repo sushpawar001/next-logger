@@ -11,7 +11,6 @@ connectDB();
 export async function GET(request: NextRequest) {
     try {
         const user = await getUserObjectId();
-        console.log("user", user)
         const data = await User.findById(user).populate("insulins");
         // const data = await User.findById(user).populate({ path: "insulins", model: InsulinType });
 

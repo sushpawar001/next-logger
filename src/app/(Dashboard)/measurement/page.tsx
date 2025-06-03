@@ -52,7 +52,7 @@ export default function MeasurementsPage() {
         const getMeasurementData = async () => {
             try {
                 axios
-                    .get(`/api/measurements/get/${daysOfData}/`)
+                    .get(`/api/measurements/get/${daysOfData}`)
                     .then((response) => {
                         if (response.status === 200) {
                             setMeasurementData(response.data.data);

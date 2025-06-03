@@ -45,7 +45,7 @@ export default function InsulinPage() {
         const getInsulinData = async () => {
             try {
                 const response = await axios.get(
-                    `/api/insulin/get/${daysOfData}/`
+                    `/api/insulin/get/${daysOfData}`
                 );
                 if (response.status === 200) {
                     let fetchedData: insulinEntryType[] = response.data.data;

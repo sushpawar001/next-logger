@@ -61,7 +61,7 @@ export default function WeightChart(props: {
     const daysOfData = props.days || 7;
     const getWeight = useCallback(async () => {
         try {
-            const response = await axios.get(`/api/weight/get/${daysOfData}/`);
+            const response = await axios.get(`/api/weight/get/${daysOfData}`);
             if (response.status === 200) {
                 let weightData = response.data.data.reverse();
                 setWeight(weightData);

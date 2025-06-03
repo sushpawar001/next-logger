@@ -25,7 +25,7 @@ export default function UserInsulins({
         e.preventDefault();
         try {
             setIsSubmitting(true);
-            const response = await axios.post("/api/users/bulk-add-insulin/", {
+            const response = await axios.post("/api/users/bulk-add-insulin", {
                 insulinData: userInsulins,
             });
             setIsSubmitting(false);

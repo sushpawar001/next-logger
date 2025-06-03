@@ -55,7 +55,7 @@ export default function InsulinChartSeparate(props) {
     const getInsulin = useCallback(
         async () => {
             try {
-                const response = await axios.get(`/api/insulin/get/${daysOfData}/`);
+                const response = await axios.get(`/api/insulin/get/${daysOfData}`);
                 if (response.status === 200) {
                     let insulinData = response.data.data.reverse();
                     setInsulin(insulinData);

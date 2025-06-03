@@ -31,7 +31,7 @@ export default function GlucoseAdd(props) {
         setIsSubmitting(true);
         try {
             const response = await axios.post(
-                "/api/glucose/add/",
+                "/api/glucose/add",
                 {
                     value: glucose,
                     date: sendTime ? selectedDate : null,

@@ -72,9 +72,9 @@ export default function Stats() {
                     insulinResponse,
                     GlucoseRangeDataResponse,
                 ] = await Promise.all([
-                    axios.get(`/api/weight/get-range/${daysOfData}/`),
-                    axios.get(`/api/insulin/get/${daysOfData}/`),
-                    axios.get(`/api/glucose/get-range/${daysOfData}/`),
+                    axios.get(`/api/weight/get-range/${daysOfData}`),
+                    axios.get(`/api/insulin/get/${daysOfData}`),
+                    axios.get(`/api/glucose/get-range/${daysOfData}`),
                 ]);
 
                 if (GlucoseRangeDataResponse.status === 200) {

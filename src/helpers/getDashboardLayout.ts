@@ -4,7 +4,7 @@ export const getDashboardLayout = async () => {
     let layout = localStorage.getItem("layoutSettings");
     console.log("layout", layout);
     if (layout == null) {
-        const response = await axios.get("/api/users/get-layout/");
+        const response = await axios.get("/api/users/get-layout");
         layout = response.data.data;
         setDashboardLayoutLocal(layout);
     }

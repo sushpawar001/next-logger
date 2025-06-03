@@ -36,7 +36,7 @@ export default function InsulinAdd(props) {
     };
 
     const getUserInsulinType = async () => {
-        const reponse = await axios.get("/api/users/get-insulin/");
+        const reponse = await axios.get("/api/users/get-insulin");
         let sortedData = reponse.data.data.sort(
             (a: { name: string }, b: { name: string }) =>
                 a.name.localeCompare(b.name)
@@ -48,7 +48,7 @@ export default function InsulinAdd(props) {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const response = await axios.post("/api/insulin/add/", {
+            const response = await axios.post("/api/insulin/add", {
                 units: insulin,
                 name: insulinType,
                 date: sendTime ? selectedDate : null,

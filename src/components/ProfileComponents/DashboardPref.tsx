@@ -32,7 +32,7 @@ export default function DashboardPreferences({
         event.preventDefault();
         if (isChanged) {
             setIsSubmitting(true);
-            const response = await axios.post("/api/users/set-layout/", {
+            const response = await axios.post("/api/users/set-layout", {
                 layoutSettings: layoutSettings,
             });
             setDashboardLayoutLocal(layoutSettings);

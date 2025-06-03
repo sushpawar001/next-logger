@@ -52,7 +52,7 @@ export default function MeasurementAdd({
         setIsSubmitting(true);
         try {
             const response = await axios.post(
-                "/api/measurements/add/",
+                "/api/measurements/add",
                 { measurements: measurements, tag: selectTag },
                 { withCredentials: true }
             );

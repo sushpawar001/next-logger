@@ -73,7 +73,7 @@ export default function MeasurementChartNew(props: {
     const daysOfData = props.days || 14;
     const getMeasurementData = useCallback(async () => {
         try {
-            const response = await axios.get(`/api/measurements/get/${daysOfData}/`);
+            const response = await axios.get(`/api/measurements/get/${daysOfData}`);
             if (response.status === 200) {
                 let data = response.data.data.reverse();
                 setMeasurementData(data);

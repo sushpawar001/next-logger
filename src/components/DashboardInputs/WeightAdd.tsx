@@ -29,7 +29,7 @@ export default function WeightAdd(props) {
         e.preventDefault();
         setIsSubmitting(true);
         try {
-            const response = await axios.post("/api/weight/add/", {
+            const response = await axios.post("/api/weight/add", {
                 value: weight,
                 date: sendTime ? selectedDate : null,
                 tag: selectTag,

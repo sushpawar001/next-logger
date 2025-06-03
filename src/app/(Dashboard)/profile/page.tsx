@@ -14,7 +14,7 @@ export default function ProfilePage() {
 
     useEffect(() => {
         const getData = async () => {
-            const response = await axios.get("/api/insulin-type/get/");
+            const response = await axios.get("/api/insulin-type/get");
             setAllAvailableInsulins(response.data.data);
         };
         getData();
@@ -22,7 +22,7 @@ export default function ProfilePage() {
 
     useEffect(() => {
         const getData = async () => {
-            const resposne = await axios.get("/api/users/get-insulin/");
+            const resposne = await axios.get("/api/users/get-insulin");
             let fetchedData: InsulinNameType[] = resposne.data.data;
             setUserInsulins(fetchedData);
         };

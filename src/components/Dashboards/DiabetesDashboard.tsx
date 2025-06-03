@@ -15,8 +15,8 @@ export default function DiabetesDashboard() {
         const fetchData = async () => {
             try {
                 const [glucoseResponse, weightResponse] = await Promise.all([
-                    axios.get(`/api/glucose/get/7/`),
-                    axios.get(`/api/weight/get/7/`),
+                    axios.get(`/api/glucose/get/7`),
+                    axios.get(`/api/weight/get/7`),
                 ]);
 
                 if (glucoseResponse.status === 200) {

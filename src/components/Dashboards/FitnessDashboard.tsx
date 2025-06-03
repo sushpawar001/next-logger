@@ -16,8 +16,8 @@ export default function FitnessDashboard() {
             try {
                 const [measurementResponse, weightResponse] = await Promise.all(
                     [
-                        axios.get(`/api/measurements/get/7/`),
-                        axios.get(`/api/weight/get/7/`),
+                        axios.get(`/api/measurements/get/7`),
+                        axios.get(`/api/weight/get/7`),
                     ]
                 );
 

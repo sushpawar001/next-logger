@@ -38,7 +38,7 @@ export default function GlucosePage() {
         const getGlucoseData = async () => {
             try {
                 axios
-                    .get(`/api/glucose/get/${daysOfData}/`)
+                    .get(`/api/glucose/get/${daysOfData}`)
                     .then((response) => {
                         if (response.status === 200) {
                             setGlucoseData(response.data.data);

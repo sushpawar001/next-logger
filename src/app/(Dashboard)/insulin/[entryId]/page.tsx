@@ -54,7 +54,7 @@ export default function EditEntry({ params }) {
     };
 
     const getUserInsulinType = async () => {
-        const reponse = await axios.get("/api/users/get-insulin/");
+        const reponse = await axios.get("/api/users/get-insulin");
         let sortedData = reponse.data.data.sort(
             (a: { name: string }, b: { name: string }) =>
                 a.name.localeCompare(b.name)

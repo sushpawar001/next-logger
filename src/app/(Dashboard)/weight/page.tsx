@@ -39,7 +39,7 @@ export default function WeightPage() {
         const getWeightData = async () => {
             try {
                 const response = await axios.get(
-                    `/api/weight/get/${daysOfData}/`
+                    `/api/weight/get/${daysOfData}`
                 );
                 if (response.status === 200) {
                     setWeightData(response.data.data);

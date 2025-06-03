@@ -60,7 +60,7 @@ export default function GlucoseChartTime(props: {
     const daysOfData = props.days || 7;
     const getGlucose = useCallback(async () => {
         try {
-            const response = await axios.get(`/api/glucose/get/${daysOfData}/`);
+            const response = await axios.get(`/api/glucose/get/${daysOfData}`);
             if (response.status === 200) {
                 let glucoseData = response.data.data.reverse();
                 setGlucose(glucoseData);

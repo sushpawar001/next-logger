@@ -36,14 +36,14 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
           (obj) => obj.name.toLowerCase() === newInsulinType.toLowerCase()
         )
       ) {
-        const response = await axios.post("/api/insulin-type/add/", {
+        const response = await axios.post("/api/insulin-type/add", {
           name: newInsulinType,
         });
         notify(response.data.message, "success");
         setNewInsulinType("");
         setallInsulinType((data) => [...data, response.data.entry]);
 
-        const addResponse = await axios.post("/api/users/add-insulin/", {
+        const addResponse = await axios.post("/api/users/add-insulin", {
           name: response.data.entry.name,
         });
         setData((data) => [...data, addResponse.data.insulin]);
@@ -64,7 +64,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
           (obj) => obj.name.toLowerCase() === insulinType.toLowerCase()
         )
       ) {
-        const response = await axios.post("/api/users/add-insulin/", {
+        const response = await axios.post("/api/users/add-insulin", {
           name: insulinType,
         });
         setData((data) => [...data, response.data.insulin]);
@@ -80,7 +80,7 @@ export default function InsulinTypeAdd(props: { data: InsulinType[]; setData: an
 
   useEffect(() => {
     const getAllInsulinTypes = async () => {
-      const reponse = await axios.get("/api/insulin-type/get/");
+      const reponse = await axios.get("/api/insulin-type/get");
       let sortedData = sortData(reponse.data.data);
       setallInsulinType(sortedData);
     };

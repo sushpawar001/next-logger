@@ -32,7 +32,7 @@ export default function AddNewInsulin({
                         obj.name.toLowerCase() === newInsulinType.toLowerCase()
                 )
             ) {
-                const response = await axios.post("/api/insulin-type/add/", {
+                const response = await axios.post("/api/insulin-type/add", {
                     name: newInsulinType,
                 });
                 notify(response.data.message, "success");
@@ -43,7 +43,7 @@ export default function AddNewInsulin({
                 ]);
 
                 const addResponse = await axios.post(
-                    "/api/users/add-insulin/",
+                    "/api/users/add-insulin",
                     {
                         name: response.data.entry.name,
                     }
