@@ -70,12 +70,6 @@ export default function Stats() {
         [key: string]: statsObjType;
     }>({});
 
-    const TdStyle = {
-        // ThStyle: `w-1/6 min-w-[100px] border-l border-transparent px-3 py-2 text-base font-medium text-white lg:px-4`,
-        ThStyle: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4 text-center`,
-        // TdStyle2: `text-dark border border-[#E8E8E8] bg-white p-2 text-center font-normal text-base`,
-        TdStyle2: `text-dark border border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-sm xl:text-base`,
-    };
 
     const changeDaysOfData = (value: string) => {
         console.log(value);
@@ -300,9 +294,7 @@ export default function Stats() {
                                     </SelectContent>
                                 </Select>
                                 <Link href="/charts">
-                                    <Button
-                                        className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg"
-                                    >
+                                    <Button className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg">
                                         <TrendingUp className="h-4 w-4 mr-2" />
                                         See Charts
                                     </Button>
@@ -356,7 +348,7 @@ export default function Stats() {
                     icon={Droplets}
                     gradient="bg-gradient-to-br from-blue-500 to-blue-600"
                     newData={glucoseStats}
-                    oldData={glucoseStatsOld}
+                    oldData={glucoseDataOld.length > 0 ? glucoseStatsOld : null}
                 />
 
                 <StatsTableCard
@@ -364,13 +356,13 @@ export default function Stats() {
                     icon={Droplets}
                     gradient="bg-gradient-to-br from-orange-500 to-orange-600"
                     newData={weightStats}
-                    oldData={weightStatsOld}
+                    oldData={weightDataOld.length > 0 ? weightStatsOld : null}
                 />
 
                 {insulinData.length > 0
                     ? Object.entries(insulinStats).map((data, index) => (
                           <StatsTableCard
-                              key={index}
+                              key={data[0]}
                               title={`Insulin: ${data[0]}`}
                               icon={Droplets}
                               gradient="bg-gradient-to-br from-green-500 to-green-600"
@@ -379,314 +371,6 @@ export default function Stats() {
                       ))
                     : ""}
             </div>
-        </div>
-    );
-}
-
-function GlucoseTile({
-    TdStyle,
-    glucoseStats,
-    glucoseStatsOld,
-}: {
-    TdStyle: {
-        ThStyle: string;
-        TdStyle2: string;
-    };
-    glucoseStats: statsObjType;
-    glucoseStatsOld: statsObjType;
-}) {
-    return (
-        <div className="bg-white border border-purple-100 transition-all duration-300 p-2 xl:p-4 shadow rounded-lg">
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">
-                Glucose:
-            </h2>
-            <table className="table table-auto">
-                <thead>
-                    <tr className="bg-secondary">
-                        <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
-                            Param
-                        </th>
-                        <th className={`${TdStyle.ThStyle}`}>Previous</th>
-                        <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
-                            Current
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Mean:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStatsOld.mean.toFixed(2)}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.mean < glucoseStatsOld.mean ? (
-                                <span className="text-green-500 ml-2">
-                                    {glucoseStats.mean.toFixed(2) + " ↓"}
-                                </span>
-                            ) : (
-                                <span className="text-red-500 ml-2">
-                                    {glucoseStats.mean.toFixed(2) + " ↑"}
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Median:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStatsOld.median.toFixed(2)}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.median < glucoseStatsOld.median ? (
-                                <span className="text-green-500 ml-2">
-                                    {glucoseStats.median.toFixed(2) + " ↓"}
-                                </span>
-                            ) : (
-                                <span className="text-red-500 ml-2">
-                                    {glucoseStats.median.toFixed(2) + " ↑"}
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Mode:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStatsOld.mode.length > 2
-                                ? glucoseStatsOld.mode.slice(0, 2).toString() +
-                                  "..."
-                                : glucoseStatsOld.mode.toString()}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.mode.length > 2
-                                ? glucoseStats.mode.slice(0, 2).toString() +
-                                  "..."
-                                : glucoseStats.mode.toString()}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Min:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStatsOld.min}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.min < glucoseStatsOld.min ? (
-                                <span className="text-green-500 ml-2">
-                                    {glucoseStats.min.toFixed(2) + " ↓"}
-                                </span>
-                            ) : (
-                                <span className="text-red-500 ml-2">
-                                    {glucoseStats.min.toFixed(2) + " ↑"}
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Max:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStatsOld.max}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {glucoseStats.max < glucoseStatsOld.max ? (
-                                <span className="text-green-500 ml-2">
-                                    {glucoseStats.max.toFixed(2) + " ↓"}
-                                </span>
-                            ) : (
-                                <span className="text-red-500 ml-2">
-                                    {glucoseStats.max.toFixed(2) + " ↑"}
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    );
-}
-
-function WeightTile({
-    TdStyle,
-    weightStats,
-    weightStatsOld,
-}: {
-    TdStyle: {
-        ThStyle: string;
-        TdStyle2: string;
-    };
-    weightStats: statsObjType;
-    weightStatsOld: statsObjType;
-}) {
-    return (
-        <div className="bg-white border border-purple-100 transition-all duration-300 p-2 xl:p-4 shadow rounded-lg">
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">
-                Weight:
-            </h2>
-            <table className="table table-auto">
-                <thead>
-                    <tr className="bg-secondary">
-                        <th className={`${TdStyle.ThStyle} rounded-tl-lg`}>
-                            Param
-                        </th>
-                        <th className={`${TdStyle.ThStyle}`}>Previous</th>
-                        <th className={`${TdStyle.ThStyle} rounded-tr-lg`}>
-                            Current
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Mean:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStatsOld.mean.toFixed(2)}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStats.mean < weightStatsOld.mean ? (
-                                <span className="text-green-500 ml-2">
-                                    {weightStats.mean.toFixed(2) + " ↓"}
-                                </span>
-                            ) : (
-                                <span className="text-red-500 ml-2">
-                                    {weightStats.mean.toFixed(2) + " ↑"}
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Median:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStatsOld.median.toFixed(2)}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStats.median < weightStatsOld.median ? (
-                                <span className="text-green-500 ml-2">
-                                    {weightStats.median.toFixed(2) + " ↓"}
-                                </span>
-                            ) : (
-                                <span className="text-red-500 ml-2">
-                                    {weightStats.median.toFixed(2) + " ↑"}
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Mode:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStatsOld.mode.length > 2
-                                ? weightStatsOld.mode.slice(0, 2).toString() +
-                                  "..."
-                                : weightStatsOld.mode.toString()}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStats.mode.length > 2
-                                ? weightStats.mode.slice(0, 2).toString() +
-                                  "..."
-                                : weightStats.mode.toString()}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Min:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStatsOld.min}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStats.min < weightStatsOld.min ? (
-                                <span className="text-green-500 ml-2">
-                                    {weightStats.min.toFixed(2) + " ↓"}
-                                </span>
-                            ) : (
-                                <span className="text-red-500 ml-2">
-                                    {weightStats.min.toFixed(2) + " ↑"}
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={TdStyle.TdStyle2}>Max:</td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStatsOld.max}
-                        </td>
-                        <td className={TdStyle.TdStyle2}>
-                            {weightStats.max < weightStatsOld.max ? (
-                                <span className="text-green-500 ml-2">
-                                    {weightStats.max.toFixed(2) + " ↓"}
-                                </span>
-                            ) : (
-                                <span className="text-red-500 ml-2">
-                                    {weightStats.max.toFixed(2) + " ↑"}
-                                </span>
-                            )}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    );
-}
-
-function InsulinTile(props) {
-    return (
-        <div className="bg-white border border-purple-100 transition-all duration-300 p-2 xl:p-4 shadow rounded-lg">
-            <h2 className="mb-2 text-lg font-semibold text-gray-900">
-                Insulin: {props.data[0]}
-            </h2>
-            <table className="table table-auto">
-                <thead>
-                    <tr className="bg-secondary">
-                        <th
-                            className={`${props.TdStyle.ThStyle} rounded-tl-lg`}
-                        >
-                            Param
-                        </th>
-                        <th
-                            className={`${props.TdStyle.ThStyle} rounded-tr-lg`}
-                        >
-                            Value
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className={props.TdStyle.TdStyle2}>Mean:</td>
-                        <td className={props.TdStyle.TdStyle2}>
-                            {props.data[1].mean.toFixed(2)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={props.TdStyle.TdStyle2}>Median:</td>
-                        <td className={props.TdStyle.TdStyle2}>
-                            {props.data[1].median.toFixed(2)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={props.TdStyle.TdStyle2}>Mode:</td>
-                        <td className={props.TdStyle.TdStyle2}>
-                            {props.data[1].mode.toString()}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={props.TdStyle.TdStyle2}>Min:</td>
-                        <td className={props.TdStyle.TdStyle2}>
-                            {props.data[1].min}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={props.TdStyle.TdStyle2}>Max:</td>
-                        <td className={props.TdStyle.TdStyle2}>
-                            {props.data[1].max}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={props.TdStyle.TdStyle2}>Daily Avg:</td>
-                        <td className={props.TdStyle.TdStyle2}>
-                            {props.data[1].dailyAvg.toFixed(2)}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className={props.TdStyle.TdStyle2}>Total:</td>
-                        <td className={props.TdStyle.TdStyle2}>
-                            {props.data[1].sum}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
     );
 }
