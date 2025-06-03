@@ -18,10 +18,13 @@ export async function GET(request: NextRequest, { params }) {
         prevDaysAgo.setDate(prevDaysAgo.getDate() - days * 2);
         prevDaysAgo.setHours(0, 0, 0, 0);
 
-        const data = await Glucose.find({
-            user: user,
-            createdAt: { $gt: prevDaysAgo },
-        }).sort({ createdAt: -1 });
+        const data = await Glucose.find(
+            {
+                user: user,
+                createdAt: { $gt: prevDaysAgo },
+            },
+            { __v: 0 }
+        ).sort({ createdAt: -1 });
 
         const daysAgoData = data.filter((d) => d.createdAt > daysAgo);
         const prevDaysAgoData = data.filter(
