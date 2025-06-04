@@ -52,7 +52,7 @@ export default function Stats() {
     const [weightData, setWeightData] = useState<weight[]>([]);
     const [weightDataOld, setWeightDataOld] = useState<weight[]>([]);
     const [insulinData, setInsulinData] = useState<insulin[]>([]);
-    const [daysOfData, setDaysOfData] = useState(7);
+    const [daysOfData, setDaysOfData] = useState(90);
     const [isLoading, setIsLoading] = useState(false);
     const [glucoseStats, setGlucoseStats] = useState<statsObjType>(statsObj);
     const [estHbA1c, setEstHbA1c] = useState(0);

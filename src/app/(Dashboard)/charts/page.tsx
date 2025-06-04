@@ -2,48 +2,44 @@
 import AdvGlucoseChart from "@/components/Charts/AdvGlucoseChart";
 import AdvInsulinChartSeparate from "@/components/Charts/AdvInsulinChartSeparate";
 import AdvWeightChart from "@/components/Charts/AdvWeightChart";
-import React, { useEffect, useRef, useState } from "react";
-import { Droplets, Weight, Syringe } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { Calendar, Droplets, Syringe, TrendingUp, Weight } from "lucide-react";
+import { useState } from "react";
+
+const daysOfDataOptions = [
+    { value: 7, label: "7 days" },
+    { value: 14, label: "14 days" },
+    { value: 30, label: "30 days" },
+    { value: 90, label: "90 days" },
+    { value: 365, label: "365 days" },
+    { value: 365 * 100, label: "All" },
+];
 
 export default function ChartPage() {
-    const [daysOfData, setDaysOfData] = useState(365);
+    const [daysOfData, setDaysOfData] = useState(90);
     const changeDaysOfData = (event: { target: { value: string } }) => {
         const daysInput = event.target.value;
         setDaysOfData(parseInt(daysInput));
     };
+    const changeDaysOfData2 = (duration: string) => {
+        setDaysOfData(parseInt(duration));
+    };
     return (
         <div className="h-full bg-background py-5 px-5">
             <div className="flex flex-col max-w-screen-xl mx-auto h-full">
-                <div className="grid md:grid-cols-2 gap-2 md:gap-3 h-full">
-                    <div className="md:col-span-2 w-full flex gap-2 md:gap-3">
-                        <div className="md:w-3/5 rounded-lg flex flex-col gap-0.5 bg-white border border-purple-100 transition-all duration-300 shadow p-2.5">
-                            <h2 className="font-bold text-gray-900 my-auto text-lg">
-                                Charts Overview
-                            </h2>
-                            <p className="text-gray-500 text-sm">
-                                Track your health metrics over time
-                            </p>
-                        </div>
-                        <div className="md:w-2/5 rounded-lg flex gap-2 md:gap-3 bg-white border border-purple-100 transition-all duration-300 shadow p-2.5">
-                            <label className="my-auto ml-1 font-medium text-gray-900 w-2/5">
-                                Select Duration
-                            </label>
-                            <select
-                                id="daysOfDataInput"
-                                value={daysOfData}
-                                onChange={changeDaysOfData}
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary block p-2.5 w-3/5"
-                            >
-                                <option defaultValue="7">7</option>
-                                <option>14</option>
-                                <option>30</option>
-                                <option>90</option>
-                                <option>365</option>
-                                <option value={365 * 100}>All</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
+                <div className="grid gap-2 md:gap-3 h-full">
+                    <ChartsHeader
+                        selectedDuration={daysOfData.toString()}
+                        onDurationChange={changeDaysOfData2}
+                    />
+                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
@@ -56,7 +52,7 @@ export default function ChartPage() {
                             <AdvGlucoseChart fetch={true} days={daysOfData} />
                         </div>
                     </div>
-                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
+                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
@@ -69,7 +65,7 @@ export default function ChartPage() {
                             <AdvWeightChart fetch={true} days={daysOfData} />
                         </div>
                     </div>
-                    <div className="md:col-span-2 w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
+                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600`}
@@ -88,5 +84,63 @@ export default function ChartPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+interface ChartsHeaderProps {
+    selectedDuration: string;
+    onDurationChange: (duration: string) => void;
+}
+
+export function ChartsHeader({
+    selectedDuration,
+    onDurationChange,
+}: ChartsHeaderProps) {
+    return (
+        <Card className="border-purple-100 transition-all duration-300 w-full">
+            <CardContent className="p-5">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3">
+                            <div className="p-3 rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                                <TrendingUp className="h-5 w-5 text-white" />
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-bold text-gray-900">
+                                    Charts Overview
+                                </h1>
+                                <p className="text-gray-600 mt-1 text-sm">
+                                    Track your health metrics over time
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 text-sm text-gray-600 w-full lg:w-fit">
+                            <Calendar className="h-4 w-4" />
+                            <span>Select Duration</span>
+                        </div>
+                        <Select
+                            value={selectedDuration}
+                            onValueChange={onDurationChange}
+                        >
+                            <SelectTrigger className="lg:w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3]">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {daysOfDataOptions.map((option) => (
+                                    <SelectItem
+                                        key={option.value}
+                                        value={option.value.toString()}
+                                    >
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
     );
 }

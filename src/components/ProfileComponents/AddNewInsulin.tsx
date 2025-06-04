@@ -3,6 +3,7 @@ import React, { useState, SetStateAction } from "react";
 import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
 import type { InsulinNameType } from "@/types/models";
+import { Plus } from "lucide-react";
 
 export default function AddNewInsulin({
     className = "",
@@ -63,11 +64,22 @@ export default function AddNewInsulin({
         <div
             className={`p-5 md:p-7 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow ${className}`}
         >
-            <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4 md:mb-6">
-                <FaPlus className="text-xl" />
-                <h2>Add New Insulin</h2>
+            <div className="flex items-center gap-3 text-lg text-gray-900 mb-4 md:mb-6">
+                <div
+                    className={`p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600`}
+                >
+                    <Plus className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                        Add New Insulin
+                    </h2>
+                    <p className="text-gray-600 text-sm">
+                        Don&apos;t see your insulin? Add it here
+                    </p>
+                </div>
             </div>
-            <form className="flex gap-2" onSubmit={submitNewInsulin}>
+            <form className="flex flex-col md:flex-row gap-2" onSubmit={submitNewInsulin}>
                 <input
                     type="text"
                     id="insulin"
@@ -79,7 +91,7 @@ export default function AddNewInsulin({
                 />
                 <button
                     type="submit"
-                    className="text-white primary-gradient focus:outline-none font-medium rounded-lg text-sm w-2/5 lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
+                    className="text-white primary-gradient focus:outline-none font-medium rounded-lg text-sm w-full lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (

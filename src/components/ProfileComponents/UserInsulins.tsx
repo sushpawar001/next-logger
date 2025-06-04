@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState, SetStateAction, useRef } from "react";
 import { FaSyringe } from "react-icons/fa";
+import { Syringe } from "lucide-react";
 import type { InsulinNameType } from "@/types/models";
 import notify from "@/helpers/notify";
 import autoAnimate from "@formkit/auto-animate";
@@ -68,11 +69,25 @@ export default function UserInsulins({
         <div
             className={`p-5 md:p-7 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow ${className}`}
         >
-            <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4 md:mb-6">
-                <FaSyringe className="text-xl" />
-                <h2>Your Insulins</h2>
+            <div className="flex items-center gap-3 text-lg text-gray-900 mb-4 md:mb-6">
+                <div
+                    className={`p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600`}
+                >
+                    <Syringe className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                    <h2 className="text-lg font-semibold text-gray-900">
+                        Your Insulins
+                    </h2>
+                    <p className="text-gray-600 text-sm">
+                        Add insulin to your profile to use it for logging
+                    </p>
+                </div>
             </div>
-            <form className="flex gap-2 mb-4" onSubmit={submitInsulin}>
+            <form
+                className="flex flex-col md:flex-row gap-2 mb-4"
+                onSubmit={submitInsulin}
+            >
                 <select
                     id="insulinType"
                     value={selectedInsulin}
@@ -90,7 +105,7 @@ export default function UserInsulins({
                 </select>
                 <button
                     type="submit"
-                    className="text-white primary-gradient focus:outline-none font-medium rounded-lg text-sm w-2/5 lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
+                    className="text-white primary-gradient focus:outline-none font-medium rounded-lg text-sm min-w-fit w-full md:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
                     disabled={isSubmitting || !isChanged}
                 >
                     {isSubmitting ? (
@@ -104,7 +119,7 @@ export default function UserInsulins({
                 {userInsulins.map((data) => (
                     <div
                         key={data._id}
-                        className="text-sm text-center text-white bg-secondary hover:bg-secondary/90 py-0.5 px-2.5 rounded-full flex items-center justify-center gap-1 w-fit"
+                        className="text-sm text-center text-white bg-gray-900 hover:bg-gray-700 py-0.5 px-1.5 md:px-2.5 rounded-full flex items-center justify-center gap-1 w-fit"
                     >
                         <p>{data.name}</p>
                         <button
