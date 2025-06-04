@@ -6,6 +6,7 @@ import Insulin from "@/models/insulinModel";
 import InsulinType from "@/models/insulinTypeModel";
 import Measurements from "@/models/measurementsModel";
 import Weight from "@/models/weightModel";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
 
 connectDB();
 
@@ -25,8 +26,20 @@ export async function POST(request: NextRequest) {
                     email: email,
                     password: "ClerkUser",
                     clerkUserId: id,
-                    trialExpiry: Date.now() + 30 * 24 * 60 * 60 * 1000,
                     layoutSettings: "diabetes",
+                    subscriptionPlan: "trial",
+                    subscriptionEndDate: new Date(
+                        Date.now() + 30 * 24 * 60 * 60 * 1000
+                    ),
+                });
+
+                await clerkClient.users.updateUserMetadata(id, {
+                    publicMetadata: {
+                        subscriptionPlan: "trial",
+                        subscriptionEndDate: new Date(
+                            Date.now() + 30 * 24 * 60 * 60 * 1000
+                        ).toISOString(),
+                    },
                 });
 
                 if (user) {
@@ -83,10 +96,18 @@ export async function POST(request: NextRequest) {
                 }
 
             default:
-                throw new Error("Invalid request type");
+                return NextResponse.json(
+                    {
+                        message: "Webhook received",
+                    },
+                    { status: 200 }
+                );
         }
     } catch (error) {
-        console.log("Error in Webhook: " + error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error("Error in webhook:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }

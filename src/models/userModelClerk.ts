@@ -8,7 +8,8 @@ export interface IClerkUser {
     password?: string;
     clerkUserId: string;
     layoutSettings: LayoutSettingType;
-    trialExpiry: Date;
+    subscriptionPlan: "trial" | "premium";
+    subscriptionEndDate: Date;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -41,9 +42,14 @@ const userSchema = new mongoose.Schema(
             enum: ["diabetes", "fitness"],
             default: "diabetes",
         },
-        trialExpiry: {
+        subscriptionPlan: {
+            type: String,
+            enum: ["trial", "premium"],
+            default: "trial",
+        },
+        subscriptionEndDate: {
             type: Date,
-            default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            default: () => new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
         },
     },
     { timestamps: true }
