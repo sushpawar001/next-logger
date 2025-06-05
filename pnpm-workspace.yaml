@@ -1,3 +1,6 @@
 ignoredBuiltDependencies:
-  - '@clerk/shared'
-  - unrs-resolver
+    - "@clerk/shared"
+    - unrs-resolver
+
+packages:
+    - "."
