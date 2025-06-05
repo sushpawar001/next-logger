@@ -6,7 +6,7 @@ import { useState, useEffect, SetStateAction } from "react";
 import type { InsulinNameType } from "@/types/models";
 import axios from "axios";
 import { SubscriptionCard } from "@/components/ProfileComponents/SubscriptionCard";
-
+import ProfilePageSkeleton from "@/components/PageSkeletons/ProfilePageSkeleton";
 
 interface SubscriptionInfo {
     subscriptionPlan: "trial" | "premium" | "free";
@@ -25,54 +25,51 @@ export default function ProfilePage() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const getData = async () => {
-            const response = await axios.get("/api/insulin-type/get");
-            setAllAvailableInsulins(response.data.data);
-        };
-        getData();
-    }, []);
-
-    useEffect(() => {
-        const fetchSubscriptionInfo = async () => {
+        const fetchAllData = async () => {
             try {
-                const response = await axios.get("/api/users/subscription");
-                setSubscriptionInfo(response.data);
+                setLoading(true);
                 setError(null);
+
+                const [insulinTypesRes, subscriptionRes, userInsulinsRes] =
+                    await Promise.all([
+                        axios.get("/api/insulin-type/get"),
+                        axios.get("/api/users/subscription"),
+                        axios.get("/api/users/get-insulin"),
+                    ]);
+
+                setAllAvailableInsulins(insulinTypesRes.data.data);
+                setSubscriptionInfo(subscriptionRes.data);
+                setUserInsulins(userInsulinsRes.data.data);
             } catch (err) {
-                setError("Failed to load subscription information");
-                console.error(err);
+                console.error("Error fetching profile data:", err);
+                setError(
+                    "Failed to load profile data. Please try again later."
+                );
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchSubscriptionInfo();
+        fetchAllData();
     }, []);
 
-    useEffect(() => {
-        const getData = async () => {
-            const resposne = await axios.get("/api/users/get-insulin");
-            let fetchedData: InsulinNameType[] = resposne.data.data;
-            setUserInsulins(fetchedData);
-        };
-        getData();
-    }, []);
+    if (loading) return <ProfilePageSkeleton />;
+    if (error)
+        return <div className="text-red-500 text-center p-4">{error}</div>;
 
     return (
         <div className="h-full py-5 px-5">
             <div className="flex flex-col max-w-screen-lg mx-auto justify-center h-full">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {/* <DashboardPreferences className="col-span-1 md:col-span-2" /> */}
-                    {subscriptionInfo && (
-                        <SubscriptionCard
-                            subscriptionPlan={
-                                subscriptionInfo?.subscriptionPlan
-                            }
-                            subscriptionEndDate={subscriptionInfo?.subscriptionEndDate}
-                            remainingDays={subscriptionInfo?.remainingDays}
-                            className="col-span-1 md:col-span-2"
-                        />
-                    )}
+                    <SubscriptionCard
+                        subscriptionPlan={subscriptionInfo?.subscriptionPlan}
+                        subscriptionEndDate={
+                            subscriptionInfo?.subscriptionEndDate
+                        }
+                        remainingDays={subscriptionInfo?.remainingDays}
+                        className="col-span-1 md:col-span-2"
+                    />
                     <UserInsulins
                         className="col-span-1"
                         allAvailableInsulins={allAvailableInsulins}

@@ -79,8 +79,8 @@ export function SubscriptionCard({
                 {/* Plan Badge and Status */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <Badge className={getPlanBadgeColor() + " w-fit"}>
-                        {subscriptionPlan.charAt(0).toUpperCase() +
-                            subscriptionPlan.slice(1)}{" "}
+                        {subscriptionPlan?.charAt(0).toUpperCase() +
+                            subscriptionPlan?.slice(1)}{" "}
                         Plan
                     </Badge>
                     {remainingDays <= 7 && subscriptionPlan !== "free" && (
