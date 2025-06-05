@@ -24,11 +24,7 @@ const daysOfDataOptions = [
 
 export default function ChartPage() {
     const [daysOfData, setDaysOfData] = useState(90);
-    const changeDaysOfData = (event: { target: { value: string } }) => {
-        const daysInput = event.target.value;
-        setDaysOfData(parseInt(daysInput));
-    };
-    const changeDaysOfData2 = (duration: string) => {
+    const changeDaysOfData = (duration: string) => {
         setDaysOfData(parseInt(duration));
     };
     return (
@@ -37,7 +33,7 @@ export default function ChartPage() {
                 <div className="grid gap-2 md:gap-3 h-full">
                     <ChartsHeader
                         selectedDuration={daysOfData.toString()}
-                        onDurationChange={changeDaysOfData2}
+                        onDurationChange={changeDaysOfData}
                     />
                     <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
@@ -92,7 +88,7 @@ interface ChartsHeaderProps {
     onDurationChange: (duration: string) => void;
 }
 
-export function ChartsHeader({
+function ChartsHeader({
     selectedDuration,
     onDurationChange,
 }: ChartsHeaderProps) {
