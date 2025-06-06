@@ -8,41 +8,48 @@ import { glucose, weight } from "@/types/models";
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function DiabetesDashboard() {
-    const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
-    const [weightData, setWeightData] = useState<weight[]>([]);
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [glucoseResponse, weightResponse] = await Promise.all([
-                    axios.get(`/api/glucose/get/7`),
-                    axios.get(`/api/weight/get/7`),
-                ]);
+export default function DiabetesDashboard({
+    initialGlucoseData,
+    initialWeightData,
+}: {
+    initialGlucoseData: glucose[];
+    initialWeightData: weight[];
+}) {
+    const [glucoseData, setGlucoseData] =
+        useState<glucose[]>(initialGlucoseData);
+    const [weightData, setWeightData] = useState<weight[]>(initialWeightData);
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             const [glucoseResponse, weightResponse] = await Promise.all([
+    //                 axios.get(`/api/glucose/get/7`),
+    //                 axios.get(`/api/weight/get/7`),
+    //             ]);
 
-                if (glucoseResponse.status === 200) {
-                    setGlucoseData(glucoseResponse.data.data);
-                } else {
-                    console.error(
-                        "Glucose API request failed with status:",
-                        glucoseResponse.status
-                    );
-                }
+    //             if (glucoseResponse.status === 200) {
+    //                 setGlucoseData(glucoseResponse.data.data);
+    //             } else {
+    //                 console.error(
+    //                     "Glucose API request failed with status:",
+    //                     glucoseResponse.status
+    //                 );
+    //             }
 
-                if (weightResponse.status === 200) {
-                    setWeightData(weightResponse.data.data);
-                } else {
-                    console.error(
-                        "Weight API request failed with status:",
-                        weightResponse.status
-                    );
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
+    //             if (weightResponse.status === 200) {
+    //                 setWeightData(weightResponse.data.data);
+    //             } else {
+    //                 console.error(
+    //                     "Weight API request failed with status:",
+    //                     weightResponse.status
+    //                 );
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching data:", error);
+    //         }
+    //     };
 
-        fetchData();
-    }, []);
+    //     fetchData();
+    // }, []);
 
     return (
         <div className="h-full flex justify-center items-center py-5 px-5 md:px-10">
