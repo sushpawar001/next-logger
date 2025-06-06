@@ -1,17 +1,10 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import FitnessDashboard from "@/components/Dashboards/FitnessDashboard";
 import DiabetesDashboard from "@/components/Dashboards/DiabetesDashboard";
-import { getGlucoseByDay, getWeightByDay } from "@/helpers/dataFetchHelpers";
-import { getUserObjectId } from "@/helpers/getUserObjectId";
-import { glucose, weight } from "@/types/models";
+import { getDashboardLayout } from "@/helpers/getDashboardLayout";
 
-export default async function Dashboard() {
-    const user = await getUserObjectId();
-    const glucoseData = (await getGlucoseByDay(7, user)) as glucose[];
-    const weightData = (await getWeightByDay(7, user)) as weight[];
-
-    return (
-        <DiabetesDashboard
-            initialGlucoseData={glucoseData}
-            initialWeightData={weightData}
-        />
-    );
+export default function Dashboard() {
+    return <DiabetesDashboard />;
 }
