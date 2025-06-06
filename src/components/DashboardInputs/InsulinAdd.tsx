@@ -58,6 +58,9 @@ export default function InsulinAdd(props) {
             setInsulinType("");
             setInsulin("");
             setIsSubmitting(false);
+            setSelectedDate(new Date());
+            setSendTime(false);
+            setSelectTag(null);
 
             if (props.data && props.setData) {
                 // Assuming response.data.entry has a 'date' property

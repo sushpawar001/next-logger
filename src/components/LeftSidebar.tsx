@@ -25,6 +25,7 @@ import {
     SidebarHeader,
     SidebarFooter,
 } from "@/components/ui/sidebar";
+import Link from "next/link";
 
 const menuItems = [
     {
@@ -77,7 +78,7 @@ export default function LeftSidebar() {
     return (
         <Sidebar className="border-r border-purple-100">
             <SidebarHeader className="p-6">
-                <div className="flex items-center gap-3">
+                <Link className="flex items-center gap-3" href="/dashboard">
                     <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED] text-white">
                         <Activity className="h-5 w-5" />
                     </div>
@@ -86,7 +87,7 @@ export default function LeftSidebar() {
                             FitDose
                         </h1>
                     </div>
-                </div>
+                </Link>
             </SidebarHeader>
 
             <SidebarContent className="px-4 mt-8">

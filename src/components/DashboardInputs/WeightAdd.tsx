@@ -37,6 +37,9 @@ export default function WeightAdd(props) {
             notify(response.data.message, "success");
             setWeight("");
             setIsSubmitting(false);
+            setSelectedDate(new Date());
+            setSendTime(false);
+            setSelectTag(null);
 
             if (props.data && props.setData) {
                 const newEntry = response.data.entry;
