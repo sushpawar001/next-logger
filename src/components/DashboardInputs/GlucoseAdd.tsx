@@ -96,7 +96,7 @@ export default function GlucoseAdd(props) {
                     <input
                         type="number"
                         id="glucose"
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10 outline-none"
                         placeholder="98 mg/dl"
                         value={glucose}
                         onChange={changeGlucose}
@@ -113,7 +113,7 @@ export default function GlucoseAdd(props) {
                     <input
                         type="datetime-local"
                         id="glucoseDate"
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 bg-white border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10 outline-none"
                         value={DatetimeLocalFormat(selectedDate)}
                         // value={selectedDate}
                         onChange={handleDateChange}
@@ -130,7 +130,7 @@ export default function GlucoseAdd(props) {
                         id="glucose_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10"
+                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
                     >
                         <option value="">Select Tag</option>
                         {entryTags.map((data) => (

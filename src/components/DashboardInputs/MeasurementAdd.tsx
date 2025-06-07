@@ -154,7 +154,7 @@ export default function MeasurementAdd({
                         id="insulin_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-9"
+                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-9 bg-white"
                     >
                         <option value="" disabled>
                             Select Tag

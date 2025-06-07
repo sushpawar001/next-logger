@@ -92,7 +92,7 @@ export default function UserInsulins({
                     id="insulinType"
                     value={selectedInsulin}
                     onChange={selectInsulinAndAdd}
-                    className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10"
+                    className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
                 >
                     <option value="" disabled>
                         Select Insulin

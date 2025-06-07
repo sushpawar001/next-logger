@@ -17,7 +17,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
     const token = getToken();
     return (
-        <ClerkProvider>
+        <ClerkProvider
+            appearance={{
+                elements: {
+                    userButtonPopoverRootBox: {
+                        width: "100%",
+                        pointerEvents: "auto",
+                    },
+                },
+            }}
+        >
             <SidebarProvider>
                 <LeftSidebar />
                 <SidebarInset>
