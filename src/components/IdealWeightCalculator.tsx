@@ -199,7 +199,7 @@ const ErrorMessages: React.FC<{ errors: string[] }> = ({ errors }) => {
 };
 
 const ResultsCard: React.FC<{ results: IBWResult }> = ({ results }) => (
-    <Card>
+    <Card className="border border-purple-100 shadow">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Ideal Body Weight Results
@@ -216,7 +216,7 @@ const ResultsCard: React.FC<{ results: IBWResult }> = ({ results }) => (
 );
 
 const EmptyResultsCard: React.FC = () => (
-    <Card>
+    <Card className="border border-purple-100 shadow">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Results
@@ -306,6 +306,7 @@ const HeightInput: React.FC<{
                 onChange={(e) => onHeightCmChange(e.target.value)}
                 min="50"
                 max="300"
+                className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
             />
         ) : (
             <div className="flex gap-4">
@@ -319,6 +320,7 @@ const HeightInput: React.FC<{
                         onChange={(e) => onHeightFeetChange(e.target.value)}
                         min="1"
                         max="8"
+                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                 </div>
                 <div className="flex-1">
@@ -331,6 +333,7 @@ const HeightInput: React.FC<{
                         onChange={(e) => onHeightInchesChange(e.target.value)}
                         min="0"
                         max="11"
+                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                 </div>
             </div>
@@ -390,7 +393,7 @@ const InputForm: React.FC<{
     onClear,
     suffix = "",
 }) => (
-    <Card>
+    <Card className="border border-purple-100 shadow">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Enter Your Information
@@ -413,6 +416,7 @@ const InputForm: React.FC<{
                     onChange={(e) => onFormDataChange("age", e.target.value)}
                     min="1"
                     max="120"
+                    className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
             </div>
 

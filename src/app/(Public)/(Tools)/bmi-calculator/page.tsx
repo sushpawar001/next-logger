@@ -24,7 +24,7 @@ export default function BMICalculatorPage() {
             {/* BMI Reference Tables */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Adults BMI Table */}
-                <Card>
+                <Card className="border border-purple-100 shadow">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-gray-900">
                             BMI Table for Adults
@@ -161,7 +161,7 @@ export default function BMICalculatorPage() {
                 </Card>
 
                 {/* Children and Teens BMI Table */}
-                <Card>
+                <Card className="border border-purple-100 shadow">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-gray-900">
                             BMI Table for Children and Teens, Age 2-20
