@@ -7,14 +7,9 @@ import {
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
-    SidebarMenuItem
+    SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-    Activity,
-    Calculator,
-    Home,
-    User
-} from "lucide-react";
+import { Activity, Calculator, Home, User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -38,6 +33,11 @@ const menuItems = [
     {
         title: "BMI Calculator",
         url: "/tools/bmi-calculator",
+        icon: Calculator,
+    },
+    {
+        title: "BMR Calculator",
+        url: "/tools/bmr-calculator",
         icon: Calculator,
     },
 ];
