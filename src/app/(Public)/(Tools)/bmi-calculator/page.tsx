@@ -3,6 +3,9 @@ import BMICalculator from "@/components/BMICalculator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+export const dynamic = "force-static";
+// export const revalidate = 60 * 60 * 24;
+
 export default function BMICalculatorPage() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
