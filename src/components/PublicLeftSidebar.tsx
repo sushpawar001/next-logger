@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Activity, Calculator, Home, User } from "lucide-react";
+import { Activity, Home, User, Target, Scale, Heart, Zap } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -28,22 +28,22 @@ const menuItems = [
     {
         title: "Ideal Weight",
         url: "/tools/ideal-weight",
-        icon: Calculator,
+        icon: Target,
     },
     {
         title: "BMI Calculator",
         url: "/tools/bmi-calculator",
-        icon: Calculator,
+        icon: Scale,
     },
     {
         title: "WHR Calculator",
         url: "/tools/whr-calculator",
-        icon: Calculator,
+        icon: Heart,
     },
     {
         title: "BMR Calculator",
         url: "/tools/bmr-calculator",
-        icon: Calculator,
+        icon: Zap,
     },
 ];
 
