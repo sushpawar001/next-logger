@@ -9,6 +9,10 @@ import {
     RadioGroup,
     RadioGroupItem,
 } from "@/components/animate-ui/radix/radio-group";
+import {
+    ToggleGroup,
+    ToggleGroupItem,
+} from "@/components/animate-ui/radix/toggle-group";
 import PrivacyNotice from "./PrivacyNotice";
 
 interface WHRResult {
@@ -363,30 +367,28 @@ const MeasurementInput: React.FC<{
                     className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
             </div>
-            <div className="flex border border-purple-200 rounded-md">
-                <button
-                    type="button"
-                    onClick={() => onUnitChange("cm")}
-                    className={`px-3 py-2 text-sm font-medium rounded-l-md transition-colors ${
-                        unit === "cm"
-                            ? "bg-[#5E4AE3] text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-50"
-                    }`}
+            <ToggleGroup
+                type="single"
+                value={unit}
+                onValueChange={(value) => {
+                    if (value) onUnitChange(value as "cm" | "in");
+                }}
+                className="border border-purple-200 rounded-md text-sm font-medium"
+                activeClassName="bg-[#5E4AE3]"
+            >
+                <ToggleGroupItem
+                    value="cm"
+                    className="px-3 py-2 data-[state=on]:text-white"
                 >
                     cm
-                </button>
-                <button
-                    type="button"
-                    onClick={() => onUnitChange("in")}
-                    className={`px-3 py-2 text-sm font-medium rounded-r-md transition-colors ${
-                        unit === "in"
-                            ? "bg-[#5E4AE3] text-white"
-                            : "bg-white text-gray-700 hover:bg-gray-50"
-                    }`}
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                    value="in"
+                    className="px-3 py-2 data-[state=on]:text-white"
                 >
                     in
-                </button>
-            </div>
+                </ToggleGroupItem>
+            </ToggleGroup>
         </div>
     </div>
 );
