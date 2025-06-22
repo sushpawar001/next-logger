@@ -36,6 +36,11 @@ const menuItems = [
         icon: Calculator,
     },
     {
+        title: "WHR Calculator",
+        url: "/tools/whr-calculator",
+        icon: Calculator,
+    },
+    {
         title: "BMR Calculator",
         url: "/tools/bmr-calculator",
         icon: Calculator,
