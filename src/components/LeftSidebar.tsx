@@ -76,6 +76,11 @@ const menuItems = [
         url: "/ideal-weight",
         icon: Calculator,
     },
+    {
+        title: "BMI Calculator",
+        url: "/bmi-calculator",
+        icon: Calculator,
+    },
 ];
 
 export default function LeftSidebar() {
