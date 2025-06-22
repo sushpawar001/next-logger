@@ -32,12 +32,12 @@ const menuItems = [
     },
     {
         title: "Ideal Weight",
-        url: "/ideal-weight",
+        url: "/tools/ideal-weight",
         icon: Calculator,
     },
     {
         title: "BMI Calculator",
-        url: "/bmi-calculator",
+        url: "/tools/bmi-calculator",
         icon: Calculator,
     },
 ];
