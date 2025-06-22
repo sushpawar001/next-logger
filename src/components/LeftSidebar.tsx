@@ -13,6 +13,7 @@ import {
     Activity,
     Settings,
     TrendingUp,
+    Calculator,
 } from "lucide-react";
 import {
     Sidebar,
@@ -69,6 +70,11 @@ const menuItems = [
         title: "Measurement",
         url: "/measurement",
         icon: Ruler,
+    },
+    {
+        title: "Ideal Weight",
+        url: "/ideal-weight",
+        icon: Calculator,
     },
 ];
 
