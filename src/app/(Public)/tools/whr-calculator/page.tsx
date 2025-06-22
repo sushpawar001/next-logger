@@ -290,3 +290,11 @@ export default function WHRCalculatorPage() {
         </div>
     );
 }
+
+export async function generateMetadata() {
+    return {
+        title: "WHR Calculator | FitDose",
+        description:
+            "Calculate your Waist-to-Hip Ratio (WHR) to assess your body fat distribution and cardiovascular risk.",
+    };
+}

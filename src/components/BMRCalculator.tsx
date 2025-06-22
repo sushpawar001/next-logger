@@ -13,6 +13,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import {
+    RadioGroup,
+    RadioGroupItem,
+} from "@/components/animate-ui/radix/radio-group";
 import PrivacyNotice from "./PrivacyNotice";
 
 interface BMRResult {
@@ -390,30 +394,28 @@ const HeightInput: React.FC<{
 }) => (
     <div className="space-y-4">
         <Label className="text-sm font-medium text-gray-700">Height</Label>
-        <div className="flex gap-4">
+        <RadioGroup
+            value={heightUnit}
+            onValueChange={(value) => onHeightUnitChange(value as "cm" | "ft")}
+            className="flex gap-4"
+        >
             <div className="flex items-center space-x-2">
-                <input
-                    type="radio"
+                <RadioGroupItem
+                    value="cm"
                     id={`cm${suffix}`}
-                    name={`heightUnit${suffix}`}
-                    checked={heightUnit === "cm"}
-                    onChange={() => onHeightUnitChange("cm")}
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4 text-[#5E4AE3]"
                 />
                 <Label htmlFor={`cm${suffix}`}>Centimeters (cm)</Label>
             </div>
             <div className="flex items-center space-x-2">
-                <input
-                    type="radio"
+                <RadioGroupItem
+                    value="ft"
                     id={`ft${suffix}`}
-                    name={`heightUnit${suffix}`}
-                    checked={heightUnit === "ft"}
-                    onChange={() => onHeightUnitChange("ft")}
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4 text-[#5E4AE3]"
                 />
                 <Label htmlFor={`ft${suffix}`}>Feet & Inches</Label>
             </div>
-        </div>
+        </RadioGroup>
 
         {heightUnit === "cm" ? (
             <Input
@@ -473,30 +475,28 @@ const WeightInput: React.FC<{
 }) => (
     <div className="space-y-4">
         <Label className="text-sm font-medium text-gray-700">Weight</Label>
-        <div className="flex gap-4">
+        <RadioGroup
+            value={weightUnit}
+            onValueChange={(value) => onWeightUnitChange(value as "kg" | "lbs")}
+            className="flex gap-4"
+        >
             <div className="flex items-center space-x-2">
-                <input
-                    type="radio"
+                <RadioGroupItem
+                    value="kg"
                     id={`kg${suffix}`}
-                    name={`weightUnit${suffix}`}
-                    checked={weightUnit === "kg"}
-                    onChange={() => onWeightUnitChange("kg")}
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4 text-[#5E4AE3]"
                 />
                 <Label htmlFor={`kg${suffix}`}>Kilograms (kg)</Label>
             </div>
             <div className="flex items-center space-x-2">
-                <input
-                    type="radio"
+                <RadioGroupItem
+                    value="lbs"
                     id={`lbs${suffix}`}
-                    name={`weightUnit${suffix}`}
-                    checked={weightUnit === "lbs"}
-                    onChange={() => onWeightUnitChange("lbs")}
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4 text-[#5E4AE3]"
                 />
                 <Label htmlFor={`lbs${suffix}`}>Pounds (lbs)</Label>
             </div>
-        </div>
+        </RadioGroup>
 
         <Input
             type="number"
@@ -521,30 +521,30 @@ const GenderSelection: React.FC<{
 }> = ({ gender, onGenderChange, suffix = "" }) => (
     <div className="space-y-2">
         <Label className="text-sm font-medium text-gray-700">Gender</Label>
-        <div className="flex gap-4">
+        <RadioGroup
+            value={gender}
+            onValueChange={(value) =>
+                onGenderChange(value as "male" | "female")
+            }
+            className="flex gap-4"
+        >
             <div className="flex items-center space-x-2">
-                <input
-                    type="radio"
+                <RadioGroupItem
+                    value="male"
                     id={`male${suffix}`}
-                    name={`gender${suffix}`}
-                    checked={gender === "male"}
-                    onChange={() => onGenderChange("male")}
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4 text-[#5E4AE3]"
                 />
                 <Label htmlFor={`male${suffix}`}>Male</Label>
             </div>
             <div className="flex items-center space-x-2">
-                <input
-                    type="radio"
+                <RadioGroupItem
+                    value="female"
                     id={`female${suffix}`}
-                    name={`gender${suffix}`}
-                    checked={gender === "female"}
-                    onChange={() => onGenderChange("female")}
-                    className="w-4 h-4 text-blue-600"
+                    className="w-4 h-4 text-[#5E4AE3]"
                 />
                 <Label htmlFor={`female${suffix}`}>Female</Label>
             </div>
-        </div>
+        </RadioGroup>
     </div>
 );
 

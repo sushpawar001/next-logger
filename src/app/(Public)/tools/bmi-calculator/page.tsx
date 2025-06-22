@@ -262,3 +262,11 @@ export default function BMICalculatorPage() {
         </div>
     );
 }
+
+export async function generateMetadata() {
+    return {
+        title: "BMI Calculator | FitDose",
+        description:
+            "Calculate your Body Mass Index (BMI) to determine your health status.",
+    };
+}

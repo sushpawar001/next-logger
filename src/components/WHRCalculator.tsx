@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import {
+    RadioGroup,
+    RadioGroupItem,
+} from "@/components/animate-ui/radix/radio-group";
 import PrivacyNotice from "./PrivacyNotice";
 
 interface WHRResult {
@@ -394,34 +398,30 @@ const GenderSelection: React.FC<{
 }> = ({ gender, onGenderChange, suffix = "" }) => (
     <div className="space-y-2">
         <Label className="text-sm font-medium text-gray-700">Gender</Label>
-        <div className="flex gap-4">
-            <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                    type="radio"
-                    name={`gender${suffix}`}
+        <RadioGroup
+            value={gender}
+            onValueChange={(value) =>
+                onGenderChange(value as "male" | "female")
+            }
+            className="flex gap-4"
+        >
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem
                     value="male"
-                    checked={gender === "male"}
-                    onChange={(e) =>
-                        onGenderChange(e.target.value as "male" | "female")
-                    }
-                    className="w-4 h-4 text-[#5E4AE3] border-gray-300 focus:ring-[#5E4AE3]"
+                    id={`male${suffix}`}
+                    className="w-4 h-4 text-[#5E4AE3]"
                 />
-                <span className="text-sm text-gray-700">Male</span>
-            </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-                <input
-                    type="radio"
-                    name={`gender${suffix}`}
+                <Label htmlFor={`male${suffix}`}>Male</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+                <RadioGroupItem
                     value="female"
-                    checked={gender === "female"}
-                    onChange={(e) =>
-                        onGenderChange(e.target.value as "male" | "female")
-                    }
-                    className="w-4 h-4 text-[#5E4AE3] border-gray-300 focus:ring-[#5E4AE3]"
+                    id={`female${suffix}`}
+                    className="w-4 h-4 text-[#5E4AE3]"
                 />
-                <span className="text-sm text-gray-700">Female</span>
-            </label>
-        </div>
+                <Label htmlFor={`female${suffix}`}>Female</Label>
+            </div>
+        </RadioGroup>
     </div>
 );
 

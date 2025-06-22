@@ -20,3 +20,11 @@ export default function IdealWeightPage() {
         </div>
     );
 }
+
+export async function generateMetadata() {
+    return {
+        title: "Ideal Weight Calculator | FitDose",
+        description:
+            "Calculate your ideal body weight using multiple established formulas.",
+    };
+}

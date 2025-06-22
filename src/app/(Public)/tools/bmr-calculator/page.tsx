@@ -236,3 +236,11 @@ export default function BMRCalculatorPage() {
         </div>
     );
 }
+
+export async function generateMetadata() {
+    return {
+        title: "BMR Calculator | FitDose",
+        description:
+            "Calculate your Basal Metabolic Rate (BMR) to estimate your daily calorie needs based on activity levels.",
+    };
+}

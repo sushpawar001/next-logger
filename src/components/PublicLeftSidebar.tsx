@@ -27,7 +27,7 @@ const menuItems = [
     },
     {
         title: "Ideal Weight",
-        url: "/tools/ideal-weight",
+        url: "/tools/ideal-weight-calculator",
         icon: Target,
     },
     {
