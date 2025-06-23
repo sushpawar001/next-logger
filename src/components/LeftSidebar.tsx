@@ -14,6 +14,7 @@ import {
     Settings,
     TrendingUp,
     Calculator,
+    Bolt,
 } from "lucide-react";
 import {
     Sidebar,
@@ -70,6 +71,11 @@ const menuItems = [
         title: "Measurement",
         url: "/measurement",
         icon: Ruler,
+    },
+    {
+        title: "Tools",
+        url: "/tools",
+        icon: Bolt,
     },
 ];
 
