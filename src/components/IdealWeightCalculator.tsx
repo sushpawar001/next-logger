@@ -10,6 +10,7 @@ import {
     RadioGroupItem,
 } from "@/components/animate-ui/radix/radio-group";
 import PrivacyNotice from "./PrivacyNotice";
+import { useQueryState } from "nuqs";
 
 interface IBWResult {
     robinson: number;
@@ -454,22 +455,77 @@ const InputForm: React.FC<{
 
 // Main Component
 const IdealWeightCalculator: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
-        age: "",
-        heightUnit: "cm",
-        heightCm: "",
-        heightFeet: "",
-        heightInches: "",
-        gender: "male",
+    // Form inputs in query parameters
+    const [age, setAge] = useQueryState("age", { defaultValue: "" });
+    const [heightUnit, setHeightUnit] = useQueryState<"cm" | "ft">(
+        "heightUnit",
+        {
+            defaultValue: "cm",
+            parse: (value) => (value === "cm" || value === "ft" ? value : "cm"),
+            serialize: (value) => value,
+        }
+    );
+    const [heightCm, setHeightCm] = useQueryState("heightCm", {
+        defaultValue: "",
     });
+    const [heightFeet, setHeightFeet] = useQueryState("heightFeet", {
+        defaultValue: "",
+    });
+    const [heightInches, setHeightInches] = useQueryState("heightInches", {
+        defaultValue: "",
+    });
+    const [gender, setGender] = useQueryState<"male" | "female">("gender", {
+        defaultValue: "male",
+        parse: (value) =>
+            value === "male" || value === "female" ? value : "male",
+        serialize: (value) => value,
+    });
+
+    // Results and errors in local state
     const [results, setResults] = useState<IBWResult | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
+
+    // Create formData object from query parameters
+    const formData: FormData = {
+        age: age || "",
+        heightUnit: heightUnit || "cm",
+        heightCm: heightCm || "",
+        heightFeet: heightFeet || "",
+        heightInches: heightInches || "",
+        gender: gender || "male",
+    };
 
     const handleFormDataChange = (
         field: keyof FormData,
         value: string | "cm" | "ft" | "male" | "female"
     ) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        switch (field) {
+            case "age":
+                setAge(value as string);
+                break;
+            case "heightUnit":
+                setHeightUnit(value as "cm" | "ft");
+                // Remove unused height unit parameters
+                if (value === "cm") {
+                    setHeightFeet("");
+                    setHeightInches("");
+                } else {
+                    setHeightCm("");
+                }
+                break;
+            case "heightCm":
+                setHeightCm(value as string);
+                break;
+            case "heightFeet":
+                setHeightFeet(value as string);
+                break;
+            case "heightInches":
+                setHeightInches(value as string);
+                break;
+            case "gender":
+                setGender(value as "male" | "female");
+                break;
+        }
     };
 
     const handleCalculate = () => {
@@ -486,14 +542,12 @@ const IdealWeightCalculator: React.FC = () => {
     };
 
     const handleClear = () => {
-        setFormData({
-            age: "",
-            heightUnit: "cm",
-            heightCm: "",
-            heightFeet: "",
-            heightInches: "",
-            gender: "male",
-        });
+        setAge("");
+        setHeightUnit("cm");
+        setHeightCm("");
+        setHeightFeet("");
+        setHeightInches("");
+        setGender("male");
         setResults(null);
         setErrors([]);
     };

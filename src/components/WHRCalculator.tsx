@@ -14,6 +14,7 @@ import {
     ToggleGroupItem,
 } from "@/components/animate-ui/radix/toggle-group";
 import PrivacyNotice from "./PrivacyNotice";
+import { useQueryState } from "nuqs";
 
 interface WHRResult {
     whr: number;
@@ -501,23 +502,90 @@ const InputForm: React.FC<{
 
 // Main Component
 const WHRCalculator: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
-        gender: "male",
-        waistUnit: "cm",
-        waistCm: "",
-        waistIn: "",
-        hipUnit: "cm",
-        hipCm: "",
-        hipIn: "",
+    // Form inputs in query parameters
+    const [gender, setGender] = useQueryState<"male" | "female">("gender", {
+        defaultValue: "male",
+        parse: (value) =>
+            value === "male" || value === "female" ? value : "male",
+        serialize: (value) => value,
     });
+    const [waistUnit, setWaistUnit] = useQueryState<"cm" | "in">("waistUnit", {
+        defaultValue: "cm",
+        parse: (value) => (value === "cm" || value === "in" ? value : "cm"),
+        serialize: (value) => value,
+    });
+    const [waistCm, setWaistCm] = useQueryState("waistCm", {
+        defaultValue: "",
+    });
+    const [waistIn, setWaistIn] = useQueryState("waistIn", {
+        defaultValue: "",
+    });
+    const [hipUnit, setHipUnit] = useQueryState<"cm" | "in">("hipUnit", {
+        defaultValue: "cm",
+        parse: (value) => (value === "cm" || value === "in" ? value : "cm"),
+        serialize: (value) => value,
+    });
+    const [hipCm, setHipCm] = useQueryState("hipCm", {
+        defaultValue: "",
+    });
+    const [hipIn, setHipIn] = useQueryState("hipIn", {
+        defaultValue: "",
+    });
+
+    // Results and errors in local state
     const [results, setResults] = useState<WHRResult | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
+
+    // Create formData object from query parameters
+    const formData: FormData = {
+        gender: gender || "male",
+        waistUnit: waistUnit || "cm",
+        waistCm: waistCm || "",
+        waistIn: waistIn || "",
+        hipUnit: hipUnit || "cm",
+        hipCm: hipCm || "",
+        hipIn: hipIn || "",
+    };
 
     const handleFormDataChange = (
         field: keyof FormData,
         value: string | "cm" | "in" | "male" | "female"
     ) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        switch (field) {
+            case "gender":
+                setGender(value as "male" | "female");
+                break;
+            case "waistUnit":
+                setWaistUnit(value as "cm" | "in");
+                // Remove unused waist unit parameters
+                if (value === "cm") {
+                    setWaistIn("");
+                } else {
+                    setWaistCm("");
+                }
+                break;
+            case "waistCm":
+                setWaistCm(value as string);
+                break;
+            case "waistIn":
+                setWaistIn(value as string);
+                break;
+            case "hipUnit":
+                setHipUnit(value as "cm" | "in");
+                // Remove unused hip unit parameters
+                if (value === "cm") {
+                    setHipIn("");
+                } else {
+                    setHipCm("");
+                }
+                break;
+            case "hipCm":
+                setHipCm(value as string);
+                break;
+            case "hipIn":
+                setHipIn(value as string);
+                break;
+        }
     };
 
     const handleCalculate = () => {
@@ -536,15 +604,13 @@ const WHRCalculator: React.FC = () => {
     };
 
     const handleClear = () => {
-        setFormData({
-            gender: "male",
-            waistUnit: "cm",
-            waistCm: "",
-            waistIn: "",
-            hipUnit: "cm",
-            hipCm: "",
-            hipIn: "",
-        });
+        setGender("male");
+        setWaistUnit("cm");
+        setWaistCm("");
+        setWaistIn("");
+        setHipUnit("cm");
+        setHipCm("");
+        setHipIn("");
         setResults(null);
         setErrors([]);
     };

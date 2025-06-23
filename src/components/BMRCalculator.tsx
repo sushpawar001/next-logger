@@ -18,6 +18,7 @@ import {
     RadioGroupItem,
 } from "@/components/animate-ui/radix/radio-group";
 import PrivacyNotice from "./PrivacyNotice";
+import { useQueryState } from "nuqs";
 
 interface BMRResult {
     bmr: number;
@@ -650,24 +651,97 @@ const InputForm: React.FC<{
 
 // Main Component
 const BMRCalculator: React.FC = () => {
-    const [formData, setFormData] = useState<FormData>({
-        age: "",
-        gender: "male",
-        heightUnit: "cm",
-        heightCm: "",
-        heightFeet: "",
-        heightInches: "",
-        weightUnit: "kg",
-        weight: "",
+    // Form inputs in query parameters
+    const [age, setAge] = useQueryState("age", { defaultValue: "" });
+    const [gender, setGender] = useQueryState<"male" | "female">("gender", {
+        defaultValue: "male",
+        parse: (value) =>
+            value === "male" || value === "female" ? value : "male",
+        serialize: (value) => value,
     });
+    const [heightUnit, setHeightUnit] = useQueryState<"cm" | "ft">(
+        "heightUnit",
+        {
+            defaultValue: "cm",
+            parse: (value) => (value === "cm" || value === "ft" ? value : "cm"),
+            serialize: (value) => value,
+        }
+    );
+    const [heightCm, setHeightCm] = useQueryState("heightCm", {
+        defaultValue: "",
+    });
+    const [heightFeet, setHeightFeet] = useQueryState("heightFeet", {
+        defaultValue: "",
+    });
+    const [heightInches, setHeightInches] = useQueryState("heightInches", {
+        defaultValue: "",
+    });
+    const [weightUnit, setWeightUnit] = useQueryState<"kg" | "lbs">(
+        "weightUnit",
+        {
+            defaultValue: "kg",
+            parse: (value) =>
+                value === "kg" || value === "lbs" ? value : "kg",
+            serialize: (value) => value,
+        }
+    );
+    const [weight, setWeight] = useQueryState("weight", {
+        defaultValue: "",
+    });
+
+    // Results and errors in local state
     const [results, setResults] = useState<BMRResult | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
+
+    // Create formData object from query parameters
+    const formData: FormData = {
+        age: age || "",
+        gender: gender || "male",
+        heightUnit: heightUnit || "cm",
+        heightCm: heightCm || "",
+        heightFeet: heightFeet || "",
+        heightInches: heightInches || "",
+        weightUnit: weightUnit || "kg",
+        weight: weight || "",
+    };
 
     const handleFormDataChange = (
         field: keyof FormData,
         value: string | "cm" | "ft" | "kg" | "lbs" | "male" | "female"
     ) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
+        switch (field) {
+            case "age":
+                setAge(value as string);
+                break;
+            case "gender":
+                setGender(value as "male" | "female");
+                break;
+            case "heightUnit":
+                setHeightUnit(value as "cm" | "ft");
+                // Remove unused height unit parameters
+                if (value === "cm") {
+                    setHeightFeet("");
+                    setHeightInches("");
+                } else {
+                    setHeightCm("");
+                }
+                break;
+            case "heightCm":
+                setHeightCm(value as string);
+                break;
+            case "heightFeet":
+                setHeightFeet(value as string);
+                break;
+            case "heightInches":
+                setHeightInches(value as string);
+                break;
+            case "weightUnit":
+                setWeightUnit(value as "kg" | "lbs");
+                break;
+            case "weight":
+                setWeight(value as string);
+                break;
+        }
     };
 
     const handleCalculate = () => {
@@ -683,16 +757,14 @@ const BMRCalculator: React.FC = () => {
     };
 
     const handleClear = () => {
-        setFormData({
-            age: "",
-            gender: "male",
-            heightUnit: "cm",
-            heightCm: "",
-            heightFeet: "",
-            heightInches: "",
-            weightUnit: "kg",
-            weight: "",
-        });
+        setAge("");
+        setGender("male");
+        setHeightUnit("cm");
+        setHeightCm("");
+        setHeightFeet("");
+        setHeightInches("");
+        setWeightUnit("kg");
+        setWeight("");
         setResults(null);
         setErrors([]);
     };
