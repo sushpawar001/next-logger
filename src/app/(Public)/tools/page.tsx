@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, Activity, Target, Ruler } from "lucide-react";
+import CopyUrlButton from "@/components/CopyUrlButton";
 
 export const dynamic = "force-static";
 
@@ -77,9 +78,12 @@ export default function ToolsPage() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-6xl">
             <div className="mb-8">
-                <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-2">
-                    Health & Fitness Tools
-                </h1>
+                <div className="flex items-center justify-between mb-2">
+                    <h1 className="text-xl md:text-3xl font-bold text-gray-900">
+                        Health & Fitness Tools
+                    </h1>
+                    <CopyUrlButton showEncouragement={true} />
+                </div>
                 <p className="text-gray-600 text-sm md:text-base">
                     Access our comprehensive collection of health and fitness
                     calculators. All calculations are performed locally and your

@@ -2,6 +2,7 @@ import React from "react";
 import BMRCalculator from "@/components/BMRCalculator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import CopyUrlButton from "@/components/CopyUrlButton";
 
 export const dynamic = "force-static";
 
@@ -9,9 +10,12 @@ export default function BMRCalculatorPage() {
     return (
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <div className="mb-4 md:mb-8">
-                <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-2">
-                    Basal Metabolic Rate (BMR) Calculator
-                </h1>
+                <div className="flex items-center justify-between mb-2">
+                    <h1 className="text-xl md:text-3xl font-bold text-gray-900">
+                        Basal Metabolic Rate (BMR) Calculator
+                    </h1>
+                    <CopyUrlButton showEncouragement={true} />
+                </div>
                 <p className="text-gray-600 text-sm md:text-base">
                     Calculate your Basal Metabolic Rate using the Mifflin-St
                     Jeor Equation and estimate your daily calorie needs based on
