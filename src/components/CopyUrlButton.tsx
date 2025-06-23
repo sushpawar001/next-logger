@@ -25,17 +25,27 @@ const CopyUrlButton: React.FC<CopyUrlButtonProps> = ({
     showEncouragement = false,
 }) => {
     const [currentUrl, setCurrentUrl] = useState("");
+    const [isClient, setIsClient] = useState(false);
 
     useEffect(() => {
-        // Set initial URL
+        setIsClient(true);
+        // Set initial URL only on client side
         setCurrentUrl(window.location.href);
     }, []);
 
     const handleCopy = (content: string) => {
         // Get the current URL at the moment of copying to ensure it's up to date
-        const urlToCopy = window.location.href;
-        return urlToCopy;
+        if (typeof window !== "undefined") {
+            const urlToCopy = window.location.href;
+            return urlToCopy;
+        }
+        return content;
     };
+
+    // Don't render anything during SSR
+    if (!isClient) {
+        return null;
+    }
 
     if (showEncouragement) {
         return (
@@ -45,7 +55,7 @@ const CopyUrlButton: React.FC<CopyUrlButtonProps> = ({
                     <span className="hidden sm:inline">Share this tool</span>
                 </div>
                 <CopyButton
-                    content={window.location.href}
+                    content={currentUrl}
                     variant="outline"
                     size="md"
                     className="border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-800 dark:border-purple-700 dark:bg-purple-950/30 dark:hover:bg-purple-950/50 dark:text-purple-300 dark:hover:text-purple-200"
@@ -64,7 +74,7 @@ const CopyUrlButton: React.FC<CopyUrlButtonProps> = ({
 
     return (
         <CopyButton
-            content={window.location.href}
+            content={currentUrl}
             variant={variant}
             size={size}
             className={className}
