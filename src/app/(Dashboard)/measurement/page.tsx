@@ -92,7 +92,7 @@ export default function MeasurementsPage() {
     };
 
     if (loading === true) {
-        return <MeasurementPageSkeleton />;
+        return <MeasurementPageSkeleton2 />;
     }
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">

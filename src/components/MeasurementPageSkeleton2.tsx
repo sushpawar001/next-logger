@@ -15,9 +15,7 @@ export default function MeasurementPageSkeleton2() {
                                 <h3>
                                     <Skeleton className="w-[88px] max-w-full" />
                                 </h3>
-                                <p>
                                     <Skeleton className="w-[240px] max-w-full" />
-                                </p>
                             </div>
                         </div>
                         <div className="border block p-2.5 w-32 border-purple-200 focus:border-[#5E4AE3]"></div>

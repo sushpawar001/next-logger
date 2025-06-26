@@ -7,10 +7,13 @@ import WeightAdd from "@/components/DashboardInputs/WeightAdd";
 import { glucose, weight } from "@/types/models";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function DiabetesDashboard() {
     const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
     const [weightData, setWeightData] = useState<weight[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -38,6 +41,8 @@ export default function DiabetesDashboard() {
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -52,8 +57,17 @@ export default function DiabetesDashboard() {
                         <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                             Glucose history
                         </h3>
-                        <div className="md:h-56">
-                            <GlucoseChart data={glucoseData} fetch={false} />
+                        <div className="h-44 md:h-56">
+                            {isLoading ? (
+                                <div className="h-full flex flex-1 items-center justify-center">
+                                    <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+                                </div>
+                            ) : (
+                                <GlucoseChart
+                                    data={glucoseData}
+                                    fetch={false}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -62,8 +76,14 @@ export default function DiabetesDashboard() {
                         <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                             Weight history
                         </h3>
-                        <div className="md:h-56">
-                            <WeightChart data={weightData} fetch={false} />
+                        <div className="h-44 md:h-56">
+                            {isLoading ? (
+                                <div className="h-full flex items-center justify-center">
+                                    <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+                                </div>
+                            ) : (
+                                <WeightChart data={weightData} fetch={false} />
+                            )}
                         </div>
                     </div>
                 </div>
