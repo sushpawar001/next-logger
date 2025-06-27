@@ -9,7 +9,16 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Activity, Home, User, Target, Scale, Heart, Zap } from "lucide-react";
+import {
+    Activity,
+    Home,
+    User,
+    Target,
+    Scale,
+    Heart,
+    Zap,
+    Droplets,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -44,6 +53,11 @@ const menuItems = [
         title: "BMR Calculator",
         url: "/tools/bmr-calculator",
         icon: Zap,
+    },
+    {
+        title: "Water Intake",
+        url: "/tools/water-intake-calculator",
+        icon: Droplets,
     },
 ];
 
