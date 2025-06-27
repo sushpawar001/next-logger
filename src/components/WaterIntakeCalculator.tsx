@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -199,8 +199,11 @@ const validateInputs = (formData: FormData): string[] => {
     return errors;
 };
 
-const ResultsCard: React.FC<{ results: WaterIntakeResult }> = ({ results }) => (
-    <Card className="border border-blue-100 shadow">
+const ResultsCard: React.FC<{
+    results: WaterIntakeResult;
+    resultsRef?: React.RefObject<HTMLDivElement>;
+}> = ({ results, resultsRef }) => (
+    <Card className="border border-blue-100 shadow" ref={resultsRef}>
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Daily Water Intake Results
@@ -272,8 +275,14 @@ const ResultsCard: React.FC<{ results: WaterIntakeResult }> = ({ results }) => (
                             personalized recommendations.
                         </li>
                         <li>
-                            • Listen to your body's thirst signals and adjust
-                            accordingly.
+                            • Listen to your body&apos;s thirst signals and
+                            adjust accordingly.
+                        </li>
+                        <li>
+                            • <strong>Formula Source:</strong> Based on
+                            WHO/Institute of Medicine guidelines (30-35 ml per
+                            kg of body weight) with adjustments for age, gender,
+                            height, and activity level.
                         </li>
                     </ul>
                 </div>
@@ -310,8 +319,8 @@ const EmptyResultsCard: React.FC = () => (
                     Calculate Your Water Intake
                 </h3>
                 <p className="text-gray-600 text-sm max-w-sm">
-                    Enter your details and click "Calculate" to see your
-                    recommended daily water intake based on your personal
+                    Enter your details and click &quot;Calculate&quot; to see
+                    your recommended daily water intake based on your personal
                     factors and activity level.
                 </p>
             </div>
@@ -688,6 +697,9 @@ const InputForm: React.FC<{
 
 // Main Component
 const WaterIntakeCalculator: React.FC = () => {
+    // Add ref for results scrolling
+    const resultsRef = useRef<HTMLDivElement>(null);
+
     // Form inputs in query parameters
     const [age, setAge] = useQueryState("age", { defaultValue: "" });
     const [gender, setGender] = useQueryState<"male" | "female">("gender", {
@@ -831,6 +843,17 @@ const WaterIntakeCalculator: React.FC = () => {
 
         const calculatedResults = calculateWaterIntake(formData);
         setResults(calculatedResults);
+
+        // Scroll to results on mobile after a short delay to ensure DOM update
+        setTimeout(() => {
+            if (resultsRef.current && window.innerWidth < 1024) {
+                // lg breakpoint
+                resultsRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                });
+            }
+        }, 100);
     };
 
     const handleClear = () => {
@@ -853,7 +876,9 @@ const WaterIntakeCalculator: React.FC = () => {
 
             {/* Mobile Layout - Results first, then inputs */}
             <div className="lg:hidden space-y-6">
-                {results && <ResultsCard results={results} />}
+                {results && (
+                    <ResultsCard results={results} resultsRef={resultsRef} />
+                )}
                 <InputForm
                     formData={formData}
                     errors={errors}
