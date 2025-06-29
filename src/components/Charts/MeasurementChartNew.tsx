@@ -12,7 +12,7 @@ import {
     Legend,
 } from "chart.js";
 import type { ChartData, ChartOptions } from "chart.js";
-import "chartjs-adapter-moment";
+import "chartjs-adapter-dayjs-4";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import { measurement } from "@/types/models";
@@ -40,7 +40,7 @@ export const options: ChartOptions<"line"> = {
         x: {
             type: "timeseries",
             time: {
-                unit: 'day',
+                unit: "day",
             },
             ticks: {
                 display: true,
@@ -51,7 +51,7 @@ export const options: ChartOptions<"line"> = {
         line: {
             tension: 0.3, // Increase for smoother curves
         },
-    }
+    },
 };
 
 const lineChartColorMap = {
@@ -73,7 +73,9 @@ export default function MeasurementChartNew(props: {
     const daysOfData = props.days || 14;
     const getMeasurementData = useCallback(async () => {
         try {
-            const response = await axios.get(`/api/measurements/get/${daysOfData}`);
+            const response = await axios.get(
+                `/api/measurements/get/${daysOfData}`
+            );
             if (response.status === 200) {
                 let data = response.data.data.reverse();
                 setMeasurementData(data);
@@ -96,7 +98,7 @@ export default function MeasurementChartNew(props: {
                 borderColor: value.color,
                 backgroundColor: value.backgroundColor,
                 hidden: value.hidden,
-            }))
+            })),
         ],
     };
     useEffect(() => {

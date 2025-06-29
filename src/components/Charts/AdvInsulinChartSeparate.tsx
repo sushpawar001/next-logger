@@ -12,12 +12,18 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
-import moment from "moment-timezone";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import type { ChartData, ChartOptions } from "chart.js";
 import { insulin, insulinName } from "@/types/models";
 import getMovingAvgInterval from "@/helpers/getMovingAvgInterval";
 import { simpleMovingAverage } from "@/helpers/statsHelpers";
 import { complementaryColor } from "@/helpers/complementaryColor";
+
+// Extend dayjs with plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 ChartJS.register(
     CategoryScale,
@@ -83,7 +89,7 @@ export default function AdvInsulinChartSeparate(props) {
             );
 
             insulin.forEach((element) => {
-                const date = moment
+                const date = dayjs
                     .utc(element.createdAt)
                     .tz("Asia/Kolkata")
                     .format("DD MMM YY");

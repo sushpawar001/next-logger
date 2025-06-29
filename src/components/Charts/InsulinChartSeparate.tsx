@@ -12,9 +12,15 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
-import moment from "moment-timezone";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import type { ChartData, ChartOptions } from "chart.js";
 import { insulin, insulinName } from "@/types/models";
+
+// Extend dayjs with plugins
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 ChartJS.register(
     CategoryScale,
@@ -52,25 +58,22 @@ export const options: ChartOptions<"line"> = {
 export default function InsulinChartSeparate(props) {
     const [insulin, setInsulin] = useState<insulin[]>([]);
     const daysOfData = props.days || 7;
-    const getInsulin = useCallback(
-        async () => {
-            try {
-                const response = await axios.get(`/api/insulin/get/${daysOfData}`);
-                if (response.status === 200) {
-                    let insulinData = response.data.data.reverse();
-                    setInsulin(insulinData);
-                } else {
-                    console.error(
-                        "API request failed with status:",
-                        response.status
-                    );
-                }
-            } catch (error) {
-                console.log(error);
+    const getInsulin = useCallback(async () => {
+        try {
+            const response = await axios.get(`/api/insulin/get/${daysOfData}`);
+            if (response.status === 200) {
+                let insulinData = response.data.data.reverse();
+                setInsulin(insulinData);
+            } else {
+                console.error(
+                    "API request failed with status:",
+                    response.status
+                );
             }
-        },
-        [daysOfData]
-    );
+        } catch (error) {
+            console.log(error);
+        }
+    }, [daysOfData]);
 
     const aggregateInsulinData = useCallback(
         (insulin: insulin[], allInsulins: string[]) => {
@@ -81,7 +84,7 @@ export default function InsulinChartSeparate(props) {
             );
 
             insulin.forEach((element) => {
-                const date = moment
+                const date = dayjs
                     .utc(element.createdAt)
                     .tz("Asia/Kolkata")
                     .format("DD MMM YY");

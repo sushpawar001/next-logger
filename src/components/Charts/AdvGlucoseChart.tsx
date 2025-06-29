@@ -11,7 +11,7 @@ import {
     Legend,
 } from "chart.js";
 import type { ChartData, ChartOptions } from "chart.js";
-import "chartjs-adapter-moment";
+import "chartjs-adapter-dayjs-4";
 import { Line } from "react-chartjs-2";
 import axios from "axios";
 import { simpleMovingAverage } from "@/helpers/statsHelpers";
