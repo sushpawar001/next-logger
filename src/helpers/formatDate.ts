@@ -6,11 +6,11 @@ import timezone from "dayjs/plugin/timezone";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-export function DatetimeLocalFormat(rawDate) {
+export function DatetimeLocalFormat(rawDate: string | Date): string {
     return dayjs(rawDate).format("YYYY-MM-DDTHH:mm");
 }
 
-export function ShortDateformat(rawDate) {
+export function ShortDateformat(rawDate: string | Date): string {
     const formattedDate = dayjs
         .utc(rawDate)
         .tz(dayjs.tz.guess())
@@ -18,7 +18,7 @@ export function ShortDateformat(rawDate) {
     return formattedDate;
 }
 
-export default function formatDate(rawDate) {
+export default function formatDate(rawDate: string | Date): string {
     const formattedDate = dayjs
         .utc(rawDate)
         .tz(dayjs.tz.guess())
