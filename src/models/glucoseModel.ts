@@ -1,7 +1,8 @@
 import mongoose, { Document, Model } from "mongoose";
+import { addEncryptionHooks } from "../lib/mongooseEncryption";
 
 export interface IGlucose {
-    value: number;
+    value: string;
     user: mongoose.Types.ObjectId;
     tag?: string | null;
     createdAt?: Date;
@@ -12,7 +13,7 @@ export interface IGlucoseDocument extends IGlucose, Document {}
 const glucoseSchema = new mongoose.Schema<IGlucoseDocument>(
     {
         value: {
-            type: Number,
+            type: String,
             required: true,
         },
         user: {
@@ -28,6 +29,25 @@ const glucoseSchema = new mongoose.Schema<IGlucoseDocument>(
     },
     { timestamps: false }
 );
+
+// Add encryption hooks for sensitive fields
+addEncryptionHooks(glucoseSchema, {
+    config: {
+        fields: ["value", "tag"],
+        encryptOnSave: true,
+        decryptOnRead: true,
+        storeAsString: true, // Store encrypted data as strings for better compatibility
+        handleArrays: false,
+        handleNested: false,
+    },
+    debug: process.env.NODE_ENV === "development", // Enable debug logs in development
+    onError: (error, operation, field) => {
+        console.error(
+            `Encryption error during ${operation} for field ${field}:`,
+            error
+        );
+    },
+});
 
 const Glucose: Model<IGlucoseDocument> =
     (mongoose.models.glucose as Model<IGlucoseDocument>) ||

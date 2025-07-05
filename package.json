@@ -6,7 +6,10 @@
     "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate:encrypt": "node scripts/migrate-encryption.js",
+    "migrate:analyze": "node scripts/migrate-encryption-dry-run.js",
+    "migrate:verify": "node scripts/verify-encryption.js"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.3.7",
@@ -29,6 +32,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dayjs": "^1.11.13",
+    "dotenv": "^16.6.1",
     "framer-motion": "^11.0.5",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.511.0",

@@ -1,7 +1,8 @@
 import mongoose, { Document, Model } from "mongoose";
+import { addEncryptionHooks } from "../lib/mongooseEncryption";
 
 interface IInsulin {
-    units: number;
+    units: string;
     name: string;
     user: mongoose.Types.ObjectId;
     tag?: string | null;
@@ -13,7 +14,7 @@ interface IInsulinDocument extends IInsulin, Document {}
 const insulinSchema = new mongoose.Schema<IInsulinDocument>(
     {
         units: {
-            type: Number,
+            type: String,
             required: true,
         },
         name: {
@@ -33,6 +34,25 @@ const insulinSchema = new mongoose.Schema<IInsulinDocument>(
     },
     { timestamps: false }
 );
+
+// Add encryption hooks for sensitive fields
+addEncryptionHooks(insulinSchema, {
+    config: {
+        fields: ["units", "name", "tag"],
+        encryptOnSave: true,
+        decryptOnRead: true,
+        storeAsString: true, // Store encrypted data as strings for better compatibility
+        handleArrays: false,
+        handleNested: false,
+    },
+    debug: process.env.NODE_ENV === "development", // Enable debug logs in development
+    onError: (error, operation, field) => {
+        console.error(
+            `Encryption error during ${operation} for field ${field}:`,
+            error
+        );
+    },
+});
 
 const Insulin: Model<IInsulinDocument> =
     mongoose.models.insulin ||
