@@ -8,8 +8,7 @@ const KEY_LENGTH = 32; // 256 bits = 32 bytes
 
 // Environment variable for the encryption key
 // In production, this should be stored securely (e.g., in environment variables)
-const ENCRYPTION_KEY =
-    process.env.ENCRYPTION_KEY || "your-fallback-encryption-key-32-chars-long";
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 
 // Ensure the key is exactly 32 bytes (256 bits)
 const getEncryptionKey = (): Buffer => {
