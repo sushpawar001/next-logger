@@ -9,7 +9,10 @@ connectDB();
 export async function GET(request: NextRequest, { params }: any) {
     try {
         const user = await getUserObjectId();
-        const data = await Measurements.findOne({ _id: params.id, user: user });
+        const data = await Measurements.findOne(
+            { _id: params.id, user: user },
+            { __v: 0, user: 0 }
+        );
         const convertedData = convertStringToNumber(data.toObject(), [
             "arms",
             "chest",

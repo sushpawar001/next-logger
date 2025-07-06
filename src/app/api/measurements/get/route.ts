@@ -9,7 +9,10 @@ connectDB();
 export async function GET(request: NextRequest) {
     try {
         const user = await getUserObjectId();
-        const data = await Measurements.find({ user: user }).sort({
+        const data = await Measurements.find(
+            { user: user },
+            { __v: 0, user: 0 }
+        ).sort({
             createdAt: -1,
         });
         const convertedData = convertArrayStringToNumber(

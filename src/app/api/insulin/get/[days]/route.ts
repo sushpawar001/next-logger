@@ -14,10 +14,13 @@ export async function GET(request: NextRequest, { params }) {
         let daysAgo = new Date();
         daysAgo.setDate(daysAgo.getDate() - days);
 
-        const data = await Insulin.find({
-            user: user,
-            createdAt: { $gt: daysAgo },
-        }).sort({ createdAt: -1 });
+        const data = await Insulin.find(
+            {
+                user: user,
+                createdAt: { $gt: daysAgo },
+            },
+            { __v: 0, user: 0 }
+        ).sort({ createdAt: -1 });
         const convertedData = convertArrayStringToNumber(
             data.map((item) => item.toObject()),
             ["units"]

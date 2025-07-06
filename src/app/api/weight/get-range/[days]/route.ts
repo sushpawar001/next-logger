@@ -24,7 +24,7 @@ export async function GET(request: NextRequest, { params }) {
                 user: user,
                 createdAt: { $gt: prevDaysAgo },
             },
-            { __v: 0 }
+            { __v: 0, user: 0 }
         ).sort({ createdAt: -1 });
 
         const daysAgoData = data.filter((d) => d.createdAt > daysAgo);
