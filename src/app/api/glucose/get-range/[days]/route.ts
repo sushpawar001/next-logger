@@ -2,6 +2,7 @@ import { connectDB } from "@/dbConfig/connectDB";
 import Glucose from "@/models/glucoseModel";
 import { NextResponse, NextRequest } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { convertArrayStringToNumber } from "@/helpers/convertStringToNumber";
 
 connectDB();
 
@@ -30,7 +31,22 @@ export async function GET(request: NextRequest, { params }) {
         const prevDaysAgoData = data.filter(
             (d) => d.createdAt < daysAgo && d.createdAt > prevDaysAgo
         );
-        return NextResponse.json({ data: { daysAgoData, prevDaysAgoData } });
+
+        const convertedDaysAgoData = convertArrayStringToNumber(
+            daysAgoData.map((item) => item.toObject()),
+            ["value"]
+        );
+        const convertedPrevDaysAgoData = convertArrayStringToNumber(
+            prevDaysAgoData.map((item) => item.toObject()),
+            ["value"]
+        );
+
+        return NextResponse.json({
+            data: {
+                daysAgoData: convertedDaysAgoData,
+                prevDaysAgoData: convertedPrevDaysAgoData,
+            },
+        });
     } catch (error) {
         console.log("Error getting Glucose " + error);
         return NextResponse.json({ error: error.message }, { status: 500 });
