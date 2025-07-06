@@ -2,8 +2,7 @@ import crypto from "crypto";
 
 // Encryption configuration
 const ALGORITHM = "aes-256-gcm";
-const IV_LENGTH = 16; // For GCM, this is 12 bytes
-const TAG_LENGTH = 16; // GCM authentication tag length
+const IV_LENGTH = 12; // For GCM, this is 12 bytes
 const KEY_LENGTH = 32; // 256 bits = 32 bytes
 
 // Environment variable for the encryption key
@@ -55,7 +54,7 @@ export function encrypt(text: string): EncryptionResult {
         }
 
         const key = getEncryptionKey();
-        const iv = crypto.randomBytes(12); // GCM uses 12 bytes for IV
+        const iv = crypto.randomBytes(IV_LENGTH); // GCM uses 12 bytes for IV
         const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
 
         let encrypted = cipher.update(text, "utf8", "hex");
