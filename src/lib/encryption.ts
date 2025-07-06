@@ -12,8 +12,17 @@ const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 
 // Ensure the key is exactly 32 bytes (256 bits)
 const getEncryptionKey = (): Buffer => {
-    const key = ENCRYPTION_KEY.padEnd(KEY_LENGTH, "0").slice(0, KEY_LENGTH);
-    return Buffer.from(key, "utf8");
+    if (!ENCRYPTION_KEY) {
+        throw new Error("ENCRYPTION_KEY environment variable is not set");
+    }
+
+    if (ENCRYPTION_KEY.length !== KEY_LENGTH) {
+        throw new Error(
+            `Encryption key must be exactly ${KEY_LENGTH} characters long. Current length: ${ENCRYPTION_KEY.length}`
+        );
+    }
+
+    return Buffer.from(ENCRYPTION_KEY, "utf8");
 };
 
 export interface EncryptedData {
@@ -243,7 +252,7 @@ export function generateEncryptionKey(): string {
  * @returns True if the key is valid
  */
 export function validateEncryptionKey(key: string): boolean {
-    return key && key.length >= KEY_LENGTH;
+    return key && key.length === KEY_LENGTH;
 }
 
 /**
