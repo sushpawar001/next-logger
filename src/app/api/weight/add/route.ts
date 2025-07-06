@@ -2,6 +2,7 @@ import { connectDB } from "@/dbConfig/connectDB";
 import Weight from "@/models/weightModel";
 import { NextResponse, NextRequest } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { decryptDocumentFields } from "@/lib/mongooseEncryption";
 
 connectDB();
 
@@ -22,7 +23,20 @@ export async function POST(request: NextRequest) {
         }
         const weightDoc = new Weight(payload);
         const entry = await weightDoc.save();
-        return NextResponse.json({ entry, message: "Weight entry added!" });
+
+        // Manually decrypt the document since mongoose hooks might not work as expected
+        const decryptedEntry = decryptDocumentFields(
+            entry.toObject(),
+            ["value", "tag"],
+            true, // storeAsString
+            false, // handleArrays
+            false // handleNested
+        );
+
+        return NextResponse.json({
+            entry: decryptedEntry,
+            message: "Weight entry added!",
+        });
     } catch (error) {
         console.log("Error adding Weight" + error);
         return NextResponse.json({ error: error.message }, { status: 500 });

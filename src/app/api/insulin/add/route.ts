@@ -2,6 +2,7 @@ import { connectDB } from "@/dbConfig/connectDB";
 import Insulin from "@/models/insulinModel";
 import { NextResponse, NextRequest } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { decryptDocumentFields } from "@/lib/mongooseEncryption";
 
 connectDB();
 
@@ -25,8 +26,17 @@ export async function POST(request: NextRequest) {
         const insulinDoc = new Insulin(payload);
         const entry = await insulinDoc.save();
 
+        // Manually decrypt the document since mongoose hooks might not work as expected
+        const decryptedEntry = decryptDocumentFields(
+            entry.toObject(),
+            ["units", "name", "tag"],
+            true, // storeAsString
+            false, // handleArrays
+            false // handleNested
+        );
+
         return NextResponse.json({
-            entry,
+            entry: decryptedEntry,
             message: `${name} insulin Entry added!`,
         });
     } catch (error) {
