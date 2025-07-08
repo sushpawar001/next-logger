@@ -1,5 +1,5 @@
 "use client";
-import GlucoseChart from "@/components/Charts/GlucoseChart";
+import GlucoseChartRecharts from "@/components/Charts/GlucoseChartRecharts";
 import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
@@ -37,18 +37,16 @@ export default function GlucosePage() {
         setLoading(true);
         const getGlucoseData = async () => {
             try {
-                axios
-                    .get(`/api/glucose/get/${daysOfData}`)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            setGlucoseData(response.data.data);
-                        } else {
-                            console.error(
-                                "API request failed with status:",
-                                response.status
-                            );
-                        }
-                    });
+                axios.get(`/api/glucose/get/${daysOfData}`).then((response) => {
+                    if (response.status === 200) {
+                        setGlucoseData(response.data.data);
+                    } else {
+                        console.error(
+                            "API request failed with status:",
+                            response.status
+                        );
+                    }
+                });
             } catch (error) {
                 console.log(error);
             } finally {
@@ -91,7 +89,10 @@ export default function GlucosePage() {
                         Glucose Trends
                     </h3>
                     <div className="h-72">
-                        <GlucoseChart data={glucoseData} fetch={false} />
+                        <GlucoseChartRecharts
+                            data={glucoseData}
+                            fetch={false}
+                        />
                     </div>
                 </div>
                 <div className="w-full">

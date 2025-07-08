@@ -1,6 +1,6 @@
 "use client";
-import GlucoseChart from "@/components/Charts/GlucoseChart";
-import WeightChart from "@/components/Charts/WeightChart";
+import GlucoseChartRecharts from "@/components/Charts/GlucoseChartRecharts";
+import WeightChartRecharts from "@/components/Charts/WeightChartRecharts";
 import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
 import WeightAdd from "@/components/DashboardInputs/WeightAdd";
@@ -63,10 +63,18 @@ export default function DiabetesDashboard() {
                                     <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
                                 </div>
                             ) : (
-                                <GlucoseChart
-                                    data={glucoseData}
-                                    fetch={false}
-                                />
+                                <div className="h-full w-full">
+                                    <GlucoseChartRecharts
+                                        data={glucoseData.map((g) => ({
+                                            value: g.value,
+                                            createdAt:
+                                                g.createdAt instanceof Date
+                                                    ? g.createdAt.toISOString()
+                                                    : g.createdAt || "",
+                                        }))}
+                                        fetch={false}
+                                    />
+                                </div>
                             )}
                         </div>
                     </div>
@@ -82,7 +90,16 @@ export default function DiabetesDashboard() {
                                     <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
                                 </div>
                             ) : (
-                                <WeightChart data={weightData} fetch={false} />
+                                <WeightChartRecharts
+                                    data={weightData.map((w) => ({
+                                        value: w.value,
+                                        createdAt:
+                                            w.createdAt instanceof Date
+                                                ? w.createdAt.toISOString()
+                                                : w.createdAt || "",
+                                    }))}
+                                    fetch={false}
+                                />
                             )}
                         </div>
                     </div>

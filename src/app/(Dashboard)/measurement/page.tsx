@@ -8,7 +8,7 @@ import Link from "next/link";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
 
 import PopUpModal from "@/components/PopUpModal";
-import MeasurementChartNew from "@/components/Charts/MeasurementChartNew";
+import MeasurementChartRecharts from "@/components/Charts/MeasurementChartRecharts";
 import {
     Table,
     TableBody,
@@ -107,7 +107,7 @@ export default function MeasurementsPage() {
                         Measurement Trends
                     </h3>
                     <div className="h-72 flex-grow">
-                        <MeasurementChartNew
+                        <MeasurementChartRecharts
                             data={measurementData}
                             fetch={false}
                         />

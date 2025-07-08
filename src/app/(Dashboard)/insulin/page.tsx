@@ -5,7 +5,7 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
-import InsulinChartSeparate from "@/components/Charts/InsulinChartSeparate";
+import InsulinChartRecharts from "@/components/Charts/InsulinChartRecharts";
 import PopUpModal from "@/components/PopUpModal";
 import { History, Edit, Trash2 } from "lucide-react";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
@@ -91,8 +91,14 @@ export default function InsulinPage() {
                         Insulin Trends
                     </h3>
                     <div className="h-72">
-                        <InsulinChartSeparate
-                            data={insulinData}
+                        <InsulinChartRecharts
+                            data={insulinData.map(
+                                ({ units, name, createdAt }) => ({
+                                    units,
+                                    name,
+                                    createdAt: new Date(createdAt),
+                                })
+                            )}
                             fetch={false}
                         />
                     </div>

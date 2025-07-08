@@ -7,8 +7,11 @@ import Insulin from "@/models/insulinModel";
 import mongoose from "mongoose";
 
 // Helper function to generate random number between min and max
-const randomNumber = (min: number, max: number) => {
-    return (Math.random() * (max - min) + min).toFixed(1);
+const randomNumber = (min: number, max: number, fractionAllowed: boolean = false) => {
+    if (fractionAllowed) {
+        return (Math.random() * (max - min) + min).toFixed(1);
+    }
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 // Helper function to generate random date within last n days
@@ -46,7 +49,7 @@ export async function POST(
 ) {
     try {
         const { userId } = params;
-        const { days = 60, count = 300, seed_token } = await req.json();
+        const { days = 60, count = 180, seed_token } = await req.json();
 
         if (seed_token && seed_token !== process.env.SEED_TOKEN) {
             return NextResponse.json(
@@ -85,7 +88,7 @@ export async function POST(
         const weightData = Array(count)
             .fill(null)
             .map(() => ({
-                value: randomNumber(60, 80),
+                value: randomNumber(65, 80, true),
                 user: userObjectId,
                 tag: randomTag(),
                 createdAt: randomDate(days),

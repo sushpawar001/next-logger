@@ -1,7 +1,7 @@
 "use client";
-import AdvGlucoseChart from "@/components/Charts/AdvGlucoseChart";
-import AdvInsulinChartSeparate from "@/components/Charts/AdvInsulinChartSeparate";
-import AdvWeightChart from "@/components/Charts/AdvWeightChart";
+import AdvGlucoseChartRecharts from "@/components/Charts/AdvGlucoseChartRecharts";
+import AdvInsulinChartSeparateRecharts from "@/components/Charts/AdvInsulinChartSeparateRecharts";
+import AdvWeightChartRecharts from "@/components/Charts/AdvWeightChartRecharts";
 import { Card, CardContent } from "@/components/ui/card";
 import {
     Select,
@@ -45,7 +45,10 @@ export default function ChartPage() {
                             Blood Glucose
                         </div>
                         <div className="h-96">
-                            <AdvGlucoseChart fetch={true} days={daysOfData} />
+                            <AdvGlucoseChartRecharts
+                                fetch={true}
+                                days={daysOfData}
+                            />
                         </div>
                     </div>
                     <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
@@ -58,7 +61,10 @@ export default function ChartPage() {
                             Weight history
                         </div>
                         <div className="h-96">
-                            <AdvWeightChart fetch={true} days={daysOfData} />
+                            <AdvWeightChartRecharts
+                                fetch={true}
+                                days={daysOfData}
+                            />
                         </div>
                     </div>
                     <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
@@ -71,7 +77,7 @@ export default function ChartPage() {
                             Insulin Dose
                         </div>
                         <div className="h-96">
-                            <AdvInsulinChartSeparate
+                            <AdvInsulinChartSeparateRecharts
                                 fetch={true}
                                 days={daysOfData}
                             />
