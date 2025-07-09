@@ -222,7 +222,12 @@ export default function InsulinChartRecharts(props: {
                         tickMargin={8}
                         tickFormatter={(value) => dayjs(value).format("MMM D")}
                     />
-                    <YAxis tick={{ fontSize: 12 }} tickMargin={8} width={20} />
+                    <YAxis
+                        tick={{ fontSize: 12 }}
+                        tickMargin={8}
+                        width={20}
+                        domain={["auto", "auto"]}
+                    />
                     <Tooltip content={<CustomTooltip />} />
                     {allInsulins.map((name, idx) => (
                         <Line

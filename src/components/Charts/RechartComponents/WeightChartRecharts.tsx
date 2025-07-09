@@ -96,10 +96,10 @@ export default function WeightChartRecharts(props: {
     const minWeight = weightValues.length ? Math.min(...weightValues) : 0;
     const maxWeight = weightValues.length ? Math.max(...weightValues) : 100;
     const weightRange = maxWeight - minWeight;
-    const yDomain = [
-        Math.round(Math.max(0, minWeight - weightRange * 0.1)), // 10% padding below, but not less than 0
-        Math.round(maxWeight + weightRange * 0.1), // 10% padding above
-    ];
+    const yMin = Math.ceil(Math.max(0, minWeight - weightRange * 0.5));
+    const yMax = Math.floor(maxWeight + weightRange * 0.5);
+    // const yDomain = yMin !== yMax ? [yMin, yMax] : ["auto", "auto"];
+    const yDomain = ["auto", "auto"];
 
     // Generate ticks at 24-hour intervals (midnight)
     const getDailyTicks = () => {
@@ -117,7 +117,7 @@ export default function WeightChartRecharts(props: {
         <ResponsiveContainer width="100%" height="100%">
             <LineChart
                 data={weight}
-                margin={{ top: 0, right: 0, left: 20, bottom: 0 }}
+                margin={{ top: 0, right: 0, left: 25, bottom: 0 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
@@ -141,6 +141,7 @@ export default function WeightChartRecharts(props: {
                     tick={{ fontSize: 12 }}
                     tickMargin={8}
                     width={20}
+                    tickCount={5}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Line
