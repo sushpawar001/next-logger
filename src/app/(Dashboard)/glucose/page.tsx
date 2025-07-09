@@ -1,5 +1,5 @@
 "use client";
-import GlucoseChartRecharts from "@/components/Charts/GlucoseChartRecharts";
+import GlucoseChartRecharts from "@/components/Charts/RechartComponents/GlucoseChartRecharts";
 import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";

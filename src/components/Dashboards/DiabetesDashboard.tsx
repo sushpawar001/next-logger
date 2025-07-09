@@ -1,6 +1,6 @@
 "use client";
-import GlucoseChartRecharts from "@/components/Charts/GlucoseChartRecharts";
-import WeightChartRecharts from "@/components/Charts/WeightChartRecharts";
+import GlucoseChartRecharts from "@/components/Charts/RechartComponents/GlucoseChartRecharts";
+import WeightChartRecharts from "@/components/Charts/RechartComponents/WeightChartRecharts";
 import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
 import WeightAdd from "@/components/DashboardInputs/WeightAdd";

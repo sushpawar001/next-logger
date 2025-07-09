@@ -8,7 +8,7 @@ import Link from "next/link";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
 
 import PopUpModal from "@/components/PopUpModal";
-import MeasurementChartRecharts from "@/components/Charts/MeasurementChartRecharts";
+import MeasurementChartRecharts from "@/components/Charts/RechartComponents/MeasurementChartRecharts";
 import {
     Table,
     TableBody,

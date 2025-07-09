@@ -1,7 +1,7 @@
 "use client";
-import AdvGlucoseChartRecharts from "@/components/Charts/AdvGlucoseChartRecharts";
-import AdvInsulinChartSeparateRecharts from "@/components/Charts/AdvInsulinChartSeparateRecharts";
-import AdvWeightChartRecharts from "@/components/Charts/AdvWeightChartRecharts";
+import AdvGlucoseChartRecharts from "@/components/Charts/RechartComponents/AdvGlucoseChartRecharts";
+import AdvInsulinChartSeparateRecharts from "@/components/Charts/RechartComponents/AdvInsulinChartSeparateRecharts";
+import AdvWeightChartRecharts from "@/components/Charts/RechartComponents/AdvWeightChartRecharts";
 import { Card, CardContent } from "@/components/ui/card";
 import {
     Select,

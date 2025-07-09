@@ -5,7 +5,7 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
 import WeightAdd from "@/components/DashboardInputs/WeightAdd";
-import WeightChartRecharts from "@/components/Charts/WeightChartRecharts";
+import WeightChartRecharts from "@/components/Charts/RechartComponents/WeightChartRecharts";
 import PopUpModal from "@/components/PopUpModal";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import {

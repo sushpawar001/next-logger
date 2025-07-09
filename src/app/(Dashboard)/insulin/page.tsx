@@ -5,7 +5,7 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
-import InsulinChartRecharts from "@/components/Charts/InsulinChartRecharts";
+import InsulinChartRecharts from "@/components/Charts/RechartComponents/InsulinChartRecharts";
 import PopUpModal from "@/components/PopUpModal";
 import { History, Edit, Trash2 } from "lucide-react";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
