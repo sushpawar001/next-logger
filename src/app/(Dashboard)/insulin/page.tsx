@@ -7,7 +7,7 @@ import Link from "next/link";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
 import InsulinChartRecharts from "@/components/Charts/RechartComponents/InsulinChartRecharts";
 import PopUpModal from "@/components/PopUpModal";
-import { History, Edit, Trash2 } from "lucide-react";
+import { History, Edit, Trash2, Loader2 } from "lucide-react";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
 import {
     Table,
@@ -39,9 +39,11 @@ type insulinEntryType = {
 export default function InsulinPage() {
     const [insulinData, setInsulinData] = useState<insulinEntryType[]>([]);
     const [daysOfData, setDaysOfData] = useState(7);
+    const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 400 });
 
     useEffect(() => {
+        setLoading(true);
         const getInsulinData = async () => {
             try {
                 const response = await axios.get(
@@ -58,6 +60,8 @@ export default function InsulinPage() {
                 }
             } catch (error) {
                 console.log(error);
+            } finally {
+                setLoading(false);
             }
         };
         getInsulinData();
@@ -90,17 +94,21 @@ export default function InsulinPage() {
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Insulin Trends
                     </h3>
-                    <div className="h-72">
-                        <InsulinChartRecharts
-                            data={insulinData.map(
-                                ({ units, name, createdAt }) => ({
-                                    units,
-                                    name,
-                                    createdAt: new Date(createdAt),
-                                })
-                            )}
-                            fetch={false}
-                        />
+                    <div className="h-72 flex items-center justify-center">
+                        {loading ? (
+                            <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+                        ) : (
+                            <InsulinChartRecharts
+                                data={insulinData.map(
+                                    ({ units, name, createdAt }) => ({
+                                        units,
+                                        name,
+                                        createdAt: new Date(createdAt),
+                                    })
+                                )}
+                                fetch={false}
+                            />
+                        )}
                     </div>
                 </div>
                 <div className="w-full">

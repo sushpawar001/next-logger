@@ -10,8 +10,16 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Calendar, Droplets, Syringe, TrendingUp, Weight } from "lucide-react";
-import { useState } from "react";
+import {
+    Calendar,
+    Droplets,
+    Syringe,
+    TrendingUp,
+    Weight,
+    Loader2,
+} from "lucide-react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const daysOfDataOptions = [
     { value: 7, label: "7 days" },
@@ -24,9 +32,36 @@ const daysOfDataOptions = [
 
 export default function ChartPage() {
     const [daysOfData, setDaysOfData] = useState(90);
+    const [glucoseData, setGlucoseData] = useState([]);
+    const [weightData, setWeightData] = useState([]);
+    const [insulinData, setInsulinData] = useState([]);
+    const [loading, setLoading] = useState(true);
+
     const changeDaysOfData = (duration: string) => {
         setDaysOfData(parseInt(duration));
     };
+
+    useEffect(() => {
+        setLoading(true);
+        const fetchData = async () => {
+            try {
+                const [glucoseRes, weightRes, insulinRes] = await Promise.all([
+                    axios.get(`/api/glucose/get/${daysOfData}`),
+                    axios.get(`/api/weight/get/${daysOfData}`),
+                    axios.get(`/api/insulin/get/${daysOfData}`),
+                ]);
+                setGlucoseData(glucoseRes.data.data || []);
+                setWeightData(weightRes.data.data || []);
+                setInsulinData(insulinRes.data.data || []);
+            } catch (error) {
+                // Optionally handle error
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, [daysOfData]);
+
     return (
         <div className="h-full bg-background py-5 px-5">
             <div className="flex flex-col max-w-screen-xl mx-auto h-full">
@@ -44,11 +79,16 @@ export default function ChartPage() {
                             </div>
                             Blood Glucose
                         </div>
-                        <div className="h-96">
-                            <AdvGlucoseChartRecharts
-                                fetch={true}
-                                days={daysOfData}
-                            />
+                        <div className="h-96 flex items-center justify-center">
+                            {loading ? (
+                                <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+                            ) : (
+                                <AdvGlucoseChartRecharts
+                                    fetch={false}
+                                    data={glucoseData}
+                                    days={daysOfData}
+                                />
+                            )}
                         </div>
                     </div>
                     <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
@@ -60,11 +100,16 @@ export default function ChartPage() {
                             </div>
                             Weight history
                         </div>
-                        <div className="h-96">
-                            <AdvWeightChartRecharts
-                                fetch={true}
-                                days={daysOfData}
-                            />
+                        <div className="h-96 flex items-center justify-center">
+                            {loading ? (
+                                <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+                            ) : (
+                                <AdvWeightChartRecharts
+                                    fetch={false}
+                                    data={weightData}
+                                    days={daysOfData}
+                                />
+                            )}
                         </div>
                     </div>
                     <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
@@ -76,11 +121,16 @@ export default function ChartPage() {
                             </div>
                             Insulin Dose
                         </div>
-                        <div className="h-96">
-                            <AdvInsulinChartSeparateRecharts
-                                fetch={true}
-                                days={daysOfData}
-                            />
+                        <div className="h-96 flex items-center justify-center">
+                            {loading ? (
+                                <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+                            ) : (
+                                <AdvInsulinChartSeparateRecharts
+                                    fetch={false}
+                                    data={insulinData}
+                                    days={daysOfData}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
