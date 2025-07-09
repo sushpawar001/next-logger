@@ -140,9 +140,10 @@ export default function AdvInsulinChartSeparateRecharts(props: {
     useEffect(() => {
         if (allInsulins.length > 0 && Object.keys(visibleLines).length === 0) {
             const initial: { [key: string]: boolean } = {};
-            allInsulins.forEach((name) => {
-                initial[name] = true;
-                initial[`${name}_ma`] = true;
+            allInsulins.forEach((name, idx) => {
+                // Only enable the first insulin and its MA by default
+                initial[name] = idx === 0;
+                initial[`${name}_ma`] = idx === 0;
             });
             setVisibleLines(initial);
         }
@@ -278,6 +279,7 @@ export default function AdvInsulinChartSeparateRecharts(props: {
                             tick={{ fontSize: 12 }}
                             tickMargin={8}
                             width={20}
+                            domain={["auto", "auto"]}
                         />
                         <Tooltip content={<CustomTooltip />} />
                         {/* Remove <Legend /> */}
@@ -308,8 +310,26 @@ export default function AdvInsulinChartSeparateRecharts(props: {
                     </LineChart>
                 </ResponsiveContainer>
             </div>
-            <div style={{ height: 48, marginTop: 8, overflow: "hidden" }}>
-                {renderLegend()}
+            <div
+                style={{
+                    marginTop: 8,
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                }}
+            >
+                <div
+                    style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "16px 24px",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                    }}
+                >
+                    {renderLegend()}
+                </div>
             </div>
         </div>
     );
