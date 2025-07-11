@@ -90,7 +90,7 @@ export default function InsulinPage() {
                     changeDaysOfData={changeDaysOfData}
                     className="md:col-span-3"
                 />
-                <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow h-full w-full md:col-span-2">
+                <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md h-full w-full md:col-span-2">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Insulin Trends
                     </h3>
@@ -114,7 +114,7 @@ export default function InsulinPage() {
                 <div className="w-full">
                     <InsulinAdd data={insulinData} setData={setInsulinData} />
                 </div>
-                <div className="border border-purple-100 transition-all duration-300 shadow p-4 md:px-6 rounded-lg md:col-span-3">
+                <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3">
                     <div className="max-w-full overflow-x-auto rounded-lg">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div

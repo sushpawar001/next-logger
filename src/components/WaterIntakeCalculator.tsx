@@ -203,7 +203,7 @@ const ResultsCard: React.FC<{
     results: WaterIntakeResult;
     resultsRef?: React.RefObject<HTMLDivElement>;
 }> = ({ results, resultsRef }) => (
-    <Card className="border border-blue-100 shadow" ref={resultsRef}>
+    <Card className="border border-blue-100 shadow-md" ref={resultsRef}>
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Daily Water Intake Results
@@ -292,7 +292,7 @@ const ResultsCard: React.FC<{
 );
 
 const EmptyResultsCard: React.FC = () => (
-    <Card className="border border-gray-200 shadow">
+    <Card className="border border-gray-200 shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Daily Water Intake Results
@@ -592,7 +592,7 @@ const InputForm: React.FC<{
     onClear,
     suffix = "",
 }) => (
-    <Card className="border border-purple-100 shadow">
+    <Card className="border border-purple-100 shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Enter Your Details

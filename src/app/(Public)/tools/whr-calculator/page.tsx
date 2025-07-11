@@ -28,7 +28,7 @@ export default function WHRCalculatorPage() {
             {/* WHR Reference Tables */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Male WHR Table */}
-                <Card className="border border-purple-100 shadow">
+                <Card className="border border-purple-100 shadow-md">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-gray-900">
                             WHR Table for Men
@@ -111,7 +111,7 @@ export default function WHRCalculatorPage() {
                 </Card>
 
                 {/* Female WHR Table */}
-                <Card className="border border-purple-100 shadow">
+                <Card className="border border-purple-100 shadow-md">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-gray-900">
                             WHR Table for Women

@@ -70,7 +70,6 @@ export default function Stats() {
         [key: string]: statsObjType;
     }>({});
 
-
     const changeDaysOfData = (value: string) => {
         console.log(value);
         const daysInput = value;
@@ -258,7 +257,7 @@ export default function Stats() {
     return (
         <div className="h-full flex justify-center items-center bg-background py-5 px-5 lg:px-20">
             <div className="w-full lg:w-fit grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                <Card className="border-purple-100 shadow transition-all duration-300 lg:col-span-2">
+                <Card className="border-purple-100 shadow-md transition-all duration-300 lg:col-span-2">
                     <CardContent className="p-4">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
@@ -303,7 +302,7 @@ export default function Stats() {
                         </div>
                     </CardContent>
                 </Card>
-                <div className="bg-white border border-purple-100 transition-all duration-300 shadow lg:col-span-2 rounded-lg lg:flex gap-1">
+                <div className="bg-white border border-purple-100 transition-all duration-300 shadow-md lg:col-span-2 rounded-lg lg:flex gap-1">
                     <div
                         className={`w-full lg:w-fit p-2 xl:p-4 rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none  ${
                             riskLevel === "high"

@@ -59,7 +59,7 @@ export function StatsTableCard({
     };
 
     return (
-        <Card className="border-purple-100 shadow transition-all duration-300">
+        <Card className="border-purple-100 shadow-md transition-all duration-300">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-900">
                     <div className={`p-2 rounded-lg ${gradient}`}>

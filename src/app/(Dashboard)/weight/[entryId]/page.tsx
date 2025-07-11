@@ -67,7 +67,7 @@ export default function EditEntry({ params }) {
 
     return (
         <section className="h-full w-full flex flex-col justify-center items-center bg-background p-5 space-y-6">
-            <div className="max-w-2xl mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow w-full">
+            <div className="max-w-2xl mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md w-full">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
@@ -92,7 +92,7 @@ export default function EditEntry({ params }) {
                 </div>
             </div>
             <form
-                className="max-w-2xl w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow"
+                className="max-w-2xl w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md"
                 onSubmit={submitForm}
             >
                 <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">

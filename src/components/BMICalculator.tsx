@@ -230,7 +230,7 @@ const ErrorMessages: React.FC<{ errors: string[] }> = ({ errors }) => {
 };
 
 const ResultsCard: React.FC<{ result: BMIResult }> = ({ result }) => (
-    <Card className="border border-purple-100 shadow">
+    <Card className="border border-purple-100 shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 BMI Results
@@ -246,7 +246,7 @@ const ResultsCard: React.FC<{ result: BMIResult }> = ({ result }) => (
 );
 
 const EmptyResultsCard: React.FC = () => (
-    <Card className="border border-purple-100 shadow">
+    <Card className="border border-purple-100 shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Results
@@ -483,7 +483,7 @@ const InputForm: React.FC<{
     onClear,
     suffix = "",
 }) => (
-    <Card className="border border-purple-100 shadow">
+    <Card className="border border-purple-100 shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Enter Your Information

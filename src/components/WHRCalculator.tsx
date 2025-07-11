@@ -281,7 +281,7 @@ const ResultsCard: React.FC<{
     result: WHRResult;
     gender: "male" | "female";
 }> = ({ result, gender }) => (
-    <Card className="border border-purple-100 shadow">
+    <Card className="border border-purple-100 shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Your Results
@@ -294,7 +294,7 @@ const ResultsCard: React.FC<{
 );
 
 const EmptyResultsCard: React.FC = () => (
-    <Card className="border border-purple-100 shadow">
+    <Card className="border border-purple-100 shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Your Results
@@ -446,7 +446,7 @@ const InputForm: React.FC<{
     onClear,
     suffix = "",
 }) => (
-    <Card className="border border-purple-100 shadow">
+    <Card className="border border-purple-100 shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Enter Your Information

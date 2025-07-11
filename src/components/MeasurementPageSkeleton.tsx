@@ -3,7 +3,7 @@ const MeasurementPageSkeleton = () => (
         <div className="bg-background h-full py-5 px-5">
             <div className="flex flex-col max-w-screen-xl mx-auto">
                 <div className="grid md:grid-cols-3 mb-5 gap-5">
-                    <form className="max-w-full p-5 md:p-7 rounded-lg bg-white/65 shadow flex items-center justify-center order-2 md:order-1">
+                    <form className="max-w-full p-5 md:p-7 rounded-lg bg-white/65 shadow-md flex items-center justify-center order-2 md:order-1">
                         <div className="grid grid-cols-4 gap-2.5 w-full">
                             <label className="block my-auto mr-2">
                                 <Skeleton className="w-[32px] max-w-full" />
@@ -57,7 +57,7 @@ const MeasurementPageSkeleton = () => (
                             </div>
                         </div>
                     </form>
-                    <div className="col-span-1 md:col-span-2 max-w-full p-5 min-h-96 md:min-h-0 rounded-lg bg-white/65 shadow order-1 md:order-2">
+                    <div className="col-span-1 md:col-span-2 max-w-full p-5 min-h-96 md:min-h-0 rounded-lg bg-white/65 shadow-md order-1 md:order-2">
                         <div>
                             <SVGSkeleton className="w-full h-[390px]" />
                             <div>
@@ -100,7 +100,7 @@ const MeasurementPageSkeleton = () => (
                         </div>
                     </div>
                 </div>
-                <div className="bg-white/65 p-4 rounded-lg shadow">
+                <div className="bg-white/65 p-4 rounded-lg shadow-md">
                     <div className="flex flex-wrap">
                         <div className="max-w-full w-full overflow-x-auto">
                             <div className="mb-2 grid grid-cols-2">

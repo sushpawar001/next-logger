@@ -67,7 +67,7 @@ export default function UserInsulins({
 
     return (
         <div
-            className={`p-5 md:p-7 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow ${className}`}
+            className={`p-5 md:p-7 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md ${className}`}
         >
             <div className="flex items-center gap-3 text-lg text-gray-900 mb-4 md:mb-6">
                 <div

@@ -43,12 +43,9 @@ export default function AddNewInsulin({
                     response.data.entry,
                 ]);
 
-                const addResponse = await axios.post(
-                    "/api/users/add-insulin",
-                    {
-                        name: response.data.entry.name,
-                    }
-                );
+                const addResponse = await axios.post("/api/users/add-insulin", {
+                    name: response.data.entry.name,
+                });
                 setUserInsulins((data) => [...data, addResponse.data.insulin]);
             } else {
                 notify("Insulin already exists!", "error");
@@ -62,7 +59,7 @@ export default function AddNewInsulin({
 
     return (
         <div
-            className={`p-5 md:p-7 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow ${className}`}
+            className={`p-5 md:p-7 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md ${className}`}
         >
             <div className="flex items-center gap-3 text-lg text-gray-900 mb-4 md:mb-6">
                 <div
@@ -79,7 +76,10 @@ export default function AddNewInsulin({
                     </p>
                 </div>
             </div>
-            <form className="flex flex-col md:flex-row gap-2" onSubmit={submitNewInsulin}>
+            <form
+                className="flex flex-col md:flex-row gap-2"
+                onSubmit={submitNewInsulin}
+            >
                 <input
                     type="text"
                     id="insulin"

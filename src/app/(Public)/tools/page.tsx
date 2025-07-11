@@ -96,7 +96,7 @@ export default function ToolsPage() {
                     const IconComponent = tool.icon;
                     return (
                         <Link href={tool.href} key={index} className="block">
-                            <Card className="border-purple-100 shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer">
+                            <Card className="border-purple-100 shadow-sm hover:shadow-md-md transition-shadow-md duration-200 cursor-pointer">
                                 <CardHeader>
                                     <div className="flex items-center gap-3">
                                         <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">

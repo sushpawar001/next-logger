@@ -1,4 +1,7 @@
-import { getDashboardLayout, setDashboardLayoutLocal } from "@/helpers/getDashboardLayout";
+import {
+    getDashboardLayout,
+    setDashboardLayoutLocal,
+} from "@/helpers/getDashboardLayout";
 import notify from "@/helpers/notify";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
@@ -44,7 +47,7 @@ export default function DashboardPreferences({
 
     return (
         <div
-            className={`p-5 md:p-7 rounded-lg bg-white shadow ${className}`}
+            className={`p-5 md:p-7 rounded-lg bg-white shadow-md ${className}`}
         >
             <div className="flex items-center gap-2 font-bold text-xl md:text-2xl text-secondary mb-4 md:mb-6">
                 <FaUserGear className="text-xl" />

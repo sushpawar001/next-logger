@@ -28,7 +28,7 @@ export default function BMRCalculatorPage() {
             {/* BMR Reference Information */}
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Activity Level Reference Table */}
-                <Card className="border border-purple-100 shadow">
+                <Card className="border border-purple-100 shadow-md">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-gray-900">
                             Activity Level Reference
@@ -161,7 +161,7 @@ export default function BMRCalculatorPage() {
                 </Card>
 
                 {/* BMR Formula Reference */}
-                <Card className="border border-purple-100 shadow">
+                <Card className="border border-purple-100 shadow-md">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-gray-900">
                             Mifflin-St Jeor Equation

@@ -122,7 +122,7 @@ export default function MeasurementAdd({
     };
     return (
         <form
-            className={`max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full shadow ${className}`}
+            className={`max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full shadow-md ${className}`}
             onSubmit={submitForm}
         >
             <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">

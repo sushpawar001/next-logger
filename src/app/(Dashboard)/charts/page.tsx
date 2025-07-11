@@ -70,7 +70,7 @@ export default function ChartPage() {
                         selectedDuration={daysOfData.toString()}
                         onDurationChange={changeDaysOfData}
                     />
-                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
+                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
@@ -91,7 +91,7 @@ export default function ChartPage() {
                             )}
                         </div>
                     </div>
-                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
+                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
@@ -112,7 +112,7 @@ export default function ChartPage() {
                             )}
                         </div>
                     </div>
-                    <div className="w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow">
+                    <div className="w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600`}

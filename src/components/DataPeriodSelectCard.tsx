@@ -12,7 +12,7 @@ export default function DataPeriodSelectCard({
 }) {
     return (
         <div
-            className={`bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow flex items-center justify-between ${className}`}
+            className={`bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow-md flex items-center justify-between ${className}`}
         >
             <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
