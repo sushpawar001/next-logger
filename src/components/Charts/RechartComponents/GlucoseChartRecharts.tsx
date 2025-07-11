@@ -7,6 +7,7 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
+    ReferenceArea,
 } from "recharts";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -138,6 +139,14 @@ export default function GlucoseChartRecharts(props: {
                 />
                 <YAxis tick={{ fontSize: 12 }} tickMargin={8} width={20} />
                 <Tooltip content={<CustomTooltip />} />
+                {/* Healthy range: 70-140 mg/dL */}
+                <ReferenceArea
+                    y1={70}
+                    y2={140}
+                    fill="#90ee90"
+                    fillOpacity={0.18}
+                    ifOverflow="extendDomain"
+                />
                 <Line
                     type="monotone"
                     dataKey="value"
