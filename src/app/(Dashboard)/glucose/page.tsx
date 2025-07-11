@@ -98,7 +98,7 @@ export default function GlucosePage() {
                 <div className="w-full">
                     <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
                 </div>
-                <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3">
+                <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div

@@ -176,7 +176,7 @@ function ChartsHeader({
                             value={selectedDuration}
                             onValueChange={onDurationChange}
                         >
-                            <SelectTrigger className="lg:w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3]">
+                            <SelectTrigger className="lg:w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] bg-white">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
