@@ -9,6 +9,7 @@ import InsulinChartRecharts from "@/components/Charts/RechartComponents/InsulinC
 import PopUpModal from "@/components/PopUpModal";
 import { History, Edit, Trash2, Loader2 } from "lucide-react";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import {
     Table,
     TableBody,
@@ -82,6 +83,11 @@ export default function InsulinPage() {
             console.log(error);
         }
     };
+
+    if (loading === true) {
+        return <LoadingSkeleton />;
+    }
+    
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
