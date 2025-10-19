@@ -20,6 +20,8 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import TagFilterCard from "@/components/TagFilterCard";
+import { filterByTags } from "@/helpers/tagFilterHelpers";
 
 const daysOfDataOptions = [
     { value: 7, label: "7 days" },
@@ -32,6 +34,7 @@ const daysOfDataOptions = [
 
 export default function ChartPage() {
     const [daysOfData, setDaysOfData] = useState(90);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [glucoseData, setGlucoseData] = useState([]);
     const [weightData, setWeightData] = useState([]);
     const [insulinData, setInsulinData] = useState([]);
@@ -62,6 +65,11 @@ export default function ChartPage() {
         fetchData();
     }, [daysOfData]);
 
+    // Filter data based on selected tags
+    const filteredGlucoseData = filterByTags(glucoseData, selectedTags);
+    const filteredWeightData = filterByTags(weightData, selectedTags);
+    const filteredInsulinData = filterByTags(insulinData, selectedTags);
+
     return (
         <div className="h-full bg-background py-5 px-5">
             <div className="flex flex-col max-w-screen-xl mx-auto h-full">
@@ -70,6 +78,13 @@ export default function ChartPage() {
                         selectedDuration={daysOfData.toString()}
                         onDurationChange={changeDaysOfData}
                     />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-3">
+                        <TagFilterCard
+                            selectedTags={selectedTags}
+                            onTagsChange={setSelectedTags}
+                            className="w-full"
+                        />
+                    </div>
                     <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
@@ -85,7 +100,7 @@ export default function ChartPage() {
                             ) : (
                                 <AdvGlucoseChartRecharts
                                     fetch={false}
-                                    data={glucoseData}
+                                    data={filteredGlucoseData}
                                     days={daysOfData}
                                 />
                             )}
@@ -106,7 +121,7 @@ export default function ChartPage() {
                             ) : (
                                 <AdvWeightChartRecharts
                                     fetch={false}
-                                    data={weightData}
+                                    data={filteredWeightData}
                                     days={daysOfData}
                                 />
                             )}
@@ -127,7 +142,7 @@ export default function ChartPage() {
                             ) : (
                                 <AdvInsulinChartSeparateRecharts
                                     fetch={false}
-                                    data={insulinData}
+                                    data={filteredInsulinData}
                                     days={daysOfData}
                                 />
                             )}

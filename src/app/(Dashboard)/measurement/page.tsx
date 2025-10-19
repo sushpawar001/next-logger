@@ -18,6 +18,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
+import TagFilterCard from "@/components/TagFilterCard";
+import { filterByTags } from "@/helpers/tagFilterHelpers";
 import { History, Edit, Trash2 } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import MeasurementPageSkeleton2 from "@/components/MeasurementPageSkeleton2";
@@ -44,6 +46,7 @@ const TdStyle = {
 export default function MeasurementsPage() {
     const [measurementData, setMeasurementData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(30);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 500 });
 
@@ -91,24 +94,34 @@ export default function MeasurementsPage() {
         }
     };
 
+    // Filter data based on selected tags
+    const filteredMeasurementData = filterByTags(measurementData, selectedTags);
+
     if (loading === true) {
         return <MeasurementPageSkeleton2 />;
     }
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
-                <DataPeriodSelectCard
-                    daysOfData={daysOfData}
-                    changeDaysOfData={changeDaysOfData}
-                    className="md:col-span-3"
-                />
+                <div className="md:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <DataPeriodSelectCard
+                        daysOfData={daysOfData}
+                        changeDaysOfData={changeDaysOfData}
+                        className=""
+                    />
+                    <TagFilterCard
+                        selectedTags={selectedTags}
+                        onTagsChange={setSelectedTags}
+                        className=""
+                    />
+                </div>
                 <div className="mx-auto p-3 md:px-6 rounded-lg border border-purple-100 transition-all duration-300 shadow-md h-full w-full md:col-span-2 flex flex-col bg-white">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Measurement Trends
                     </h3>
                     <div className="h-72 flex-grow">
                         <MeasurementChartRecharts
-                            data={measurementData}
+                            data={filteredMeasurementData}
                             fetch={false}
                         />
                     </div>
@@ -166,81 +179,84 @@ export default function MeasurementsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody ref={parent}>
-                                    {measurementData.length === 0 ? (
+                                    {filteredMeasurementData.length === 0 ? (
                                         <TableRow>
                                             <TableCell
-                                                colSpan={4}
+                                                colSpan={10}
                                                 className="text-center py-8 text-gray-500"
                                             >
-                                                No glucose entries found for the
-                                                selected period.
+                                                {measurementData.length === 0
+                                                    ? "No measurement entries found for the selected period."
+                                                    : "No measurement entries match the selected tags."}
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        measurementData.map((entry, index) => (
-                                            <TableRow
-                                                key={entry._id}
-                                                className={`hover:bg-purple-50 transition-colors ${
-                                                    index % 2 === 0
-                                                        ? "bg-white"
-                                                        : "bg-gray-50/50"
-                                                }`}
-                                            >
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.arms}
-                                                </TableCell>
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.chest}
-                                                </TableCell>
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.abdomen}
-                                                </TableCell>
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.waist}
-                                                </TableCell>
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.hip}
-                                                </TableCell>
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.thighs}
-                                                </TableCell>
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.calves}
-                                                </TableCell>
-                                                <TableCell className="text-gray-600">
-                                                    {formatDate(
-                                                        entry.createdAt
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
-                                                        {entry.tag ?? "--"}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <Link
-                                                            href={`/measurement/${entry._id}`}
-                                                            className={
-                                                                TdStyle.TdButton
-                                                            }
-                                                        >
-                                                            <Edit className="h-5 w-5" />
-                                                        </Link>
-                                                        <PopUpModal
-                                                            delete={() => {
-                                                                deleteData(
-                                                                    entry._id
-                                                                );
-                                                            }}
-                                                            buttonContent={
-                                                                <Trash2 className="h-5 w-5" />
-                                                            }
-                                                        />
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
+                                        filteredMeasurementData.map(
+                                            (entry, index) => (
+                                                <TableRow
+                                                    key={entry._id}
+                                                    className={`hover:bg-purple-50 transition-colors ${
+                                                        index % 2 === 0
+                                                            ? "bg-white"
+                                                            : "bg-gray-50/50"
+                                                    }`}
+                                                >
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.arms}
+                                                    </TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.chest}
+                                                    </TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.abdomen}
+                                                    </TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.waist}
+                                                    </TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.hip}
+                                                    </TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.thighs}
+                                                    </TableCell>
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.calves}
+                                                    </TableCell>
+                                                    <TableCell className="text-gray-600">
+                                                        {formatDate(
+                                                            entry.createdAt
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
+                                                            {entry.tag ?? "--"}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <Link
+                                                                href={`/measurement/${entry._id}`}
+                                                                className={
+                                                                    TdStyle.TdButton
+                                                                }
+                                                            >
+                                                                <Edit className="h-5 w-5" />
+                                                            </Link>
+                                                            <PopUpModal
+                                                                delete={() => {
+                                                                    deleteData(
+                                                                        entry._id
+                                                                    );
+                                                                }}
+                                                                buttonContent={
+                                                                    <Trash2 className="h-5 w-5" />
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        )
                                     )}
                                 </TableBody>
                             </Table>

@@ -1,9 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import { mean, median, mode, min, max, sum } from "mathjs";
 import { glucose, weight, insulin } from "@/types/models";
 import { getDailyInsulinValues, getHba1cValue } from "@/helpers/statsHelpers";
+import { filterByTags } from "@/helpers/tagFilterHelpers";
 import { FaChartLine, FaInfoCircle } from "react-icons/fa";
 import { LuInfo } from "react-icons/lu";
 import Link from "next/link";
@@ -20,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { BarChart3, TrendingUp } from "lucide-react";
 import { StatsTableCard } from "@/components/StatsTableCard";
+import TagFilterCard from "@/components/TagFilterCard";
 
 interface statsObjType {
     mean: number;
@@ -53,6 +55,7 @@ export default function Stats() {
     const [weightDataOld, setWeightDataOld] = useState<weight[]>([]);
     const [insulinData, setInsulinData] = useState<insulin[]>([]);
     const [daysOfData, setDaysOfData] = useState(90);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [glucoseStats, setGlucoseStats] = useState<statsObjType>(statsObj);
     const [estHbA1c, setEstHbA1c] = useState(0);
@@ -136,9 +139,31 @@ export default function Stats() {
         fetchData();
     }, [daysOfData]);
 
+    // Filter data based on selected tags using useMemo to prevent infinite loops
+    const filteredGlucoseData = useMemo(
+        () => filterByTags(glucoseData, selectedTags),
+        [glucoseData, selectedTags]
+    );
+    const filteredGlucoseDataOld = useMemo(
+        () => filterByTags(glucoseDataOld, selectedTags),
+        [glucoseDataOld, selectedTags]
+    );
+    const filteredWeightData = useMemo(
+        () => filterByTags(weightData, selectedTags),
+        [weightData, selectedTags]
+    );
+    const filteredWeightDataOld = useMemo(
+        () => filterByTags(weightDataOld, selectedTags),
+        [weightDataOld, selectedTags]
+    );
+    const filteredInsulinData = useMemo(
+        () => filterByTags(insulinData, selectedTags),
+        [insulinData, selectedTags]
+    );
+
     useEffect(() => {
-        if (glucoseData.length > 0) {
-            const glucoseArr = glucoseData.map((data) => data.value);
+        if (filteredGlucoseData.length > 0) {
+            const glucoseArr = filteredGlucoseData.map((data) => data.value);
 
             setGlucoseStats({
                 mean: mean(glucoseArr),
@@ -161,11 +186,11 @@ export default function Stats() {
         } else {
             setGlucoseStats(statsObj);
         }
-    }, [glucoseData]);
+    }, [filteredGlucoseData]);
 
     useEffect(() => {
-        if (weightData.length > 0) {
-            const weightArr = weightData.map((data) => data.value);
+        if (filteredWeightData.length > 0) {
+            const weightArr = filteredWeightData.map((data) => data.value);
 
             setWeightStats({
                 mean: mean(weightArr),
@@ -177,12 +202,12 @@ export default function Stats() {
         } else {
             setWeightStats(statsObj);
         }
-    }, [weightData]);
+    }, [filteredWeightData]);
 
     useEffect(() => {
-        if (insulinData.length > 0) {
+        if (filteredInsulinData.length > 0) {
             const insulinsArrObj = {};
-            insulinData.forEach((insulin) => {
+            filteredInsulinData.forEach((insulin) => {
                 if (!(insulin.name in insulinsArrObj)) {
                     insulinsArrObj[insulin.name] = [];
                 }
@@ -191,7 +216,7 @@ export default function Stats() {
             const insulinsStatsObj = {};
 
             Object.keys(insulinsArrObj).forEach((key) => {
-                const tempData = insulinData.filter(
+                const tempData = filteredInsulinData.filter(
                     (data) => data.name === key
                 );
                 const daily = getDailyInsulinValues(tempData);
@@ -211,11 +236,11 @@ export default function Stats() {
         } else {
             setInsulinStats({});
         }
-    }, [insulinData]);
+    }, [filteredInsulinData]);
 
     useEffect(() => {
-        if (glucoseDataOld.length > 0) {
-            const glucoseArr = glucoseDataOld.map((data) => data.value);
+        if (filteredGlucoseDataOld.length > 0) {
+            const glucoseArr = filteredGlucoseDataOld.map((data) => data.value);
 
             setGlucoseStatsOld({
                 mean: mean(glucoseArr),
@@ -227,11 +252,11 @@ export default function Stats() {
         } else {
             setGlucoseStatsOld(statsObj);
         }
-    }, [glucoseDataOld]);
+    }, [filteredGlucoseDataOld]);
 
     useEffect(() => {
-        if (weightDataOld.length > 0) {
-            const weightArr = weightDataOld.map((data) => data.value);
+        if (filteredWeightDataOld.length > 0) {
+            const weightArr = filteredWeightDataOld.map((data) => data.value);
 
             setWeightStatsOld({
                 mean: mean(weightArr),
@@ -243,7 +268,7 @@ export default function Stats() {
         } else {
             setWeightStatsOld(statsObj);
         }
-    }, [weightDataOld]);
+    }, [filteredWeightDataOld]);
 
     if (isLoading === true) {
         return (
@@ -274,24 +299,6 @@ export default function Stats() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-3 w-full lg:w-fit">
-                                <Select
-                                    value={daysOfData.toString()}
-                                    onValueChange={changeDaysOfData}
-                                >
-                                    <SelectTrigger className="lg:w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] bg-white">
-                                        <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {daysOfDataOptions.map((option) => (
-                                            <SelectItem
-                                                key={option.value}
-                                                value={option.value.toString()}
-                                            >
-                                                {option.label}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
                                 <Link href="/charts">
                                     <Button className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg">
                                         <TrendingUp className="h-4 w-4 mr-2" />
@@ -302,6 +309,47 @@ export default function Stats() {
                         </div>
                     </CardContent>
                 </Card>
+
+                <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                    <div className="bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow-md flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                                <BarChart3 className="h-4 w-4 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="font-semibold text-gray-900">
+                                    Data Period
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                    Select time range for analysis
+                                </p>
+                            </div>
+                        </div>
+                        <Select
+                            value={daysOfData.toString()}
+                            onValueChange={changeDaysOfData}
+                        >
+                            <SelectTrigger className="w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] bg-white">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {daysOfDataOptions.map((option) => (
+                                    <SelectItem
+                                        key={option.value}
+                                        value={option.value.toString()}
+                                    >
+                                        {option.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <TagFilterCard
+                        selectedTags={selectedTags}
+                        onTagsChange={setSelectedTags}
+                        className=""
+                    />
+                </div>
                 <div className="bg-white border border-purple-100 transition-all duration-300 shadow-md lg:col-span-2 rounded-lg lg:flex gap-1">
                     <div
                         className={`w-full lg:w-fit p-2 xl:p-4 rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none  ${
@@ -347,7 +395,11 @@ export default function Stats() {
                     icon={Droplets}
                     gradient="bg-gradient-to-br from-blue-500 to-blue-600"
                     newData={glucoseStats}
-                    oldData={glucoseDataOld.length > 0 ? glucoseStatsOld : null}
+                    oldData={
+                        filteredGlucoseDataOld.length > 0
+                            ? glucoseStatsOld
+                            : null
+                    }
                 />
 
                 <StatsTableCard
@@ -355,10 +407,12 @@ export default function Stats() {
                     icon={Droplets}
                     gradient="bg-gradient-to-br from-orange-500 to-orange-600"
                     newData={weightStats}
-                    oldData={weightDataOld.length > 0 ? weightStatsOld : null}
+                    oldData={
+                        filteredWeightDataOld.length > 0 ? weightStatsOld : null
+                    }
                 />
 
-                {insulinData.length > 0
+                {filteredInsulinData.length > 0
                     ? Object.entries(insulinStats).map((data, index) => (
                           <StatsTableCard
                               key={data[0]}

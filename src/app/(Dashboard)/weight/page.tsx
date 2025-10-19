@@ -17,6 +17,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
+import TagFilterCard from "@/components/TagFilterCard";
+import { filterByTags } from "@/helpers/tagFilterHelpers";
 import { History, Edit, Trash2 } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
@@ -32,6 +34,7 @@ const TdStyle = {
 export default function WeightPage() {
     const [weightData, setWeightData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(7);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 400 });
 
@@ -74,23 +77,36 @@ export default function WeightPage() {
         }
     };
 
+    // Filter data based on selected tags
+    const filteredWeightData = filterByTags(weightData, selectedTags);
+
     if (loading === true) {
         return <LoadingSkeleton />;
     }
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
-                <DataPeriodSelectCard
-                    daysOfData={daysOfData}
-                    changeDaysOfData={changeDaysOfData}
-                    className="md:col-span-3"
-                />
+                <div className="md:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <DataPeriodSelectCard
+                        daysOfData={daysOfData}
+                        changeDaysOfData={changeDaysOfData}
+                        className=""
+                    />
+                    <TagFilterCard
+                        selectedTags={selectedTags}
+                        onTagsChange={setSelectedTags}
+                        className=""
+                    />
+                </div>
                 <div className="mx-auto p-4 md:px-6 md:py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md h-full w-full md:col-span-2 flex flex-col">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Weight Trends
                     </h3>
                     <div className="h-72 flex-grow">
-                        <WeightChartRecharts data={weightData} fetch={false} />
+                        <WeightChartRecharts
+                            data={filteredWeightData}
+                            fetch={false}
+                        />
                     </div>
                 </div>
                 <div className="w-full">
@@ -125,63 +141,66 @@ export default function WeightPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody ref={parent}>
-                                    {weightData.length === 0 ? (
+                                    {filteredWeightData.length === 0 ? (
                                         <TableRow>
                                             <TableCell
                                                 colSpan={4}
                                                 className="text-center py-8 text-gray-500"
                                             >
-                                                No weight entries found for the
-                                                selected period.
+                                                {weightData.length === 0
+                                                    ? "No weight entries found for the selected period."
+                                                    : "No weight entries match the selected tags."}
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        weightData.map((entry, index) => (
-                                            <TableRow
-                                                key={entry.id}
-                                                className={`hover:bg-purple-50 transition-colors ${
-                                                    index % 2 === 0
-                                                        ? "bg-white"
-                                                        : "bg-gray-50/50"
-                                                }`}
-                                            >
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.value} kg
-                                                </TableCell>
-                                                <TableCell className="text-gray-600">
-                                                    {formatDate(
-                                                        entry.createdAt
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
-                                                        {entry.tag ?? "--"}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <Link
-                                                            href={`/weight/${entry._id}`}
-                                                            className={
-                                                                TdStyle.TdButton
-                                                            }
-                                                        >
-                                                            <Edit className="h-5 w-5" />
-                                                        </Link>
-                                                        <PopUpModal
-                                                            delete={() => {
-                                                                deleteData(
-                                                                    entry._id
-                                                                );
-                                                            }}
-                                                            buttonContent={
-                                                                <Trash2 className="h-5 w-5" />
-                                                            }
-                                                        />
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
+                                        filteredWeightData.map(
+                                            (entry, index) => (
+                                                <TableRow
+                                                    key={entry.id}
+                                                    className={`hover:bg-purple-50 transition-colors ${
+                                                        index % 2 === 0
+                                                            ? "bg-white"
+                                                            : "bg-gray-50/50"
+                                                    }`}
+                                                >
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.value} kg
+                                                    </TableCell>
+                                                    <TableCell className="text-gray-600">
+                                                        {formatDate(
+                                                            entry.createdAt
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
+                                                            {entry.tag ?? "--"}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <Link
+                                                                href={`/weight/${entry._id}`}
+                                                                className={
+                                                                    TdStyle.TdButton
+                                                                }
+                                                            >
+                                                                <Edit className="h-5 w-5" />
+                                                            </Link>
+                                                            <PopUpModal
+                                                                delete={() => {
+                                                                    deleteData(
+                                                                        entry._id
+                                                                    );
+                                                                }}
+                                                                buttonContent={
+                                                                    <Trash2 className="h-5 w-5" />
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        )
                                     )}
                                 </TableBody>
                             </Table>

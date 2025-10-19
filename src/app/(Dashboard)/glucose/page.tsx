@@ -2,6 +2,7 @@
 import GlucoseChartRecharts from "@/components/Charts/RechartComponents/GlucoseChartRecharts";
 import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
+import TagFilterCard from "@/components/TagFilterCard";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import PopUpModal from "@/components/PopUpModal";
 import {
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/table";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
+import { filterByTags } from "@/helpers/tagFilterHelpers";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import axios from "axios";
 import { History, Edit, Trash2 } from "lucide-react";
@@ -30,6 +32,7 @@ const TdStyle = {
 export default function GlucosePage() {
     const [glucoseData, setGlucoseData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(7);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 400 });
 
@@ -72,6 +75,9 @@ export default function GlucosePage() {
         }
     };
 
+    // Filter data based on selected tags
+    const filteredGlucoseData = filterByTags(glucoseData, selectedTags);
+
     if (loading === true) {
         return <LoadingSkeleton />;
     }
@@ -79,18 +85,25 @@ export default function GlucosePage() {
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
-                <DataPeriodSelectCard
-                    daysOfData={daysOfData}
-                    changeDaysOfData={changeDaysOfData}
-                    className="md:col-span-3"
-                />
+                <div className="md:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    <DataPeriodSelectCard
+                        daysOfData={daysOfData}
+                        changeDaysOfData={changeDaysOfData}
+                        className=""
+                    />
+                    <TagFilterCard
+                        selectedTags={selectedTags}
+                        onTagsChange={setSelectedTags}
+                        className=""
+                    />
+                </div>
                 <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md h-full w-full md:col-span-2">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Glucose Trends
                     </h3>
                     <div className="h-72">
                         <GlucoseChartRecharts
-                            data={glucoseData}
+                            data={filteredGlucoseData}
                             fetch={false}
                         />
                     </div>
@@ -127,63 +140,66 @@ export default function GlucosePage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody ref={parent}>
-                                    {glucoseData.length === 0 ? (
+                                    {filteredGlucoseData.length === 0 ? (
                                         <TableRow>
                                             <TableCell
                                                 colSpan={4}
                                                 className="text-center py-8 text-gray-500"
                                             >
-                                                No glucose entries found for the
-                                                selected period.
+                                                {glucoseData.length === 0
+                                                    ? "No glucose entries found for the selected period."
+                                                    : "No glucose entries match the selected tags."}
                                             </TableCell>
                                         </TableRow>
                                     ) : (
-                                        glucoseData.map((entry, index) => (
-                                            <TableRow
-                                                key={entry.id}
-                                                className={`hover:bg-purple-50 transition-colors ${
-                                                    index % 2 === 0
-                                                        ? "bg-white"
-                                                        : "bg-gray-50/50"
-                                                }`}
-                                            >
-                                                <TableCell className="font-medium text-gray-900">
-                                                    {entry.value} mg/dl
-                                                </TableCell>
-                                                <TableCell className="text-gray-600">
-                                                    {formatDate(
-                                                        entry.createdAt
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
-                                                        {entry.tag ?? "--"}
-                                                    </span>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <div className="flex items-center justify-center gap-2">
-                                                        <Link
-                                                            href={`/glucose/${entry._id}`}
-                                                            className={
-                                                                TdStyle.TdButton
-                                                            }
-                                                        >
-                                                            <Edit className="h-5 w-5" />
-                                                        </Link>
-                                                        <PopUpModal
-                                                            delete={() => {
-                                                                deleteData(
-                                                                    entry._id
-                                                                );
-                                                            }}
-                                                            buttonContent={
-                                                                <Trash2 className="h-5 w-5" />
-                                                            }
-                                                        />
-                                                    </div>
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
+                                        filteredGlucoseData.map(
+                                            (entry, index) => (
+                                                <TableRow
+                                                    key={entry.id}
+                                                    className={`hover:bg-purple-50 transition-colors ${
+                                                        index % 2 === 0
+                                                            ? "bg-white"
+                                                            : "bg-gray-50/50"
+                                                    }`}
+                                                >
+                                                    <TableCell className="font-medium text-gray-900">
+                                                        {entry.value} mg/dl
+                                                    </TableCell>
+                                                    <TableCell className="text-gray-600">
+                                                        {formatDate(
+                                                            entry.createdAt
+                                                        )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
+                                                            {entry.tag ?? "--"}
+                                                        </span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <Link
+                                                                href={`/glucose/${entry._id}`}
+                                                                className={
+                                                                    TdStyle.TdButton
+                                                                }
+                                                            >
+                                                                <Edit className="h-5 w-5" />
+                                                            </Link>
+                                                            <PopUpModal
+                                                                delete={() => {
+                                                                    deleteData(
+                                                                        entry._id
+                                                                    );
+                                                                }}
+                                                                buttonContent={
+                                                                    <Trash2 className="h-5 w-5" />
+                                                                }
+                                                            />
+                                                        </div>
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        )
                                     )}
                                 </TableBody>
                             </Table>
