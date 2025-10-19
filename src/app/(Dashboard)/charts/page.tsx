@@ -74,15 +74,45 @@ export default function ChartPage() {
         <div className="h-full bg-background py-5 px-5">
             <div className="flex flex-col max-w-screen-xl mx-auto h-full">
                 <div className="grid gap-2 md:gap-3 h-full">
-                    <ChartsHeader
-                        selectedDuration={daysOfData.toString()}
-                        onDurationChange={changeDaysOfData}
-                    />
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 md:gap-3">
+                    <ChartsHeader />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+                        <div className="bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow-md flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                                    <Calendar className="h-4 w-4 text-white" />
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold text-gray-900">
+                                        Data Period
+                                    </h3>
+                                    <p className="text-sm text-gray-500">
+                                        Select time range for analysis
+                                    </p>
+                                </div>
+                            </div>
+                            <Select
+                                value={daysOfData.toString()}
+                                onValueChange={changeDaysOfData}
+                            >
+                                <SelectTrigger className="w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] bg-white">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {daysOfDataOptions.map((option) => (
+                                        <SelectItem
+                                            key={option.value}
+                                            value={option.value.toString()}
+                                        >
+                                            {option.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
                         <TagFilterCard
                             selectedTags={selectedTags}
                             onTagsChange={setSelectedTags}
-                            className="w-full"
+                            className=""
                         />
                     </div>
                     <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
@@ -154,57 +184,21 @@ export default function ChartPage() {
     );
 }
 
-interface ChartsHeaderProps {
-    selectedDuration: string;
-    onDurationChange: (duration: string) => void;
-}
-
-function ChartsHeader({
-    selectedDuration,
-    onDurationChange,
-}: ChartsHeaderProps) {
+function ChartsHeader() {
     return (
         <Card className="border-purple-100 transition-all duration-300 w-full">
             <CardContent className="p-5">
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-3">
-                            <div className="p-3 rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
-                                <TrendingUp className="h-5 w-5 text-white" />
-                            </div>
-                            <div>
-                                <h1 className="text-lg font-bold text-gray-900">
-                                    Charts Overview
-                                </h1>
-                                <p className="text-gray-600 mt-1 text-sm">
-                                    Track your health metrics over time
-                                </p>
-                            </div>
-                        </div>
+                <div className="flex items-center gap-3">
+                    <div className="p-3 rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                        <TrendingUp className="h-5 w-5 text-white" />
                     </div>
-                    <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 text-sm text-gray-600 w-full lg:w-fit">
-                            <Calendar className="h-4 w-4" />
-                            <span>Select Duration</span>
-                        </div>
-                        <Select
-                            value={selectedDuration}
-                            onValueChange={onDurationChange}
-                        >
-                            <SelectTrigger className="lg:w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] bg-white">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {daysOfDataOptions.map((option) => (
-                                    <SelectItem
-                                        key={option.value}
-                                        value={option.value.toString()}
-                                    >
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
+                    <div>
+                        <h1 className="text-lg font-bold text-gray-900">
+                            Charts Overview
+                        </h1>
+                        <p className="text-gray-600 mt-1 text-sm">
+                            Track your health metrics over time
+                        </p>
                     </div>
                 </div>
             </CardContent>
