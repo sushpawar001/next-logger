@@ -1,6 +1,7 @@
 export interface insulin {
     units: number;
     name: string;
+    tag?: string | null;
     createdAt?: Date;
 }
 
@@ -16,11 +17,13 @@ export interface InsulinNameType {
 
 export interface weight {
     value: number;
+    tag?: string | null;
     createdAt?: Date;
 }
 
 export interface glucose {
     value: number;
+    tag?: string | null;
     createdAt?: Date;
     _id?: string;
 }
