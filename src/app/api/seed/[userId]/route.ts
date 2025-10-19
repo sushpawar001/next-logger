@@ -5,7 +5,7 @@ import Weight from "@/models/weightModel";
 import Glucose from "@/models/glucoseModel";
 import Insulin from "@/models/insulinModel";
 import mongoose from "mongoose";
-
+import { entryTags } from "@/constants/constants";
 // Helper function to generate random number between min and max
 const randomNumber = (min: number, max: number, fractionAllowed: boolean = false) => {
     if (fractionAllowed) {
@@ -26,12 +26,7 @@ const randomDate = (days: number) => {
 // Helper function to generate random tag
 const randomTag = () => {
     const tags = [
-        "morning",
-        "afternoon",
-        "evening",
-        "night",
-        "pre-meal",
-        "post-meal",
+        ...entryTags,
         null,
     ];
     return tags[Math.floor(Math.random() * tags.length)];
