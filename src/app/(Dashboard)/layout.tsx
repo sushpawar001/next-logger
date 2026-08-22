@@ -1,6 +1,4 @@
 import getToken from "@/helpers/getToken";
-import Navbar2 from "@/components/Navbar2";
-import NavbarClerk from "@/components/NavbarClerk";
 import { ClerkProvider } from "@clerk/nextjs";
 import LeftSidebar from "@/components/LeftSidebar";
 import {
