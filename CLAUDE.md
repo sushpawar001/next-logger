@@ -21,6 +21,17 @@ There is no test framework or test suite in this repo. Verification is `pnpm bui
 
 Required env vars (`.env`, gitignored): `MONGO_URI`, `ENCRYPTION_KEY` (**exactly 32 characters** or every model throws), Clerk keys (`NEXT_PUBLIC_CLERK_*`, `CLERK_SECRET_KEY`), `RESEND_API_KEY`, `SEED_TOKEN`, `GA_ID`, `NEXT_PUBLIC_BASE_URL`, Razorpay keys. `TOKEN_SECRET`/`DOMAIN` are leftovers from the pre-Clerk JWT auth.
 
+## Hosting and infra constraints
+
+Deployed on **Vercel (free/Hobby plan)** with the database on **MongoDB Atlas (free tier)**. There is no infra budget — when proposing architecture changes, stay within what these free tiers provide and prefer free/self-contained options.
+
+Practical implications:
+- Everything runs as serverless route handlers with short execution limits and cold starts. No long-running processes, background workers, queues, websockets, or in-memory caches that must survive between requests.
+- No local filesystem persistence — uploads or generated files would need a free-tier external store, not disk.
+- Hobby cron is very limited; don't design features that assume frequent scheduled jobs.
+- Atlas free tier is a small shared cluster with a capped connection count. Serverless invocations each reuse the module-scope `connectDB()` call, so avoid patterns that open new connections per request or fan out many parallel queries.
+- Don't introduce paid services (Redis, S3, hosted search, paid APIs, dedicated hosts) as part of a solution. If a feature genuinely needs one, flag the cost and propose a free-tier or in-app alternative instead of assuming the spend.
+
 ## Architecture
 
 ### Route groups (`src/app`)
