@@ -5,6 +5,7 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
 import WeightAdd from "@/components/DashboardInputs/WeightAdd";
+import { useQuickLog } from "@/hooks/use-quick-log";
 import WeightChartRecharts from "@/components/Charts/RechartComponents/WeightChartRecharts";
 import PopUpModal from "@/components/PopUpModal";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
@@ -32,6 +33,7 @@ const TdStyle = {
 };
 
 export default function WeightPage() {
+    const quickLog = useQuickLog();
     const [weightData, setWeightData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(7);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -110,7 +112,7 @@ export default function WeightPage() {
                     </div>
                 </div>
                 <div className="w-full">
-                    <WeightAdd data={weightData} setData={setWeightData} />
+                    <WeightAdd data={weightData} setData={setWeightData} autoFocus={quickLog} />
                 </div>
                 <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">

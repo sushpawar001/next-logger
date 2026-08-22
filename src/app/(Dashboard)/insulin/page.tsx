@@ -5,6 +5,7 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import Link from "next/link";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
+import { useQuickLog } from "@/hooks/use-quick-log";
 import InsulinChartRecharts from "@/components/Charts/RechartComponents/InsulinChartRecharts";
 import PopUpModal from "@/components/PopUpModal";
 import { History, Edit, Trash2, Loader2 } from "lucide-react";
@@ -40,6 +41,7 @@ type insulinEntryType = {
 };
 
 export default function InsulinPage() {
+    const quickLog = useQuickLog();
     const [insulinData, setInsulinData] = useState<insulinEntryType[]>([]);
     const [daysOfData, setDaysOfData] = useState(7);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -131,7 +133,7 @@ export default function InsulinPage() {
                     </div>
                 </div>
                 <div className="w-full">
-                    <InsulinAdd data={insulinData} setData={setInsulinData} />
+                    <InsulinAdd data={insulinData} setData={setInsulinData} autoFocus={quickLog} />
                 </div>
                 <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">

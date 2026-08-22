@@ -2,11 +2,26 @@
 import { entryTags } from "@/constants/constants";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
+import entryLogged from "@/helpers/entryLogged";
 import axios from "axios";
 import { Droplets } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function GlucoseAdd(props) {
+    const valueInputRef = useRef<HTMLInputElement>(null);
+
+    // Focused when arriving from a PWA manifest shortcut (?quick=1). Driven by an
+    // effect rather than the autoFocus attribute, which only applies on mount —
+    // the page reads the query param after hydration.
+    useEffect(() => {
+        if (!props.autoFocus) return;
+        valueInputRef.current?.focus();
+        valueInputRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+        });
+    }, [props.autoFocus]);
+
     const [glucose, setGlucose] = useState("");
     const [sendTime, setSendTime] = useState(false);
     const [selectTag, setSelectTag] = useState<string>(null);
@@ -40,6 +55,7 @@ export default function GlucoseAdd(props) {
                 { withCredentials: true }
             );
             notify(response.data.message, "success");
+            entryLogged();
             setGlucose("");
             setSendTime(false);
             setSelectTag(null);
@@ -96,6 +112,7 @@ export default function GlucoseAdd(props) {
                     <input
                         type="number"
                         id="glucose"
+                        ref={valueInputRef}
                         className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10 outline-none"
                         placeholder="98 mg/dl"
                         value={glucose}

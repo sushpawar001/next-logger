@@ -1,8 +1,9 @@
 "use client";
 import notify from "@/helpers/notify";
+import entryLogged from "@/helpers/entryLogged";
 import axios from "axios";
 import { Ruler } from "lucide-react";
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { entryTags } from "@/constants/constants";
 import MeasurementInput from "../MeasurementInput";
 
@@ -21,7 +22,21 @@ export default function MeasurementAdd({
     data = null,
     setData = null,
     className = "",
+    autoFocus = false,
 }) {
+    const formRef = useRef<HTMLFormElement>(null);
+
+    // Arriving from a PWA manifest shortcut (?quick=1). Unlike the single-value
+    // forms this one has seven fields, so scroll it into view rather than
+    // guessing which one the user meant to fill.
+    useEffect(() => {
+        if (!autoFocus) return;
+        formRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+        });
+    }, [autoFocus]);
+
     const [measurements, setMeasurements] = useState({
         arms: "",
         chest: "",
@@ -57,6 +72,7 @@ export default function MeasurementAdd({
                 { withCredentials: true }
             );
             notify(response.data.message, "success");
+            entryLogged();
             setMeasurements({
                 arms: "",
                 chest: "",
@@ -122,6 +138,7 @@ export default function MeasurementAdd({
     };
     return (
         <form
+            ref={formRef}
             className={`max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full shadow-md ${className}`}
             onSubmit={submitForm}
         >

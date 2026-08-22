@@ -15,7 +15,9 @@ import {
     TrendingUp,
     Calculator,
     Bolt,
+    Smartphone,
 } from "lucide-react";
+import { useInstallPrompt } from "@/hooks/use-install-prompt";
 import {
     Sidebar,
     SidebarContent,
@@ -81,6 +83,7 @@ const menuItems = [
 
 export default function LeftSidebar() {
     const currentRoute = usePathname();
+    const { installed, isSupported } = useInstallPrompt();
 
     return (
         <Sidebar className="border-r border-purple-100">
@@ -123,6 +126,30 @@ export default function LeftSidebar() {
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
+
+                            {/* Always-available install path, for users who
+                                dismissed the prompt or never triggered it. */}
+                            {!installed && isSupported && (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton
+                                        onClick={() =>
+                                            window.dispatchEvent(
+                                                new CustomEvent(
+                                                    "fitdose:install-requested"
+                                                )
+                                            )
+                                        }
+                                        className="h-11 rounded-xl hover:bg-purple-50 pl-2.5"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <Smartphone className="h-5 w-5" />
+                                            <span className="font-medium">
+                                                Install app
+                                            </span>
+                                        </div>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

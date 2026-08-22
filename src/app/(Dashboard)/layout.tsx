@@ -7,6 +7,7 @@ import {
     SidebarInset,
 } from "@/components/ui/sidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
+import InstallAppCard from "@/components/pwa/InstallAppCard";
 export const metadata = {
     title: "FitDose",
     description: "Your daily logger!",
@@ -41,6 +42,8 @@ export default function RootLayout({ children }) {
                     </header>
                 </SidebarInset> */}
                     <main className="w-full h-full">{children}</main>
+                    {/* Dashboard only — never on the public /tools calculators. */}
+                    <InstallAppCard />
                 </SidebarInset>
             </SidebarProvider>
         </ClerkProvider>

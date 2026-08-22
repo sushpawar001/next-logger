@@ -1,6 +1,7 @@
 "use client";
 import GlucoseChartRecharts from "@/components/Charts/RechartComponents/GlucoseChartRecharts";
 import GlucoseAdd from "@/components/DashboardInputs/GlucoseAdd";
+import { useQuickLog } from "@/hooks/use-quick-log";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
 import TagFilterCard from "@/components/TagFilterCard";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
@@ -30,6 +31,7 @@ const TdStyle = {
 };
 
 export default function GlucosePage() {
+    const quickLog = useQuickLog();
     const [glucoseData, setGlucoseData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(7);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -109,7 +111,7 @@ export default function GlucosePage() {
                     </div>
                 </div>
                 <div className="w-full">
-                    <GlucoseAdd data={glucoseData} setData={setGlucoseData} />
+                    <GlucoseAdd data={glucoseData} setData={setGlucoseData} autoFocus={quickLog} />
                 </div>
                 <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">

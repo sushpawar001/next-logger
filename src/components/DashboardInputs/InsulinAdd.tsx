@@ -1,13 +1,28 @@
 "use client";
 import { entryTags } from "@/constants/constants";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import notify from "@/helpers/notify";
+import entryLogged from "@/helpers/entryLogged";
 import axios from "axios";
 import InsulinType from "@/models/insulinTypeModel"; // import to avoid error
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { Droplets, Weight, Syringe } from "lucide-react";
 
 export default function InsulinAdd(props) {
+    const valueInputRef = useRef<HTMLInputElement>(null);
+
+    // Focused when arriving from a PWA manifest shortcut (?quick=1). Driven by an
+    // effect rather than the autoFocus attribute, which only applies on mount —
+    // the page reads the query param after hydration.
+    useEffect(() => {
+        if (!props.autoFocus) return;
+        valueInputRef.current?.focus();
+        valueInputRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+        });
+    }, [props.autoFocus]);
+
     const [insulin, setInsulin] = useState("");
     const [insulinType, setInsulinType] = useState("");
     const [userInsulinType, setuserInsulinType] = useState([]);
@@ -55,6 +70,7 @@ export default function InsulinAdd(props) {
                 tag: selectTag,
             });
             notify(response.data.message, "success");
+            entryLogged();
             setInsulinType("");
             setInsulin("");
             setIsSubmitting(false);
@@ -115,6 +131,7 @@ export default function InsulinAdd(props) {
                         <input
                             type="number"
                             id="insulin"
+                            ref={valueInputRef}
                             className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10 outline-none"
                             placeholder="10 IU"
                             value={insulin}

@@ -1,5 +1,6 @@
 "use client";
 import MeasurementAdd from "@/components/DashboardInputs/MeasurementAdd";
+import { useQuickLog } from "@/hooks/use-quick-log";
 import { useEffect, useState } from "react";
 import notify from "@/helpers/notify";
 import axios from "axios";
@@ -44,6 +45,7 @@ const TdStyle = {
 };
 
 export default function MeasurementsPage() {
+    const quickLog = useQuickLog();
     const [measurementData, setMeasurementData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(30);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -130,6 +132,7 @@ export default function MeasurementsPage() {
                     <MeasurementAdd
                         data={measurementData}
                         setData={setMeasurementData}
+                        autoFocus={quickLog}
                     />
                 </div>
                 <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">

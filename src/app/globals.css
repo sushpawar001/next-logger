@@ -37,6 +37,19 @@
     @apply bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 focus:ring-primary-ring;
 }
 
+/*
+ * Safe-area helpers. The root layout sets viewportFit: "cover", so in an
+ * installed PWA the viewport extends under the iOS status bar and home
+ * indicator. These resolve to 0 everywhere else.
+ */
+.pt-safe {
+    padding-top: env(safe-area-inset-top);
+}
+
+.pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
 @layer base {
     :root {
         --background: 0 0% 98%;
