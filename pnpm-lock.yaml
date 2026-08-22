@@ -110,6 +110,9 @@ importers:
       resend:
         specifier: ^4.8.0
         version: 4.8.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailgrids:
+        specifier: ^2.4.0
+        version: 2.4.0
       tailwind-merge:
         specifier: ^3.6.0
         version: 3.6.0
@@ -3066,6 +3069,10 @@ packages:
     resolution: {integrity: sha512-BRw55e8r0B7SpDN20CAzoQAHl7y1yP7/Zt7oqUjMv0vSt2u2Xnkm88Ws+VypbV9BXHQVuSuyVq7zMjO16wSExw==}
     peerDependencies:
       react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  tailgrids@2.4.0:
+    resolution: {integrity: sha512-oyhsPskkku+omlvWJJzATtpLXsWOwM2dntQKTCbSVd9fKFj4ebTE2vRzTBhFYPEKn8CE22HL27snifhSkMGP8A==}
+    deprecated: 'This package has been deprecated. Please use @tailgrids/cli instead: https://www.npmjs.com/package/@tailgrids/cli'
 
   tailwind-merge@3.6.0:
     resolution: {integrity: sha512-uxL7qAVQriqRQPAyK3pj66VqskWqoZ37PW94jwOTwNfq/z9oyu1V+eqrZqtR2+fCiXdYOZe/Modt8GtvqNzu+w==}
@@ -6397,6 +6404,8 @@ snapshots:
       dequal: 2.0.3
       react: 18.3.1
       use-sync-external-store: 1.6.0(react@18.3.1)
+
+  tailgrids@2.4.0: {}
 
   tailwind-merge@3.6.0: {}
 

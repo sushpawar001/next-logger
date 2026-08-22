@@ -7,6 +7,7 @@ module.exports = {
         "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     plugins: [
+        require("tailgrids/plugin"),
         require("daisyui"),
         require("tailwindcss-animate"),
     ],
