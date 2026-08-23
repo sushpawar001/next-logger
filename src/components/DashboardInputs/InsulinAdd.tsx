@@ -8,6 +8,7 @@ import InsulinType from "@/models/insulinTypeModel"; // import to avoid error
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { Droplets, Weight, Syringe } from "lucide-react";
 import { useUserInsulins } from "@/hooks/queries/useReferenceData";
+import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 
 export default function InsulinAdd(props) {
     const valueInputRef = useRef<HTMLInputElement>(null);
@@ -30,7 +31,11 @@ export default function InsulinAdd(props) {
     // dashboard and /insulin. A failed lookup now leaves the dropdown empty
     // rather than rejecting into nothing (docs/BUGS.md #19).
     const { data: userInsulinType = [] } = useUserInsulins();
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const addEntry = useAddEntry("insulin");
+    // isPending resets on error too. The hand-rolled flag it replaces was
+    // only cleared on the success path, so a failed submit left the button
+    // disabled and spinning until reload.
+    const isSubmitting = addEntry.isPending;
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectTag, setSelectTag] = useState<string>(null);
     const [sendTime, setSendTime] = useState(false);
@@ -57,26 +62,25 @@ export default function InsulinAdd(props) {
 
     const submitForm = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        setIsSubmitting(true);
         try {
-            const response = await axios.post("/api/insulin/add", {
+            const response = await addEntry.mutateAsync({
                 units: insulin,
                 name: insulinType,
                 date: sendTime ? selectedDate : null,
                 tag: selectTag,
             });
-            notify(response.data.message, "success");
+            notify(response.message, "success");
             entryLogged();
             setInsulinType("");
             setInsulin("");
-            setIsSubmitting(false);
             setSelectedDate(new Date());
             setSendTime(false);
             setSelectTag(null);
 
             if (props.data && props.setData) {
-                // Assuming response.data.entry has a 'date' property
-                const newEntry = response.data.entry;
+                // Kept until every parent reads through the cache; a no-op for
+                // those that already do.
+                const newEntry = response.entry;
 
                 props.setData((prevData) => {
                     // Combine the new entry with the existing data
@@ -93,7 +97,9 @@ export default function InsulinAdd(props) {
                 });
             }
         } catch (error) {
-            notify(error.response.data.message, "error");
+            // Was `error.response.data.message`, which threw a second time from
+            // inside the catch on any non-axios error.
+            notify(mutationErrorMessage(error), "error");
         }
     };
 

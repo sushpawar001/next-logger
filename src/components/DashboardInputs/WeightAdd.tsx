@@ -6,6 +6,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { entryTags } from "@/constants/constants";
 import { Droplets, Weight, Syringe } from "lucide-react";
+import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 
 export default function WeightAdd(props) {
     const valueInputRef = useRef<HTMLInputElement>(null);
@@ -23,7 +24,11 @@ export default function WeightAdd(props) {
     }, [props.autoFocus]);
 
     const [weight, setWeight] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const addEntry = useAddEntry("weight");
+    // isPending resets on error too. The hand-rolled flag it replaces was
+    // only cleared on the success path, so a failed submit left the button
+    // disabled and spinning until reload.
+    const isSubmitting = addEntry.isPending;
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [sendTime, setSendTime] = useState(false);
     const [selectTag, setSelectTag] = useState<string>(null);
@@ -42,23 +47,23 @@ export default function WeightAdd(props) {
 
     const submitForm = async (e) => {
         e.preventDefault();
-        setIsSubmitting(true);
         try {
-            const response = await axios.post("/api/weight/add", {
+            const response = await addEntry.mutateAsync({
                 value: weight,
                 date: sendTime ? selectedDate : null,
                 tag: selectTag,
             });
-            notify(response.data.message, "success");
+            notify(response.message, "success");
             entryLogged();
             setWeight("");
-            setIsSubmitting(false);
             setSelectedDate(new Date());
             setSendTime(false);
             setSelectTag(null);
 
             if (props.data && props.setData) {
-                const newEntry = response.data.entry;
+                // Kept until every parent reads through the cache; a no-op for
+                // those that already do.
+                const newEntry = response.entry;
 
                 props.setData((prevData) => {
                     // Combine the new entry with the existing data
@@ -75,11 +80,7 @@ export default function WeightAdd(props) {
                 });
             }
         } catch (error) {
-            console.error(error);
-            notify(
-                error.response?.data?.message || "An error occurred",
-                "error"
-            );
+            notify(mutationErrorMessage(error), "error");
         }
     };
     return (

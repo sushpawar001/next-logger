@@ -6,6 +6,7 @@ import { Ruler } from "lucide-react";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { entryTags } from "@/constants/constants";
 import MeasurementInput from "../MeasurementInput";
+import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 
 const dataInputs = [
     "arms",
@@ -46,7 +47,11 @@ export default function MeasurementAdd({
         thighs: "",
         calves: "",
     });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const addEntry = useAddEntry("measurements");
+    // isPending resets on error too. The hand-rolled flag it replaces was
+    // only cleared on the success path, so a failed submit left the button
+    // disabled and spinning until reload.
+    const isSubmitting = addEntry.isPending;
     const [selectTag, setSelectTag] = useState<string>(null);
 
     const handleTagChange = (event: { target: { value: string } }) => {
@@ -63,15 +68,12 @@ export default function MeasurementAdd({
     };
     const submitForm = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        console.log(measurements);
-        setIsSubmitting(true);
         try {
-            const response = await axios.post(
-                "/api/measurements/add",
-                { measurements: measurements, tag: selectTag },
-                { withCredentials: true }
-            );
-            notify(response.data.message, "success");
+            const response = await addEntry.mutateAsync({
+                measurements: measurements,
+                tag: selectTag,
+            });
+            notify(response.message, "success");
             entryLogged();
             setMeasurements({
                 arms: "",
@@ -82,11 +84,11 @@ export default function MeasurementAdd({
                 thighs: "",
                 calves: "",
             });
-            setIsSubmitting(false);
 
             if (data && setData) {
-                // Assuming response.data.entry has a 'date' property
-                const newEntry = response.data.entry;
+                // Kept until every parent reads through the cache; a no-op for
+                // those that already do.
+                const newEntry = response.entry;
 
                 setData((prevData) => {
                     // Combine the new entry with the existing data
@@ -103,11 +105,7 @@ export default function MeasurementAdd({
                 });
             }
         } catch (error) {
-            console.error(error);
-            notify(
-                error.response?.data?.message || "An error occurred",
-                "error"
-            );
+            notify(mutationErrorMessage(error), "error");
         }
     };
 

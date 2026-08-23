@@ -5,6 +5,7 @@ import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
 import axios from "axios";
 import { Droplets } from "lucide-react";
+import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 import { useEffect, useRef, useState } from "react";
 
 export default function GlucoseAdd(props) {
@@ -25,7 +26,11 @@ export default function GlucoseAdd(props) {
     const [glucose, setGlucose] = useState("");
     const [sendTime, setSendTime] = useState(false);
     const [selectTag, setSelectTag] = useState<string>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const addEntry = useAddEntry("glucose");
+    // isPending resets on error too. The hand-rolled flag it replaces was
+    // only cleared on the success path, so a failed submit left the button
+    // disabled and spinning until reload.
+    const isSubmitting = addEntry.isPending;
     const [selectedDate, setSelectedDate] = useState(new Date());
 
     const changeGlucose = (event: { target: { value: string } }): void => {
@@ -43,28 +48,23 @@ export default function GlucoseAdd(props) {
 
     const submitForm = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
-        setIsSubmitting(true);
         try {
-            const response = await axios.post(
-                "/api/glucose/add",
-                {
-                    value: glucose,
-                    date: sendTime ? selectedDate : null,
-                    tag: selectTag,
-                },
-                { withCredentials: true }
-            );
-            notify(response.data.message, "success");
+            const response = await addEntry.mutateAsync({
+                value: glucose,
+                date: sendTime ? selectedDate : null,
+                tag: selectTag,
+            });
+            notify(response.message, "success");
             entryLogged();
             setGlucose("");
             setSendTime(false);
             setSelectTag(null);
             setSelectedDate(new Date());
-            setIsSubmitting(false);
 
             if (props.data && props.setData) {
-                // Assuming response.data.entry has a 'date' property
-                const newEntry = response.data.entry;
+                // Kept until every parent reads through the cache; a no-op for
+                // those that already do.
+                const newEntry = response.entry;
 
                 props.setData((prevData) => {
                     // Combine the new entry with the existing data
@@ -81,11 +81,7 @@ export default function GlucoseAdd(props) {
                 });
             }
         } catch (error) {
-            console.error(error);
-            notify(
-                error.response?.data?.message || "An error occurred",
-                "error"
-            );
+            notify(mutationErrorMessage(error), "error");
         }
     };
     return (
