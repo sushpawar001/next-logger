@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
-import axios from "axios";
+import { useEntries, useEntryRange } from "@/hooks/queries/useEntries";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 import { mean, median, mode, min, max, sum } from "mathjs";
 import { glucose, weight, insulin } from "@/types/models";
 import { getDailyInsulinValues, getHba1cValue } from "@/helpers/statsHelpers";
@@ -49,14 +50,24 @@ const daysOfDataOptions = [
     { value: 365 * 100, label: "All" },
 ];
 export default function Stats() {
-    const [glucoseData, setGlucoseData] = useState<glucose[]>([]);
-    const [glucoseDataOld, setGlucoseDataOld] = useState<glucose[]>([]);
-    const [weightData, setWeightData] = useState<weight[]>([]);
-    const [weightDataOld, setWeightDataOld] = useState<weight[]>([]);
-    const [insulinData, setInsulinData] = useState<insulin[]>([]);
     const [daysOfData, setDaysOfData] = useState(90);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+
+    // Same three requests as the Promise.all this replaces. The glucose and
+    // weight ranges carry the current and preceding window together, which is
+    // what the period-over-period figures below compare.
+    const glucoseRange = useEntryRange<glucose>("glucose", daysOfData);
+    const weightRange = useEntryRange<weight>("weight", daysOfData);
+    const insulinQuery = useEntries<insulin>("insulin", daysOfData);
+
+    const glucoseData = glucoseRange.data?.current ?? (EMPTY_ROWS as glucose[]);
+    const glucoseDataOld = glucoseRange.data?.previous ?? (EMPTY_ROWS as glucose[]);
+    const weightData = weightRange.data?.current ?? (EMPTY_ROWS as weight[]);
+    const weightDataOld = weightRange.data?.previous ?? (EMPTY_ROWS as weight[]);
+    const insulinData = insulinQuery.data ?? (EMPTY_ROWS as insulin[]);
+
+    const isLoading =
+        glucoseRange.isPending || weightRange.isPending || insulinQuery.isPending;
     const [glucoseStats, setGlucoseStats] = useState<statsObjType>(statsObj);
     const [estHbA1c, setEstHbA1c] = useState(0);
     const [riskLevel, setRiskLevel] = useState("normal");
@@ -78,66 +89,6 @@ export default function Stats() {
         const daysInput = value;
         setDaysOfData(parseInt(daysInput));
     };
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-                const [
-                    WeightRangeDataResponse,
-                    insulinResponse,
-                    GlucoseRangeDataResponse,
-                ] = await Promise.all([
-                    axios.get(`/api/weight/get-range/${daysOfData}`),
-                    axios.get(`/api/insulin/get/${daysOfData}`),
-                    axios.get(`/api/glucose/get-range/${daysOfData}`),
-                ]);
-
-                if (GlucoseRangeDataResponse.status === 200) {
-                    setGlucoseData(
-                        GlucoseRangeDataResponse.data.data.daysAgoData
-                    );
-                    setGlucoseDataOld(
-                        GlucoseRangeDataResponse.data.data.prevDaysAgoData
-                    );
-                } else {
-                    console.error(
-                        "Range API request failed with status:",
-                        GlucoseRangeDataResponse.status
-                    );
-                }
-
-                if (WeightRangeDataResponse.status === 200) {
-                    setWeightData(
-                        WeightRangeDataResponse.data.data.daysAgoData
-                    );
-                    setWeightDataOld(
-                        WeightRangeDataResponse.data.data.prevDaysAgoData
-                    );
-                } else {
-                    console.error(
-                        "Weight API request failed with status:",
-                        WeightRangeDataResponse.status
-                    );
-                }
-
-                if (insulinResponse.status === 200) {
-                    setInsulinData(insulinResponse.data.data);
-                } else {
-                    console.error(
-                        "Weight API request failed with status:",
-                        insulinResponse.status
-                    );
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [daysOfData]);
 
     // Filter data based on selected tags using useMemo to prevent infinite loops
     const filteredGlucoseData = useMemo(

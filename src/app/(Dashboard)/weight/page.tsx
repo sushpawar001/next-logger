@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import { useEntries } from "@/hooks/queries/useEntries";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 import Link from "next/link";
 import WeightAdd from "@/components/DashboardInputs/WeightAdd";
@@ -39,7 +40,11 @@ export default function WeightPage() {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [parent] = useAutoAnimate({ duration: 400 });
 
-    const { data: weightData = [], isPending, isError } = useEntries("weight", daysOfData);
+    const {
+        data: weightData = EMPTY_ROWS,
+        isPending,
+        isError,
+    } = useEntries("weight", daysOfData);
     const deleteEntry = useDeleteEntry("weight");
 
     const changeDaysOfData = (event) => {

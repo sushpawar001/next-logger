@@ -58,3 +58,13 @@ export const listStaleTime = (days: number | string) =>
 
 /** Reference data changes only through mutations we invalidate explicitly. */
 export const REFERENCE_STALE_TIME = 30 * 60_000;
+
+/**
+ * A single frozen empty array to fall back on while a query is pending.
+ *
+ * Writing `query.data ?? []` inline allocates a new array on every render,
+ * which breaks referential equality for anything downstream that memoises on
+ * it -- on /stats that spins the useMemo/useEffect chain into an infinite
+ * render loop.
+ */
+export const EMPTY_ROWS: any[] = [];

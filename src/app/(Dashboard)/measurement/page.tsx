@@ -4,6 +4,7 @@ import { useQuickLog } from "@/hooks/use-quick-log";
 import { useEffect, useState } from "react";
 import notify from "@/helpers/notify";
 import { useEntries } from "@/hooks/queries/useEntries";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 import formatDate from "@/helpers/formatDate";
 import Link from "next/link";
@@ -52,7 +53,7 @@ export default function MeasurementsPage() {
     const [parent] = useAutoAnimate({ duration: 500 });
 
     const {
-        data: measurementData = [],
+        data: measurementData = EMPTY_ROWS,
         isPending,
         isError,
     } = useEntries("measurements", daysOfData);

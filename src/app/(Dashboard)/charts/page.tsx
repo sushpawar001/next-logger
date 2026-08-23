@@ -18,8 +18,9 @@ import {
     Weight,
     Loader2,
 } from "lucide-react";
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
+import { useEntries } from "@/hooks/queries/useEntries";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 import TagFilterCard from "@/components/TagFilterCard";
 import { filterByTags } from "@/helpers/tagFilterHelpers";
 
@@ -35,35 +36,21 @@ const daysOfDataOptions = [
 export default function ChartPage() {
     const [daysOfData, setDaysOfData] = useState(90);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [glucoseData, setGlucoseData] = useState([]);
-    const [weightData, setWeightData] = useState([]);
-    const [insulinData, setInsulinData] = useState([]);
-    const [loading, setLoading] = useState(true);
+
+    // Three independent queries rather than one Promise.all, so a slow insulin
+    // fetch no longer blanks the glucose and weight charts beside it. Same three
+    // requests as before -- no extra fan-out.
+    const glucoseQuery = useEntries("glucose", daysOfData);
+    const weightQuery = useEntries("weight", daysOfData);
+    const insulinQuery = useEntries("insulin", daysOfData);
+
+    const glucoseData = glucoseQuery.data ?? EMPTY_ROWS;
+    const weightData = weightQuery.data ?? EMPTY_ROWS;
+    const insulinData = insulinQuery.data ?? EMPTY_ROWS;
 
     const changeDaysOfData = (duration: string) => {
         setDaysOfData(parseInt(duration));
     };
-
-    useEffect(() => {
-        setLoading(true);
-        const fetchData = async () => {
-            try {
-                const [glucoseRes, weightRes, insulinRes] = await Promise.all([
-                    axios.get(`/api/glucose/get/${daysOfData}`),
-                    axios.get(`/api/weight/get/${daysOfData}`),
-                    axios.get(`/api/insulin/get/${daysOfData}`),
-                ]);
-                setGlucoseData(glucoseRes.data.data || []);
-                setWeightData(weightRes.data.data || []);
-                setInsulinData(insulinRes.data.data || []);
-            } catch (error) {
-                // Optionally handle error
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, [daysOfData]);
 
     // Filter data based on selected tags
     const filteredGlucoseData = filterByTags(glucoseData, selectedTags);
@@ -125,7 +112,7 @@ export default function ChartPage() {
                             Blood Glucose
                         </div>
                         <div className="h-96 flex items-center justify-center">
-                            {loading ? (
+                            {glucoseQuery.isPending ? (
                                 <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
                             ) : (
                                 <AdvGlucoseChartRecharts
@@ -146,7 +133,7 @@ export default function ChartPage() {
                             Weight history
                         </div>
                         <div className="h-96 flex items-center justify-center">
-                            {loading ? (
+                            {weightQuery.isPending ? (
                                 <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
                             ) : (
                                 <AdvWeightChartRecharts
@@ -167,7 +154,7 @@ export default function ChartPage() {
                             Insulin Dose
                         </div>
                         <div className="h-96 flex items-center justify-center">
-                            {loading ? (
+                            {insulinQuery.isPending ? (
                                 <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
                             ) : (
                                 <AdvInsulinChartSeparateRecharts

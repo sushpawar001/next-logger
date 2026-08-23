@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import { useEntries } from "@/hooks/queries/useEntries";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 import Link from "next/link";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
@@ -48,7 +49,7 @@ export default function InsulinPage() {
     const [parent] = useAutoAnimate({ duration: 400 });
 
     const {
-        data: insulinData = [],
+        data: insulinData = EMPTY_ROWS,
         isPending,
         isFetching,
         isError,

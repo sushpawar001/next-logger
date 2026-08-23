@@ -7,6 +7,7 @@ import WeightAdd from "@/components/DashboardInputs/WeightAdd";
 import { glucose, weight } from "@/types/models";
 import { Loader2 } from "lucide-react";
 import { useEntries } from "@/hooks/queries/useEntries";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 
 const DAYS = 7;
 
@@ -16,8 +17,8 @@ export default function DiabetesDashboard() {
     const glucoseQuery = useEntries<glucose>("glucose", DAYS);
     const weightQuery = useEntries<weight>("weight", DAYS);
 
-    const glucoseData = glucoseQuery.data ?? [];
-    const weightData = weightQuery.data ?? [];
+    const glucoseData = glucoseQuery.data ?? (EMPTY_ROWS as glucose[]);
+    const weightData = weightQuery.data ?? (EMPTY_ROWS as weight[]);
 
     return (
         <div className="h-full flex justify-center items-center py-5 px-5 md:px-10 bg-zinc-50">

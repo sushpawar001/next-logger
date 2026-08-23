@@ -7,6 +7,7 @@ import MeasurementChartNew from "../Charts/MeasurementChartNew";
 import WeightChart from "../Charts/WeightChart";
 import type { measurement, weight } from "@/types/models";
 import { useEntries } from "@/hooks/queries/useEntries";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 
 const DAYS = 7;
 
@@ -15,8 +16,8 @@ export default function FitnessDashboard() {
     const weightQuery = useEntries<weight>("weight", DAYS);
     const measurementQuery = useEntries<measurement>("measurements", DAYS);
 
-    const weightData = weightQuery.data ?? [];
-    const measurementData = measurementQuery.data ?? [];
+    const weightData = weightQuery.data ?? (EMPTY_ROWS as weight[]);
+    const measurementData = measurementQuery.data ?? (EMPTY_ROWS as measurement[]);
 
     return (
         <>

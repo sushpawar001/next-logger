@@ -112,7 +112,9 @@ describe("stats page", () => {
     it("refetches when the period changes", async () => {
         const user = userEvent.setup();
         renderWithProviders(<StatsPage />);
-        await waitFor(() => expect(get).toHaveBeenCalled());
+        await waitFor(() =>
+            expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0)
+        );
 
         // Unlike the list pages, stats uses a Radix Select: open it, then pick.
         await user.click(screen.getAllByRole("combobox")[0]);
@@ -128,8 +130,9 @@ describe("stats page", () => {
     it("offers a tag filter", async () => {
         renderWithProviders(<StatsPage />);
 
-        await waitFor(() => expect(get).toHaveBeenCalled());
-        expect(screen.getAllByText(/filter by tags/i).length).toBeGreaterThan(0);
+        await waitFor(() =>
+            expect(screen.getAllByText(/filter by tags/i).length).toBeGreaterThan(0)
+        );
     });
 
     it("renders with no data at all", async () => {
@@ -141,8 +144,9 @@ describe("stats page", () => {
 
         renderWithProviders(<StatsPage />);
 
-        await waitFor(() => expect(get).toHaveBeenCalled());
-        expect(screen.getAllByRole("table").length).toBeGreaterThan(0);
+        await waitFor(() =>
+            expect(screen.getAllByRole("table").length).toBeGreaterThan(0)
+        );
     });
 
     it("survives a failed load", async () => {

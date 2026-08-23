@@ -22,6 +22,7 @@ import { History, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useEntries } from "@/hooks/queries/useEntries";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 const TdStyle = {
     ThStyle: `lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
@@ -37,7 +38,11 @@ export default function GlucosePage() {
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [parent] = useAutoAnimate({ duration: 400 });
 
-    const { data: glucoseData = [], isPending, isError } = useEntries("glucose", daysOfData);
+    const {
+        data: glucoseData = EMPTY_ROWS,
+        isPending,
+        isError,
+    } = useEntries("glucose", daysOfData);
     const deleteEntry = useDeleteEntry("glucose");
 
     const changeDaysOfData = (event: { target: { value: string } }) => {
