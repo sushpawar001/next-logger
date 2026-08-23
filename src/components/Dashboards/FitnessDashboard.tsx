@@ -1,50 +1,22 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
+import { Loader2 } from "lucide-react";
 import WeightAdd from "../DashboardInputs/WeightAdd";
 import MeasurementAdd from "../DashboardInputs/MeasurementAdd";
 import MeasurementChartNew from "../Charts/MeasurementChartNew";
 import WeightChart from "../Charts/WeightChart";
 import type { measurement, weight } from "@/types/models";
+import { useEntries } from "@/hooks/queries/useEntries";
+
+const DAYS = 7;
 
 export default function FitnessDashboard() {
-    const [weightData, setWeightData] = useState<weight[]>([]);
-    const [measurementData, setMeasurementData] = useState<measurement[]>([]);
+    // Shares the weight window with DiabetesDashboard and /weight.
+    const weightQuery = useEntries<weight>("weight", DAYS);
+    const measurementQuery = useEntries<measurement>("measurements", DAYS);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const [measurementResponse, weightResponse] = await Promise.all(
-                    [
-                        axios.get(`/api/measurements/get/7`),
-                        axios.get(`/api/weight/get/7`),
-                    ]
-                );
-
-                if (measurementResponse.status === 200) {
-                    setMeasurementData(measurementResponse.data.data);
-                } else {
-                    console.error(
-                        "measurement API request failed with status:",
-                        measurementResponse.status
-                    );
-                }
-
-                if (weightResponse.status === 200) {
-                    setWeightData(weightResponse.data.data);
-                } else {
-                    console.error(
-                        "Weight API request failed with status:",
-                        weightResponse.status
-                    );
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-
-        fetchData();
-    }, []);
+    const weightData = weightQuery.data ?? [];
+    const measurementData = measurementQuery.data ?? [];
 
     return (
         <>
@@ -57,10 +29,16 @@ export default function FitnessDashboard() {
                                     Weight history
                                 </h3>
                                 <div className="flex-grow">
-                                    <WeightChart
-                                        data={weightData}
-                                        fetch={false}
-                                    />
+                                    {weightQuery.isPending ? (
+                                        <div className="h-full flex items-center justify-center">
+                                            <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+                                        </div>
+                                    ) : (
+                                        <WeightChart
+                                            data={weightData}
+                                            fetch={false}
+                                        />
+                                    )}
                                 </div>
                             </div>
                             <div className="p-4 md:px-6 rounded-lg bg-white shadow-md h-1/2 flex flex-col">
@@ -68,25 +46,24 @@ export default function FitnessDashboard() {
                                     Measurement history
                                 </h3>
                                 <div className="flex-grow">
-                                    <MeasurementChartNew
-                                        data={measurementData}
-                                        fetch={false}
-                                    />
+                                    {measurementQuery.isPending ? (
+                                        <div className="h-full flex items-center justify-center">
+                                            <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
+                                        </div>
+                                    ) : (
+                                        <MeasurementChartNew
+                                            data={measurementData}
+                                            fetch={false}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>
                         <div className="col-span-1 rounded gap-4 flex flex-col">
                             <div className="">
-                                <WeightAdd
-                                    data={weightData}
-                                    setData={setWeightData}
-                                />
+                                <WeightAdd />
                             </div>
-                            <MeasurementAdd
-                                data={measurementData}
-                                setData={setMeasurementData}
-                                className="flex-grow"
-                            />
+                            <MeasurementAdd className="flex-grow" />
                         </div>
                     </div>
                 </div>
