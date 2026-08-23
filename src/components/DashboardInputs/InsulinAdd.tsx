@@ -7,6 +7,7 @@ import axios from "axios";
 import InsulinType from "@/models/insulinTypeModel"; // import to avoid error
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { Droplets, Weight, Syringe } from "lucide-react";
+import { useUserInsulins } from "@/hooks/queries/useReferenceData";
 
 export default function InsulinAdd(props) {
     const valueInputRef = useRef<HTMLInputElement>(null);
@@ -25,7 +26,10 @@ export default function InsulinAdd(props) {
 
     const [insulin, setInsulin] = useState("");
     const [insulinType, setInsulinType] = useState("");
-    const [userInsulinType, setuserInsulinType] = useState([]);
+    // Shared with the insulin edit page and /profile, and deduped across the
+    // dashboard and /insulin. A failed lookup now leaves the dropdown empty
+    // rather than rejecting into nothing (docs/BUGS.md #19).
+    const { data: userInsulinType = [] } = useUserInsulins();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [selectTag, setSelectTag] = useState<string>(null);
@@ -50,14 +54,6 @@ export default function InsulinAdd(props) {
         setInsulinType(insulinTypeInput);
     };
 
-    const getUserInsulinType = async () => {
-        const reponse = await axios.get("/api/users/get-insulin");
-        let sortedData = reponse.data.data.sort(
-            (a: { name: string }, b: { name: string }) =>
-                a.name.localeCompare(b.name)
-        );
-        setuserInsulinType(sortedData);
-    };
 
     const submitForm = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
@@ -100,10 +96,6 @@ export default function InsulinAdd(props) {
             notify(error.response.data.message, "error");
         }
     };
-
-    useEffect(() => {
-        getUserInsulinType();
-    }, []);
 
     return (
         <form

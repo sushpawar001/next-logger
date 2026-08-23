@@ -273,25 +273,44 @@ describe("InsulinAdd", () => {
     });
 
     /**
-     * KNOWN BUG (docs/BUGS.md #19): getUserInsulinType has no try/catch, so a failed
-     * lookup rejects unhandled and the insulin dropdown is silently left empty
-     * with no error shown.
+     * Previously docs/BUGS.md #19: the lookup had no try/catch, so a failed
+     * request rejected unhandled and had to be asserted from the source -- driving
+     * the rejection would have escaped the component and failed the whole run.
      *
-     * Asserted from the source: driving the rejection would escape the
-     * component entirely and fail the whole test run rather than this one test.
+     * The query hook contains the rejection, so it can be tested for real now.
      */
-    it("has no error handling around its insulin lookup", () => {
-        const source = fs.readFileSync(
-            "src/components/DashboardInputs/InsulinAdd.tsx",
-            "utf8"
-        );
-        const lookup = source.slice(
-            source.indexOf("const getUserInsulinType"),
-            source.indexOf("const submitForm")
+    it("survives a failed insulin lookup with an empty dropdown", async () => {
+        vi.mocked(axios.get).mockRejectedValue(new Error("network down"));
+
+        renderWithProviders(<InsulinAdd />);
+
+        await waitFor(() => expect(axios.get).toHaveBeenCalled());
+
+        // The form is still usable and the dropdown holds only its placeholder.
+        expect(screen.getByRole("button", { name: /submit/i })).toBeInTheDocument();
+        const select = document.getElementById("insulinType") as HTMLSelectElement;
+        expect(select.options).toHaveLength(1);
+        expect(select.options[0]).toBeDisabled();
+    });
+
+    it("fetches the insulin types once even when two forms are on the page", async () => {
+        vi.mocked(axios.get).mockResolvedValue({
+            data: { data: [{ _id: "1", name: "Lantus" }] },
+        });
+
+        renderWithProviders(
+            <>
+                <InsulinAdd />
+                <InsulinAdd />
+            </>
         );
 
-        expect(lookup).toContain("await axios.get");
-        expect(lookup).not.toContain("catch");
+        await waitFor(() => expect(axios.get).toHaveBeenCalled());
+
+        const lookups = vi
+            .mocked(axios.get)
+            .mock.calls.filter((c) => String(c[0]).includes("/api/users/get-insulin"));
+        expect(lookups).toHaveLength(1);
     });
 });
 

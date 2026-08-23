@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { entryTags } from "@/constants/constants";
 import { Droplets, ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useUserInsulins } from "@/hooks/queries/useReferenceData";
 
 export default function EditEntry({ params }) {
     const [data, setData] = useState({
@@ -16,7 +17,9 @@ export default function EditEntry({ params }) {
         tag: "",
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [userInsulinType, setuserInsulinType] = useState([]);
+    // Shared with InsulinAdd and /profile through one cache entry, so arriving
+    // here from /insulin costs no extra request.
+    const { data: userInsulinType = [] } = useUserInsulins();
     const router = useRouter();
     useEffect(() => {
         const getData = async () => {
@@ -52,19 +55,6 @@ export default function EditEntry({ params }) {
             console.log(error);
         }
     };
-
-    const getUserInsulinType = async () => {
-        const reponse = await axios.get("/api/users/get-insulin");
-        let sortedData = reponse.data.data.sort(
-            (a: { name: string }, b: { name: string }) =>
-                a.name.localeCompare(b.name)
-        );
-        setuserInsulinType(sortedData);
-    };
-
-    useEffect(() => {
-        getUserInsulinType();
-    }, []);
 
     const submitForm = async (e) => {
         e.preventDefault();
