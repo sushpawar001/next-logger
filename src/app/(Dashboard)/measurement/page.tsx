@@ -3,7 +3,8 @@ import MeasurementAdd from "@/components/DashboardInputs/MeasurementAdd";
 import { useQuickLog } from "@/hooks/use-quick-log";
 import { useEffect, useState } from "react";
 import notify from "@/helpers/notify";
-import axios from "axios";
+import { useEntries } from "@/hooks/queries/useEntries";
+import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 import formatDate from "@/helpers/formatDate";
 import Link from "next/link";
 import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
@@ -46,37 +47,16 @@ const TdStyle = {
 
 export default function MeasurementsPage() {
     const quickLog = useQuickLog();
-    const [measurementData, setMeasurementData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(30);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 500 });
 
-    useEffect(() => {
-        setLoading(true);
-        const getMeasurementData = async () => {
-            try {
-                axios
-                    .get(`/api/measurements/get/${daysOfData}`)
-                    .then((response) => {
-                        if (response.status === 200) {
-                            setMeasurementData(response.data.data);
-                            console.log(response.data.data);
-                        } else {
-                            console.error(
-                                "API request failed with status:",
-                                response.status
-                            );
-                        }
-                    });
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        getMeasurementData();
-    }, [daysOfData]);
+    const {
+        data: measurementData = [],
+        isPending,
+        isError,
+    } = useEntries("measurements", daysOfData);
+    const deleteEntry = useDeleteEntry("measurements");
 
     const changeDaysOfData = (event: { target: { value: string } }) => {
         const daysInput = event.target.value;
@@ -85,23 +65,28 @@ export default function MeasurementsPage() {
 
     const deleteData = async (id) => {
         try {
-            const deletedData = await axios.delete(
-                `/api/measurements/delete/${id}`
-            );
-            let updatedData = measurementData.filter((obj) => obj._id !== id);
-            setMeasurementData(updatedData);
+            await deleteEntry.mutateAsync(id);
             notify("Measurements data deleted!", "success");
         } catch (error) {
-            console.log(error);
+            notify("Could not delete that entry.", "error");
         }
     };
 
     // Filter data based on selected tags
     const filteredMeasurementData = filterByTags(measurementData, selectedTags);
 
-    if (loading === true) {
+    if (isPending) {
         return <MeasurementPageSkeleton2 />;
     }
+
+    if (isError) {
+        return (
+            <div className="text-red-500 text-center p-4">
+                Failed to load measurement data. Please try again later.
+            </div>
+        );
+    }
+
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
@@ -129,11 +114,7 @@ export default function MeasurementsPage() {
                     </div>
                 </div>
                 <div className="w-full">
-                    <MeasurementAdd
-                        data={measurementData}
-                        setData={setMeasurementData}
-                        autoFocus={quickLog}
-                    />
+                    <MeasurementAdd autoFocus={quickLog} />
                 </div>
                 <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">

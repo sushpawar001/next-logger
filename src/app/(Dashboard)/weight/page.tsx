@@ -2,7 +2,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
-import axios from "axios";
+import { useEntries } from "@/hooks/queries/useEntries";
+import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 import Link from "next/link";
 import WeightAdd from "@/components/DashboardInputs/WeightAdd";
 import { useQuickLog } from "@/hooks/use-quick-log";
@@ -34,56 +35,42 @@ const TdStyle = {
 
 export default function WeightPage() {
     const quickLog = useQuickLog();
-    const [weightData, setWeightData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(7);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 400 });
 
-    useEffect(() => {
-        const getWeightData = async () => {
-            try {
-                const response = await axios.get(
-                    `/api/weight/get/${daysOfData}`
-                );
-                if (response.status === 200) {
-                    setWeightData(response.data.data);
-                } else {
-                    console.error(
-                        "API request failed with status:",
-                        response.status
-                    );
-                }
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        getWeightData();
-    }, [daysOfData]);
+    const { data: weightData = [], isPending, isError } = useEntries("weight", daysOfData);
+    const deleteEntry = useDeleteEntry("weight");
 
     const changeDaysOfData = (event) => {
         const daysInput = event.target.value;
-        setDaysOfData(daysInput);
+        // parseInt matters here: this was the one page storing the raw string,
+        // which would key the same window separately from every other page.
+        setDaysOfData(parseInt(daysInput));
     };
 
     const deleteData = async (id) => {
         try {
-            const deletedData = await axios.delete(`/api/weight/delete/${id}`);
-            let updatedData = weightData.filter((obj) => obj._id !== id);
-            setWeightData(updatedData);
+            await deleteEntry.mutateAsync(id);
             notify("Weight data deleted!", "success");
         } catch (error) {
-            console.log(error);
+            notify("Could not delete that entry.", "error");
         }
     };
 
     // Filter data based on selected tags
     const filteredWeightData = filterByTags(weightData, selectedTags);
 
-    if (loading === true) {
+    if (isPending) {
         return <LoadingSkeleton />;
+    }
+
+    if (isError) {
+        return (
+            <div className="text-red-500 text-center p-4">
+                Failed to load weight data. Please try again later.
+            </div>
+        );
     }
     return (
         <section className="h-full flex justify-center items-center bg-background p-5">
@@ -112,7 +99,7 @@ export default function WeightPage() {
                     </div>
                 </div>
                 <div className="w-full">
-                    <WeightAdd data={weightData} setData={setWeightData} autoFocus={quickLog} />
+                    <WeightAdd autoFocus={quickLog} />
                 </div>
                 <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">

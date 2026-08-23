@@ -18,10 +18,11 @@ import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import { filterByTags } from "@/helpers/tagFilterHelpers";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import axios from "axios";
 import { History, Edit, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useEntries } from "@/hooks/queries/useEntries";
+import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 const TdStyle = {
     ThStyle: `lg:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
     TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-base`,
@@ -32,34 +33,12 @@ const TdStyle = {
 
 export default function GlucosePage() {
     const quickLog = useQuickLog();
-    const [glucoseData, setGlucoseData] = useState([]);
     const [daysOfData, setDaysOfData] = useState(7);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 400 });
 
-    useEffect(() => {
-        setLoading(true);
-        const getGlucoseData = async () => {
-            try {
-                axios.get(`/api/glucose/get/${daysOfData}`).then((response) => {
-                    if (response.status === 200) {
-                        setGlucoseData(response.data.data);
-                    } else {
-                        console.error(
-                            "API request failed with status:",
-                            response.status
-                        );
-                    }
-                });
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        getGlucoseData();
-    }, [daysOfData]);
+    const { data: glucoseData = [], isPending, isError } = useEntries("glucose", daysOfData);
+    const deleteEntry = useDeleteEntry("glucose");
 
     const changeDaysOfData = (event: { target: { value: string } }) => {
         const daysInput = event.target.value;
@@ -68,20 +47,28 @@ export default function GlucosePage() {
 
     const deleteData = async (id) => {
         try {
-            const deletedData = await axios.delete(`/api/glucose/delete/${id}`);
-            let updatedData = glucoseData.filter((obj) => obj._id !== id);
-            setGlucoseData(updatedData);
+            await deleteEntry.mutateAsync(id);
             notify("Glucose data deleted!", "success");
         } catch (error) {
-            console.log(error);
+            notify("Could not delete that entry.", "error");
         }
     };
 
     // Filter data based on selected tags
     const filteredGlucoseData = filterByTags(glucoseData, selectedTags);
 
-    if (loading === true) {
+    // isPending, not isFetching: with keepPreviousData a period change keeps the
+    // previous window on screen instead of blanking the page behind a skeleton.
+    if (isPending) {
         return <LoadingSkeleton />;
+    }
+
+    if (isError) {
+        return (
+            <div className="text-red-500 text-center p-4">
+                Failed to load glucose data. Please try again later.
+            </div>
+        );
     }
 
     return (
@@ -111,7 +98,7 @@ export default function GlucosePage() {
                     </div>
                 </div>
                 <div className="w-full">
-                    <GlucoseAdd data={glucoseData} setData={setGlucoseData} autoFocus={quickLog} />
+                    <GlucoseAdd autoFocus={quickLog} />
                 </div>
                 <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">

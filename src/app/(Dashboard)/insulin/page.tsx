@@ -2,7 +2,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
-import axios from "axios";
+import { useEntries } from "@/hooks/queries/useEntries";
+import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 import Link from "next/link";
 import InsulinAdd from "@/components/DashboardInputs/InsulinAdd";
 import { useQuickLog } from "@/hooks/use-quick-log";
@@ -42,36 +43,17 @@ type insulinEntryType = {
 
 export default function InsulinPage() {
     const quickLog = useQuickLog();
-    const [insulinData, setInsulinData] = useState<insulinEntryType[]>([]);
     const [daysOfData, setDaysOfData] = useState(7);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
     const [parent] = useAutoAnimate({ duration: 400 });
 
-    useEffect(() => {
-        setLoading(true);
-        const getInsulinData = async () => {
-            try {
-                const response = await axios.get(
-                    `/api/insulin/get/${daysOfData}`
-                );
-                if (response.status === 200) {
-                    let fetchedData: insulinEntryType[] = response.data.data;
-                    setInsulinData(fetchedData);
-                } else {
-                    console.error(
-                        "API request failed with status:",
-                        response.status
-                    );
-                }
-            } catch (error) {
-                console.log(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        getInsulinData();
-    }, [daysOfData]);
+    const {
+        data: insulinData = [],
+        isPending,
+        isFetching,
+        isError,
+    } = useEntries<insulinEntryType>("insulin", daysOfData);
+    const deleteEntry = useDeleteEntry("insulin");
 
     const changeDaysOfData = (event: { target: { value: string } }) => {
         const daysInput = event.target.value;
@@ -80,20 +62,26 @@ export default function InsulinPage() {
 
     const deleteData = async (id: string) => {
         try {
-            const deletedData = await axios.delete(`/api/insulin/delete/${id}`);
-            let updatedData = insulinData.filter((obj) => obj._id !== id);
-            setInsulinData(updatedData);
+            await deleteEntry.mutateAsync(id);
             notify("Insulin data deleted!", "success");
         } catch (error) {
-            console.log(error);
+            notify("Could not delete that entry.", "error");
         }
     };
 
     // Filter data based on selected tags
     const filteredInsulinData = filterByTags(insulinData, selectedTags);
 
-    if (loading === true) {
+    if (isPending) {
         return <LoadingSkeleton />;
+    }
+
+    if (isError) {
+        return (
+            <div className="text-red-500 text-center p-4">
+                Failed to load insulin data. Please try again later.
+            </div>
+        );
     }
 
     return (
@@ -116,7 +104,7 @@ export default function InsulinPage() {
                         Insulin Trends
                     </h3>
                     <div className="h-72 flex items-center justify-center">
-                        {loading ? (
+                        {isFetching ? (
                             <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
                         ) : (
                             <InsulinChartRecharts
@@ -133,7 +121,7 @@ export default function InsulinPage() {
                     </div>
                 </div>
                 <div className="w-full">
-                    <InsulinAdd data={insulinData} setData={setInsulinData} autoFocus={quickLog} />
+                    <InsulinAdd autoFocus={quickLog} />
                 </div>
                 <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">

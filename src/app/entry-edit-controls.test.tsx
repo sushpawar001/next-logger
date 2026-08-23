@@ -151,7 +151,11 @@ describe("measurement list page controls", () => {
     it("refetches when the period changes", async () => {
         const user = userEvent.setup();
         renderWithProviders(<MeasurementPage />);
-        await waitFor(() => expect(get).toHaveBeenCalled());
+        // Wait for the rendered control, not for the request to be issued --
+        // the page holds its skeleton until the query resolves.
+        await waitFor(() =>
+            expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0)
+        );
 
         await user.selectOptions(screen.getAllByRole("combobox")[0], "90");
 

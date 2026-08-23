@@ -131,7 +131,9 @@ describe.each(LIST_PAGES)("$name page", (p) => {
     it("refetches when the period changes", async () => {
         const user = userEvent.setup();
         renderWithProviders(<p.Page />);
-        await waitFor(() => expect(get).toHaveBeenCalledWith(p.endpoint));
+        await waitFor(() =>
+            expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0)
+        );
 
         await user.selectOptions(screen.getAllByRole("combobox")[0], "30");
 
@@ -153,7 +155,9 @@ describe.each(LIST_PAGES)("$name page", (p) => {
     it("links each row to its edit page", async () => {
         renderWithProviders(<p.Page />);
 
-        await waitFor(() => expect(get).toHaveBeenCalled());
+        await waitFor(() =>
+            expect(screen.getAllByRole("link").length).toBeGreaterThan(0)
+        );
         const hrefs = screen
             .getAllByRole("link")
             .map((a) => a.getAttribute("href"));
@@ -185,10 +189,11 @@ describe.each(LIST_PAGES)("$name page", (p) => {
 
         renderWithProviders(<p.Page />);
 
-        await waitFor(() => expect(get).toHaveBeenCalled());
-        expect(
-            screen.getAllByRole("button", { name: /submit/i }).length
-        ).toBeGreaterThan(0);
+        await waitFor(() =>
+            expect(
+                screen.getAllByRole("button", { name: /submit/i }).length
+            ).toBeGreaterThan(0)
+        );
     });
 
     it("renders with no entries at all", async () => {
@@ -297,32 +302,46 @@ describe("load page", () => {
 });
 
 /**
- * KNOWN BUG (docs/BUGS.md #17): the list pages wrap their fetch in try/catch but
- * call `axios.get(...).then(...)` without awaiting it, so a network failure
- * rejects a promise the page never handles -- the catch and finally blocks run
- * immediately and the loading flag clears while nothing has loaded. The user
- * is left with an empty table and no error.
+ * Previously docs/BUGS.md #17: glucose and measurement created their fetch
+ * promise inside a try block without awaiting it, so the catch and finally ran
+ * immediately -- the loading flag cleared while nothing had loaded and the
+ * rejection escaped unhandled. It could only be asserted from the source.
+ *
+ * Reading through TanStack Query means a failure is contained and observable,
+ * so every list page can now be checked for real.
  */
-describe("fetch error handling differs between the list pages", () => {
-    it("glucose fires its fetch without awaiting or catching it", () => {
-        const source = fs.readFileSync(
-            "src/app/(Dashboard)/glucose/page.tsx",
-            "utf8"
-        );
+describe("list pages surface a failed fetch", () => {
+    it.each(LIST_PAGES.map((p) => [p.name, p.Page] as const))(
+        "%s shows an error instead of an empty table",
+        async (_name, Page) => {
+            get.mockRejectedValue(new Error("network down"));
 
-        // The promise is created inside a try block but never awaited, so the
-        // catch and finally run immediately and a rejection escapes entirely.
-        expect(source).toContain(".then((response)");
-        expect(source).not.toContain(".catch(");
-        expect(source).not.toContain("await axios.get");
+            renderWithProviders(<Page />);
+
+            await waitFor(() =>
+                expect(screen.getByText(/failed to load/i)).toBeInTheDocument()
+            );
+        }
+    );
+
+    it("measurement shows an error too, which it never did before", async () => {
+        get.mockRejectedValue(new Error("network down"));
+
+        renderWithProviders(<MeasurementPage />);
+
+        await waitFor(() =>
+            expect(screen.getByText(/failed to load/i)).toBeInTheDocument()
+        );
     });
 
-    it.each([
-        ["weight", "src/app/(Dashboard)/weight/page.tsx"],
-        ["insulin", "src/app/(Dashboard)/insulin/page.tsx"],
-    ])("%s awaits its fetch, so its try/catch actually works", (_name, file) => {
-        const source = fs.readFileSync(file, "utf8");
+    it("does not leave the skeleton up once a fetch has failed", async () => {
+        get.mockRejectedValue(new Error("network down"));
 
-        expect(source).toContain("await axios.get");
+        const { container } = renderWithProviders(<GlucosePage />);
+
+        await waitFor(() =>
+            expect(screen.getByText(/failed to load/i)).toBeInTheDocument()
+        );
+        expect(container.querySelectorAll(".animate-pulse")).toHaveLength(0);
     });
 });
