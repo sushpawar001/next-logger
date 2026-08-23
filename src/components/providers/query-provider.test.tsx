@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { useQueryClient } from "@tanstack/react-query";
 import QueryProvider from "./QueryProvider";
-import { makeQueryClient } from "@/lib/query/client";
+import { makeQueryClient, queryDefaults } from "@/lib/query/client";
 
 function Probe() {
     const client = useQueryClient();
@@ -57,5 +57,16 @@ describe("QueryProvider", () => {
 
     it("builds a distinct client per call, so nothing is shared across renders", () => {
         expect(makeQueryClient()).not.toBe(makeQueryClient());
+    });
+
+    it("backs off exponentially but caps the delay", () => {
+        const retryDelay = queryDefaults?.queries?.retryDelay as (
+            attempt: number
+        ) => number;
+
+        expect(retryDelay(0)).toBe(1_000);
+        expect(retryDelay(1)).toBe(2_000);
+        // Capped, so a failing query cannot hold a retry timer open for ages.
+        expect(retryDelay(10)).toBe(8_000);
     });
 });
