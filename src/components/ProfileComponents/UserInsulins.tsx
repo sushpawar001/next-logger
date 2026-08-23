@@ -1,10 +1,11 @@
-import axios from "axios";
 import React, { useEffect, useState, SetStateAction, useRef } from "react";
 import { FaSyringe } from "react-icons/fa";
 import { Syringe } from "lucide-react";
 import type { InsulinNameType } from "@/types/models";
 import notify from "@/helpers/notify";
 import autoAnimate from "@formkit/auto-animate";
+import { useSaveUserInsulins } from "@/hooks/queries/useInsulinMutations";
+import { mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 
 export default function UserInsulins({
     className = "",
@@ -17,7 +18,9 @@ export default function UserInsulins({
     userInsulins: InsulinNameType[];
     setUserInsulins: React.Dispatch<SetStateAction<InsulinNameType[]>>;
 }) {
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    // The chip list stays local draft state -- only Save commits it.
+    const saveInsulins = useSaveUserInsulins();
+    const isSubmitting = saveInsulins.isPending;
     const [isChanged, setIsChanged] = useState(false);
     const [selectedInsulin, setSelectedInsulin] = useState("");
     const parent = useRef(null);
@@ -25,16 +28,11 @@ export default function UserInsulins({
     const submitInsulin = async (e) => {
         e.preventDefault();
         try {
-            setIsSubmitting(true);
-            const response = await axios.post("/api/users/bulk-add-insulin", {
-                insulinData: userInsulins,
-            });
-            setIsSubmitting(false);
+            const response = await saveInsulins.mutateAsync(userInsulins);
             setIsChanged(false);
-            notify(response.data.message, "success");
+            notify(response.message, "success");
         } catch (error) {
-            notify(error.response.data.message, "error");
-            console.error(error);
+            notify(mutationErrorMessage(error), "error");
         }
     };
 

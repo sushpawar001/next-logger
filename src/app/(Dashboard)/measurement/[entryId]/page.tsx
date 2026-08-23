@@ -1,5 +1,4 @@
 "use client";
-import axios from "axios";
 import React, { useEffect, useState, ChangeEvent } from "react";
 import notify from "@/helpers/notify";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
@@ -7,6 +6,12 @@ import { useRouter } from "next/navigation";
 import { entryTags } from "@/constants/constants";
 import { Droplets, ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useEntry } from "@/hooks/queries/useEntries";
+import {
+    useUpdateEntry,
+    useDeleteEntry,
+    mutationErrorMessage,
+} from "@/hooks/queries/useEntryMutations";
 import MeasurementInput from "@/components/MeasurementInput";
 
 const dataInputs = [
@@ -31,20 +36,22 @@ export default function EditEntry({ params }) {
         createdAt: "",
         tag: "",
     });
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
+
+    const entry = useEntry("measurements", params.entryId);
+    const updateEntry = useUpdateEntry("measurements", params.entryId);
+    const deleteEntry = useDeleteEntry("measurements");
+    const isSubmitting = updateEntry.isPending || deleteEntry.isPending;
+
+    // The form is an edited draft, so it stays local state and is seeded from
+    // the query rather than bound to it.
     useEffect(() => {
-        const getData = async () => {
-            const entryData = await axios.get(
-                `/api/measurements/get-one/${params.entryId}`
-            );
-            const entryCopy = entryData.data.data;
-            entryCopy.createdAt = DatetimeLocalFormat(entryCopy.createdAt);
-            setData(entryCopy);
-            console.log(entryCopy);
-        };
-        getData();
-    }, [params.entryId]);
+        if (!entry.data) return;
+        setData({
+            ...entry.data,
+            createdAt: DatetimeLocalFormat(entry.data.createdAt),
+        });
+    }, [entry.data]);
     const changeValue = (event) => {
         const name = event.target.name;
         const value = event.target.value;
@@ -61,15 +68,11 @@ export default function EditEntry({ params }) {
         e.preventDefault();
         try {
             data.createdAt = new Date(data.createdAt).toISOString();
-            const response = await axios.put(
-                `/api/measurements/update/${params.entryId}`,
-                data
-            );
-            notify(response.data.message, "success");
+            const response = await updateEntry.mutateAsync(data);
+            notify(response.message, "success");
             router.push("/measurement/");
         } catch (error) {
-            console.log(error);
-            notify(error.response.data.message, "error");
+            notify(mutationErrorMessage(error), "error");
         }
     };
 
@@ -84,13 +87,11 @@ export default function EditEntry({ params }) {
 
     const deleteData = async (id) => {
         try {
-            const deletedData = await axios.delete(
-                `/api/measurements/delete/${id}`
-            );
+            await deleteEntry.mutateAsync(id);
             notify("Measurements data deleted!", "success");
             router.push("/measurement/");
         } catch (error) {
-            console.log(error);
+            notify(mutationErrorMessage(error), "error");
         }
     };
 

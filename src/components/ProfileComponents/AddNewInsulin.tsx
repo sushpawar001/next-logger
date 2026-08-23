@@ -1,22 +1,22 @@
 import notify from "@/helpers/notify";
-import React, { useState, SetStateAction } from "react";
+import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
-import axios from "axios";
 import type { InsulinNameType } from "@/types/models";
 import { Plus } from "lucide-react";
+import { useAddNewInsulin } from "@/hooks/queries/useInsulinMutations";
+import { mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 
 export default function AddNewInsulin({
     className = "",
     allAvailableInsulins = [],
-    setAllAvailableInsulins = () => {},
-    setUserInsulins,
 }: {
     className?: string;
     allAvailableInsulins?: InsulinNameType[];
-    setAllAvailableInsulins?: React.Dispatch<SetStateAction<InsulinNameType[]>>;
-    setUserInsulins: React.Dispatch<SetStateAction<InsulinNameType[]>>;
 }) {
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    // Both setters this component used to take were pure server syncs after the
+    // two POSTs; invalidation covers them.
+    const addNewInsulin = useAddNewInsulin();
+    const isSubmitting = addNewInsulin.isPending;
     const [newInsulinType, setNewInsulinType] = useState("");
 
     const changeNewInsulinType = (event: { target: { value: string } }) => {
@@ -33,27 +33,17 @@ export default function AddNewInsulin({
                         obj.name.toLowerCase() === newInsulinType.toLowerCase()
                 )
             ) {
-                const response = await axios.post("/api/insulin-type/add", {
-                    name: newInsulinType,
-                });
-                notify(response.data.message, "success");
+                await addNewInsulin.mutateAsync(newInsulinType);
+                notify("Insulin added!", "success");
                 setNewInsulinType("");
-                setAllAvailableInsulins((data) => [
-                    ...data,
-                    response.data.entry,
-                ]);
-
-                const addResponse = await axios.post("/api/users/add-insulin", {
-                    name: response.data.entry.name,
-                });
-                setUserInsulins((data) => [...data, addResponse.data.insulin]);
             } else {
                 notify("Insulin already exists!", "error");
                 setNewInsulinType("");
             }
         } catch (error) {
-            let e = error.response.data.error || "Something went wrong!";
-            notify(e, "error");
+            // Was `error.response.data.error` unguarded, which threw again from
+            // inside the catch on a network failure.
+            notify(mutationErrorMessage(error, "Something went wrong!"), "error");
         }
     };
 

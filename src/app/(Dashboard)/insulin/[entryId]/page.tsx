@@ -1,5 +1,4 @@
 "use client";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import notify from "@/helpers/notify";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
@@ -7,6 +6,12 @@ import { useRouter } from "next/navigation";
 import { entryTags } from "@/constants/constants";
 import { Droplets, ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useEntry } from "@/hooks/queries/useEntries";
+import {
+    useUpdateEntry,
+    useDeleteEntry,
+    mutationErrorMessage,
+} from "@/hooks/queries/useEntryMutations";
 import { useUserInsulins } from "@/hooks/queries/useReferenceData";
 
 export default function EditEntry({ params }) {
@@ -16,22 +21,25 @@ export default function EditEntry({ params }) {
         createdAt: "",
         tag: "",
     });
-    const [isSubmitting, setIsSubmitting] = useState(false);
     // Shared with InsulinAdd and /profile through one cache entry, so arriving
     // here from /insulin costs no extra request.
     const { data: userInsulinType = [] } = useUserInsulins();
     const router = useRouter();
+
+    const entry = useEntry("insulin", params.entryId);
+    const updateEntry = useUpdateEntry("insulin", params.entryId);
+    const deleteEntry = useDeleteEntry("insulin");
+    const isSubmitting = updateEntry.isPending || deleteEntry.isPending;
+
+    // The form is an edited draft, so it stays local state and is seeded from
+    // the query rather than bound to it.
     useEffect(() => {
-        const getData = async () => {
-            const entryData = await axios.get(
-                `/api/insulin/get-one/${params.entryId}`
-            );
-            const entryCopy = entryData.data.data;
-            entryCopy.createdAt = DatetimeLocalFormat(entryCopy.createdAt);
-            setData(entryCopy);
-        };
-        getData();
-    }, [params.entryId]);
+        if (!entry.data) return;
+        setData({
+            ...entry.data,
+            createdAt: DatetimeLocalFormat(entry.data.createdAt),
+        });
+    }, [entry.data]);
     const changeValue = (event) => {
         setData({ ...data, units: event.target.value });
     };
@@ -48,11 +56,11 @@ export default function EditEntry({ params }) {
 
     const deleteData = async (id: string) => {
         try {
-            const deletedData = await axios.delete(`/api/insulin/delete/${id}`);
+            await deleteEntry.mutateAsync(id);
             notify("Insulin data deleted!", "success");
             router.push("/insulin/");
         } catch (error) {
-            console.log(error);
+            notify(mutationErrorMessage(error), "error");
         }
     };
 
@@ -60,16 +68,11 @@ export default function EditEntry({ params }) {
         e.preventDefault();
         try {
             data.createdAt = new Date(data.createdAt).toISOString();
-            const response = await axios.put(
-                `/api/insulin/update/${params.entryId}`,
-                data
-            );
-            console.log(response);
-            notify(response.data.message, "success");
+            const response = await updateEntry.mutateAsync(data);
+            notify(response.message, "success");
             router.push("/insulin/");
         } catch (error) {
-            console.log(error);
-            notify(error.response.data.message, "error");
+            notify(mutationErrorMessage(error), "error");
         }
     };
 

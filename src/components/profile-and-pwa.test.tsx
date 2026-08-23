@@ -254,11 +254,7 @@ describe("AddNewInsulin", () => {
             data: { message: "added!", entry: { _id: "i3", name: "Tresiba" } },
         });
         renderWithProviders(
-            <AddNewInsulin
-                allAvailableInsulins={insulins}
-                setAllAvailableInsulins={vi.fn()}
-                setUserInsulins={vi.fn()}
-            />
+            <AddNewInsulin allAvailableInsulins={insulins} />
         );
 
         await user.type(screen.getAllByRole("textbox")[0], "Tresiba");
@@ -274,11 +270,7 @@ describe("AddNewInsulin", () => {
             response: { data: { error: "Tresiba Insulin already exists" } },
         }));
         renderWithProviders(
-            <AddNewInsulin
-                allAvailableInsulins={insulins}
-                setAllAvailableInsulins={vi.fn()}
-                setUserInsulins={vi.fn()}
-            />
+            <AddNewInsulin allAvailableInsulins={insulins} />
         );
 
         await user.type(screen.getAllByRole("textbox")[0], "Tresiba");

@@ -7,7 +7,7 @@ import {
     type Resource,
     type RangeResource,
 } from "@/lib/query/keys";
-import { getList, getRange } from "@/lib/query/fetchers";
+import { getList, getOne, getRange } from "@/lib/query/fetchers";
 
 /**
  * A day-window of one metric.
@@ -40,5 +40,14 @@ export function useEntryRange<T = any>(
         queryFn: () => getRange<T>(`/api/${resource}/get-range/${Number(days)}`),
         placeholderData: keepPreviousData,
         staleTime: listStaleTime(days),
+    });
+}
+
+/** A single entry, for the `[entryId]` edit pages. */
+export function useEntry<T = any>(resource: Resource, id: string) {
+    return useQuery({
+        queryKey: qk.entry(resource, id),
+        queryFn: () => getOne<T>(`/api/${resource}/get-one/${id}`),
+        enabled: Boolean(id),
     });
 }
