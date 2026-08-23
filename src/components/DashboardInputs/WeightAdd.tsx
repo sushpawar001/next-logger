@@ -59,26 +59,6 @@ export default function WeightAdd(props) {
             setSelectedDate(new Date());
             setSendTime(false);
             setSelectTag(null);
-
-            if (props.data && props.setData) {
-                // Kept until every parent reads through the cache; a no-op for
-                // those that already do.
-                const newEntry = response.entry;
-
-                props.setData((prevData) => {
-                    // Combine the new entry with the existing data
-                    const newData = [newEntry, ...prevData];
-
-                    // Sort the array based on the 'date' property
-                    newData.sort(
-                        (a, b) =>
-                            new Date(b.createdAt).getTime() -
-                            new Date(a.createdAt).getTime()
-                    );
-
-                    return newData;
-                });
-            }
         } catch (error) {
             notify(mutationErrorMessage(error), "error");
         }

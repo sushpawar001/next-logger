@@ -1,6 +1,13 @@
 import fs from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, userEvent, waitFor } from "@/test/render";
+import {
+    makeTestQueryClient,
+    renderWithProviders,
+    screen,
+    userEvent,
+    waitFor,
+} from "@/test/render";
+import { qk } from "@/lib/query/keys";
 import { rejectsWith } from "@/test/promises";
 
 vi.mock("axios");
@@ -43,6 +50,7 @@ const FORMS = [
         name: "GlucoseAdd",
         Component: GlucoseAdd,
         endpoint: "/api/glucose/add",
+        resource: "glucose" as const,
         heading: /blood glucose/i,
         valueLabel: /glucose level/i,
         tagSelectId: "glucose_tag",
@@ -55,6 +63,7 @@ const FORMS = [
         name: "WeightAdd",
         Component: WeightAdd,
         endpoint: "/api/weight/add",
+        resource: "weight" as const,
         heading: /weight/i,
         valueLabel: /weight/i,
         tagSelectId: "weight_tag",
@@ -121,25 +130,42 @@ describe.each(FORMS)("$name", (f) => {
         expect(entryLogged).toHaveBeenCalledTimes(1);
     });
 
-    it("prepends the new entry to the parent list, newest first", async () => {
+    /**
+     * Replaces a test that drove `data`/`setData` directly and asserted the
+     * parent list came back as ["new", "old"]. That prop drill is gone: the form
+     * invalidates the resource instead, and each page re-reads from the cache.
+     */
+    it("invalidates every cached window of its resource after a successful add", async () => {
         const user = userEvent.setup();
-        const existing = [
-            { _id: "old", createdAt: "2026-01-01T00:00:00.000Z" },
-        ];
-        let captured: any[] = [];
-        const setData = vi.fn((updater: any) => {
-            captured = updater(existing);
-        });
+        const queryClient = makeTestQueryClient();
+
+        // Two windows of the same resource, plus an unrelated one that must be
+        // left alone.
+        queryClient.setQueryData(qk.list(f.resource, 7), [{ _id: "old" }]);
+        queryClient.setQueryData(qk.list(f.resource, 30), [{ _id: "old" }]);
+        queryClient.setQueryData(qk.insulinTypes(), [{ _id: "type" }]);
+
         post.mockResolvedValue(
             okResponse({ _id: "new", createdAt: "2026-02-01T00:00:00.000Z" })
         );
-        renderWithProviders(<f.Component data={existing} setData={setData} />);
+        renderWithProviders(<f.Component />, { queryClient });
 
         await f.fill(user);
         await user.click(screen.getByRole("button", { name: /submit/i }));
 
-        await waitFor(() => expect(setData).toHaveBeenCalled());
-        expect(captured.map((e) => e._id)).toEqual(["new", "old"]);
+        await waitFor(() => expect(post).toHaveBeenCalled());
+        await waitFor(() => {
+            expect(
+                queryClient.getQueryState(qk.list(f.resource, 7))?.isInvalidated
+            ).toBe(true);
+            expect(
+                queryClient.getQueryState(qk.list(f.resource, 30))?.isInvalidated
+            ).toBe(true);
+        });
+
+        expect(
+            queryClient.getQueryState(qk.insulinTypes())?.isInvalidated
+        ).toBe(false);
     });
 
     it("reports a server error through a toast", async () => {
