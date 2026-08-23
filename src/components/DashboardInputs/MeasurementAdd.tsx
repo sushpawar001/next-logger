@@ -1,7 +1,6 @@
 "use client";
 import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
-import axios from "axios";
 import { Ruler } from "lucide-react";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { entryTags } from "@/constants/constants";

@@ -3,7 +3,6 @@ import { entryTags } from "@/constants/constants";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
-import axios from "axios";
 import { Droplets } from "lucide-react";
 import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 import { useEffect, useRef, useState } from "react";

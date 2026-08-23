@@ -3,7 +3,6 @@ import { entryTags } from "@/constants/constants";
 import React, { useState, useEffect, useRef } from "react";
 import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
-import axios from "axios";
 import InsulinType from "@/models/insulinTypeModel"; // import to avoid error
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { Droplets, Weight, Syringe } from "lucide-react";

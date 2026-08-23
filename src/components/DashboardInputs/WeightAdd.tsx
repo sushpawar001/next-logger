@@ -1,7 +1,6 @@
 "use client";
 import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
-import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { entryTags } from "@/constants/constants";
