@@ -11,32 +11,20 @@ import {
 } from "@/components/animate-ui/radix/radio-group";
 import PrivacyNotice from "./PrivacyNotice";
 import { useQueryState } from "nuqs";
+import {
+    BMI_CLASSIFICATIONS,
+    getHeightInMeters,
+    getWeightInKg,
+    calculateBMI,
+    getBMIClassification,
+    validateInputs,
+} from "@/lib/calculators/bmi";
+import type {
+    BMIResult,
+    FormData,
+} from "@/lib/calculators/bmi";
 
-interface BMIResult {
-    bmi: number;
-    classification: string;
-    category: "underweight" | "normal" | "overweight" | "obesity";
-}
 
-interface FormData {
-    age: string;
-    gender: "male" | "female";
-    heightUnit: "cm" | "ft";
-    heightCm: string;
-    heightFeet: string;
-    heightInches: string;
-    weightUnit: "kg" | "lbs";
-    weightKg: string;
-    weightLbs: string;
-}
-
-// Constants
-const BMI_CLASSIFICATIONS = {
-    underweight: { min: 0, max: 18.5, label: "Underweight", color: "blue" },
-    normal: { min: 18.5, max: 25, label: "Normal", color: "green" },
-    overweight: { min: 25, max: 30, label: "Overweight", color: "yellow" },
-    obesity: { min: 30, max: Infinity, label: "Obesity", color: "red" },
-} as const;
 
 const IMPORTANT_NOTES = [
     "BMI is a screening tool and may not be accurate for all individuals",
@@ -46,108 +34,6 @@ const IMPORTANT_NOTES = [
     "BMI ranges may vary slightly between different health organizations",
 ];
 
-// Utility functions
-const getHeightInMeters = (formData: FormData): number => {
-    if (formData.heightUnit === "cm") {
-        return parseFloat(formData.heightCm) / 100;
-    } else {
-        const totalInches =
-            parseFloat(formData.heightFeet) * 12 +
-            parseFloat(formData.heightInches);
-        return totalInches * 0.0254;
-    }
-};
-
-const getWeightInKg = (formData: FormData): number => {
-    if (formData.weightUnit === "kg") {
-        return parseFloat(formData.weightKg);
-    } else {
-        return parseFloat(formData.weightLbs) * 0.453592;
-    }
-};
-
-const calculateBMI = (weightKg: number, heightM: number): number => {
-    return weightKg / (heightM * heightM);
-};
-
-const getBMIClassification = (bmi: number): BMIResult => {
-    for (const [category, range] of Object.entries(BMI_CLASSIFICATIONS)) {
-        if (bmi >= range.min && bmi < range.max) {
-            return {
-                bmi,
-                classification: range.label,
-                category: category as keyof typeof BMI_CLASSIFICATIONS,
-            };
-        }
-    }
-    // Fallback for very high BMI values
-    return {
-        bmi,
-        classification: BMI_CLASSIFICATIONS.obesity.label,
-        category: "obesity",
-    };
-};
-
-const validateInputs = (formData: FormData): string[] => {
-    const errors: string[] = [];
-
-    // Validate age
-    if (
-        !formData.age ||
-        isNaN(parseFloat(formData.age)) ||
-        parseFloat(formData.age) <= 0
-    ) {
-        errors.push("Please enter a valid age");
-    }
-
-    // Validate height based on unit
-    if (formData.heightUnit === "cm") {
-        if (
-            !formData.heightCm ||
-            isNaN(parseFloat(formData.heightCm)) ||
-            parseFloat(formData.heightCm) <= 0
-        ) {
-            errors.push("Please enter a valid height in centimeters");
-        }
-    } else {
-        if (
-            !formData.heightFeet ||
-            isNaN(parseFloat(formData.heightFeet)) ||
-            parseFloat(formData.heightFeet) <= 0
-        ) {
-            errors.push("Please enter a valid height in feet");
-        }
-        if (
-            !formData.heightInches ||
-            isNaN(parseFloat(formData.heightInches)) ||
-            parseFloat(formData.heightInches) < 0 ||
-            parseFloat(formData.heightInches) >= 12
-        ) {
-            errors.push("Please enter a valid height in inches (0-11)");
-        }
-    }
-
-    // Validate weight based on unit
-    if (formData.weightUnit === "kg") {
-        if (
-            !formData.weightKg ||
-            isNaN(parseFloat(formData.weightKg)) ||
-            parseFloat(formData.weightKg) <= 0
-        ) {
-            errors.push("Please enter a valid weight in kilograms");
-        }
-    } else {
-        if (
-            !formData.weightLbs ||
-            isNaN(parseFloat(formData.weightLbs)) ||
-            parseFloat(formData.weightLbs) <= 0
-        ) {
-            errors.push("Please enter a valid weight in pounds");
-        }
-    }
-
-    return errors;
-};
 
 // Reusable Components
 const BMIClassificationCard: React.FC<{ result: BMIResult }> = ({ result }) => {

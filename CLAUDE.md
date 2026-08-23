@@ -12,12 +12,58 @@ FitDose (repo name `next-logger`) — a Next.js 14 App Router health logger for 
 pnpm dev              # dev server on port 4000 (NOT 3000 — README is stale)
 pnpm build            # next build
 pnpm lint             # next lint (eslint-config-next)
+pnpm typecheck        # tsc --noEmit
+pnpm test             # vitest run (both projects)
+pnpm test:watch       # vitest in watch mode
+pnpm test:api         # node-env project only (lib, helpers, models, api routes)
+pnpm test:components  # jsdom project only (components, hooks, pages)
+pnpm test:coverage    # vitest run --coverage; fails below the thresholds
 pnpm migrate:analyze  # dry-run: report which DB fields would be encrypted
 pnpm migrate:encrypt  # encrypt existing plaintext fields in-place (BACKUP FIRST)
 pnpm migrate:verify   # decrypt-test existing data, report failures
 ```
 
-There is no test framework or test suite in this repo. Verification is `pnpm build` + `pnpm lint` + manual checks.
+### Testing
+
+**Vitest + React Testing Library**, ~1150 tests across two projects defined in `vitest.config.ts`:
+
+- **`node`** — `src/{lib,helpers,models,dbConfig}`, `src/app/api/**`, `src/middleware.ts`
+- **`jsdom`** — `src/components/**`, `src/hooks/**`, `src/app/**/*.test.tsx`, plus `src/lib/**/*.dom.test.ts`
+
+Coverage gates at **90% lines/functions/statements, 85% branches**. Presentational
+code is excluded from the denominator (shadcn `ui/`, generated skeletons,
+layouts, the superseded Chart.js components, dead files, legacy JWT routes) —
+see the `coverage.exclude` list in `vitest.config.ts`.
+
+Shared harness lives in `src/test/`:
+- `mongoose.ts` — `createModelMock()` (constructible + statics) and
+  `createQuery()`, a chainable thenable standing in for a mongoose Query.
+  Always use `createFailingQuery()` rather than an eagerly-rejected promise.
+- `setup.node.ts` — globally mocks `@/dbConfig/connectDB` (the real one calls
+  `process.exit()`, which would kill the worker) and `@clerk/nextjs/server`.
+- `setup.jsdom.tsx` — jsdom gaps: `ResizeObserver`, `matchMedia`,
+  `Element.animate`, Pointer Capture, `scrollIntoView`, plus stubs for
+  `next/image`, `next/dynamic`, `next/font` and the Chart.js dayjs adapter.
+- `render.tsx` — `renderWithProviders`, which wraps in `NuqsTestingAdapter`.
+  Note it reports URL writes via `onUrlUpdate` but does **not** feed them back
+  as state, so drive calculators from `searchParams` rather than by typing.
+- `promises.ts` — `rejectsWith()`, for driving a rejection into code that
+  does handle it without tripping Vitest's unhandled-rejection detection.
+
+The highest-value test is
+`src/app/api/__tests__/user-scoping.security.test.ts`: a table-driven proof
+that every single-row handler filters on `_id` **and** `user` together, plus a
+source-level sweep that fails if a new `delete`/`update`/`get-one` route is
+added without a matching case.
+
+**`docs/BUGS.md`** lists 28 defects found while writing these tests. None are fixed;
+each is pinned by a test asserting current behavior with a
+`KNOWN BUG (docs/BUGS.md #n)` comment, so a future fix fails loudly rather than
+silently changing behavior.
+
+Calculator maths lives in `src/lib/calculators/` (extracted from the components
+so it can be unit-tested); the components import from there and are otherwise
+unchanged.
 
 Required env vars (`.env`, gitignored): `MONGO_URI`, `ENCRYPTION_KEY` (**exactly 32 characters** or every model throws), Clerk keys (`NEXT_PUBLIC_CLERK_*`, `CLERK_SECRET_KEY`), `RESEND_API_KEY`, `SEED_TOKEN`, `GA_ID`, `NEXT_PUBLIC_BASE_URL`, Razorpay keys. `TOKEN_SECRET`/`DOMAIN` are leftovers from the pre-Clerk JWT auth.
 

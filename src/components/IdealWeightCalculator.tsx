@@ -11,22 +11,17 @@ import {
 } from "@/components/animate-ui/radix/radio-group";
 import PrivacyNotice from "./PrivacyNotice";
 import { useQueryState } from "nuqs";
+import {
+    formatWeight,
+    getHeightInInches,
+    calculateIBW,
+    validateInputs,
+} from "@/lib/calculators/idealWeight";
+import type {
+    IBWResult,
+    FormData,
+} from "@/lib/calculators/idealWeight";
 
-interface IBWResult {
-    robinson: number;
-    miller: number;
-    devine: number;
-    hamwi: number;
-}
-
-interface FormData {
-    age: string;
-    heightUnit: "cm" | "ft";
-    heightCm: string;
-    heightFeet: string;
-    heightInches: string;
-    gender: "male" | "female";
-}
 
 // Constants
 const FORMULA_NAMES = {
@@ -43,85 +38,6 @@ const IMPORTANT_NOTES = [
     "The Devine formula is highlighted as it's most commonly used in clinical settings",
 ];
 
-// Utility functions
-const formatWeight = (weight: number): string => `${weight.toFixed(1)} kg`;
-
-const getHeightInInches = (formData: FormData): number => {
-    if (formData.heightUnit === "cm") {
-        return parseFloat(formData.heightCm) / 2.54;
-    } else {
-        return (
-            parseFloat(formData.heightFeet) * 12 +
-            parseFloat(formData.heightInches)
-        );
-    }
-};
-
-const calculateIBW = (
-    heightInches: number,
-    gender: "male" | "female"
-): IBWResult => {
-    const baseHeight = 60; // 5 feet = 60 inches
-    const inchesOver5Feet = Math.max(0, heightInches - baseHeight);
-
-    if (gender === "male") {
-        return {
-            robinson: 52 + 1.9 * inchesOver5Feet,
-            miller: 56.2 + 1.41 * inchesOver5Feet,
-            devine: 50.0 + 2.3 * inchesOver5Feet,
-            hamwi: 48.0 + 2.7 * inchesOver5Feet,
-        };
-    } else {
-        return {
-            robinson: 49 + 1.7 * inchesOver5Feet,
-            miller: 53.1 + 1.36 * inchesOver5Feet,
-            devine: 45.5 + 2.2 * inchesOver5Feet,
-            hamwi: 45.5 + 2.2 * inchesOver5Feet,
-        };
-    }
-};
-
-const validateInputs = (formData: FormData): string[] => {
-    const errors: string[] = [];
-
-    // Validate age
-    if (
-        !formData.age ||
-        isNaN(parseFloat(formData.age)) ||
-        parseFloat(formData.age) <= 0
-    ) {
-        errors.push("Please enter a valid age");
-    }
-
-    // Validate height based on unit
-    if (formData.heightUnit === "cm") {
-        if (
-            !formData.heightCm ||
-            isNaN(parseFloat(formData.heightCm)) ||
-            parseFloat(formData.heightCm) <= 0
-        ) {
-            errors.push("Please enter a valid height in centimeters");
-        }
-    } else {
-        if (
-            !formData.heightFeet ||
-            isNaN(parseFloat(formData.heightFeet)) ||
-            parseFloat(formData.heightFeet) <= 0
-        ) {
-            errors.push("Please enter a valid height in feet");
-        }
-        if (
-            !formData.heightInches ||
-            isNaN(parseFloat(formData.heightInches)) ||
-            parseFloat(formData.heightInches) < 0 ||
-            parseFloat(formData.heightInches) >= 12
-        ) {
-            errors.push("Please enter a valid height in inches (0-11)");
-        }
-    }
-
-    return errors;
-};
 
 const DevineFormulaCard: React.FC<{ weight: number }> = ({ weight }) => (
     <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg">
