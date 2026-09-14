@@ -6,6 +6,7 @@ import { sendGAEvent } from "@next/third-parties/google";
 import {
     isIosDevice,
     isIosSafari,
+    isMobileDevice,
     isStandalone,
     trackPwaEvent,
 } from "./pwa";
@@ -138,6 +139,40 @@ describe("isIosSafari", () => {
 
     it("is false on a non-iOS device", () => {
         expect(isIosSafari()).toBe(false);
+    });
+});
+
+describe("isMobileDevice", () => {
+    it("is true on an iPhone", () => {
+        setUserAgent(IPHONE);
+
+        expect(isMobileDevice()).toBe(true);
+    });
+
+    it("is true on an iPad reporting a desktop Mac user agent", () => {
+        setUserAgent(IPAD_DESKTOP_UA);
+        setMaxTouchPoints(5);
+
+        expect(isMobileDevice()).toBe(true);
+    });
+
+    it("is true on Android Chrome", () => {
+        setUserAgent(
+            "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36"
+        );
+
+        expect(isMobileDevice()).toBe(true);
+    });
+
+    it("is false on desktop Chrome", () => {
+        expect(isMobileDevice()).toBe(false);
+    });
+
+    it("is false on a real Mac", () => {
+        setUserAgent(IPAD_DESKTOP_UA);
+        setMaxTouchPoints(0);
+
+        expect(isMobileDevice()).toBe(false);
     });
 });
 

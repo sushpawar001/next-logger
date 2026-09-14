@@ -30,6 +30,19 @@ export function isIosSafari(): boolean {
 }
 
 /**
+ * True on phones and tablets. Desktop Chrome fires beforeinstallprompt too, but
+ * the install nag only makes sense where the home screen is a real destination,
+ * so we gate the prompt on this. Covers iPad's desktop-Mac UA via isIosDevice.
+ */
+export function isMobileDevice(): boolean {
+    if (typeof navigator === "undefined") return false;
+    if (isIosDevice()) return true;
+    return /Android|Mobi|IEMobile|BlackBerry|Opera Mini/i.test(
+        navigator.userAgent
+    );
+}
+
+/**
  * Fire a GA event, no-op when GA has not loaded (dev, or GA_ID unset) so we
  * don't spam the console with warnings.
  */

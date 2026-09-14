@@ -1,7 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { isIosSafari, isStandalone, trackPwaEvent } from "@/lib/pwa";
+import {
+    isIosSafari,
+    isMobileDevice,
+    isStandalone,
+    trackPwaEvent,
+} from "@/lib/pwa";
 
 const STORAGE_KEY = "fitdose.install";
 const MAX_SHOWINGS = 2;
@@ -46,11 +51,13 @@ export function useInstallPrompt() {
         useState<InstallPromptEvent | null>(null);
     const [installed, setInstalled] = useState(false);
     const [ios, setIos] = useState(false);
+    const [mobile, setMobile] = useState(false);
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
         setInstalled(isStandalone() || readState().installed);
         setIos(isIosSafari());
+        setMobile(isMobileDevice());
 
         const onBeforeInstallPrompt = (event: Event) => {
             // Suppress Chrome's own mini-infobar so we can choose the moment.
@@ -77,9 +84,10 @@ export function useInstallPrompt() {
         };
     }, []);
 
-    // Can we show the card at all? iOS gets instructions (no API), everyone else
-    // needs Chrome to have handed us a deferred prompt.
-    const isSupported = ios || deferredPrompt !== null;
+    // Can we show the card at all? Phones/tablets only — a home-screen icon is
+    // meaningless on desktop even though desktop Chrome fires the event. iOS
+    // gets instructions (no API), everyone else needs Chrome's deferred prompt.
+    const isSupported = mobile && (ios || deferredPrompt !== null);
 
     const eligible = useCallback(() => {
         if (installed || !isSupported) return false;

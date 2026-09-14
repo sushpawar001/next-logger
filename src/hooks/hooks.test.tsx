@@ -5,10 +5,16 @@ vi.mock("@/lib/pwa", () => ({
     isStandalone: vi.fn(() => false),
     isIosDevice: vi.fn(() => false),
     isIosSafari: vi.fn(() => false),
+    isMobileDevice: vi.fn(() => true),
     trackPwaEvent: vi.fn(),
 }));
 
-import { isIosSafari, isStandalone, trackPwaEvent } from "@/lib/pwa";
+import {
+    isIosSafari,
+    isMobileDevice,
+    isStandalone,
+    trackPwaEvent,
+} from "@/lib/pwa";
 import { useInstallPrompt } from "./use-install-prompt";
 import { useIsMobile } from "./use-mobile";
 import { useQuickLog } from "./use-quick-log";
@@ -134,6 +140,7 @@ describe("useInstallPrompt", () => {
         window.localStorage.clear();
         vi.mocked(isStandalone).mockReturnValue(false);
         vi.mocked(isIosSafari).mockReturnValue(false);
+        vi.mocked(isMobileDevice).mockReturnValue(true);
         vi.mocked(trackPwaEvent).mockClear();
     });
 
@@ -165,6 +172,24 @@ describe("useInstallPrompt", () => {
             fireBeforeInstallPrompt();
 
             expect(result.current.isSupported).toBe(true);
+        });
+
+        it("stays unsupported on desktop even when Chrome defers its prompt", () => {
+            vi.mocked(isMobileDevice).mockReturnValue(false);
+
+            const { result } = renderHook(() => useInstallPrompt());
+            fireBeforeInstallPrompt();
+
+            expect(result.current.isSupported).toBe(false);
+        });
+
+        it("stays unsupported on a non-mobile iOS-Safari-like browser", () => {
+            vi.mocked(isMobileDevice).mockReturnValue(false);
+            vi.mocked(isIosSafari).mockReturnValue(true);
+
+            const { result } = renderHook(() => useInstallPrompt());
+
+            expect(result.current.isSupported).toBe(false);
         });
 
         it("suppresses Chrome's own mini-infobar", () => {

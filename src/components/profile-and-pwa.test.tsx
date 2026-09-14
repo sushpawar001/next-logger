@@ -13,6 +13,7 @@ vi.mock("@/lib/pwa", () => ({
     isStandalone: vi.fn(() => false),
     isIosDevice: vi.fn(() => false),
     isIosSafari: vi.fn(() => false),
+    isMobileDevice: vi.fn(() => true),
     trackPwaEvent: vi.fn(),
 }));
 
