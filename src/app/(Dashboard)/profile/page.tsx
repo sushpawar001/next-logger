@@ -5,6 +5,7 @@ import UserInsulins from "@/components/ProfileComponents/UserInsulins";
 import { useEffect, useState } from "react";
 import type { InsulinNameType } from "@/types/models";
 import { SubscriptionCard } from "@/components/ProfileComponents/SubscriptionCard";
+import ExportDataCard from "@/components/ProfileComponents/ExportDataCard";
 import ProfilePageSkeleton from "@/components/PageSkeletons/ProfilePageSkeleton";
 import {
     useInsulinTypes,
@@ -67,6 +68,7 @@ export default function ProfilePage() {
                         className="col-span-1"
                         allAvailableInsulins={allAvailableInsulins}
                     />
+                    <ExportDataCard className="col-span-1 md:col-span-2" />
                 </div>
             </div>
         </div>
