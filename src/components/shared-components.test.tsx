@@ -415,6 +415,18 @@ describe("DashboardHeader", () => {
 
         expect(container.querySelector("header, div")).toBeTruthy();
     });
+
+    it("shows the wordmark logo linking to the dashboard", () => {
+        renderWithProviders(
+            <SidebarProvider>
+                <DashboardHeader />
+            </SidebarProvider>
+        );
+
+        const logo = screen.getByRole("img", { name: "FitDose" });
+        expect(logo).toHaveAttribute("src", "/brand/svg/fitdose-wordmark.svg");
+        expect(logo.closest("a")).toHaveAttribute("href", "/dashboard");
+    });
 });
 
 describe("PublicLeftSidebar", () => {
@@ -431,6 +443,19 @@ describe("PublicLeftSidebar", () => {
 
         expect(hrefs.some((h) => h?.includes("bmi"))).toBe(true);
         expect(hrefs.some((h) => h?.includes("tools"))).toBe(true);
+    });
+
+    it("shows the wordmark logo", () => {
+        renderWithProviders(
+            <SidebarProvider>
+                <PublicLeftSidebar />
+            </SidebarProvider>
+        );
+
+        expect(screen.getByRole("img", { name: "FitDose" })).toHaveAttribute(
+            "src",
+            "/brand/svg/fitdose-wordmark.svg"
+        );
     });
 
     it("does not require a Clerk session", () => {

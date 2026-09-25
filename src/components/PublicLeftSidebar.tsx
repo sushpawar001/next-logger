@@ -10,7 +10,6 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import {
-    Activity,
     Home,
     User,
     Target,
@@ -20,6 +19,7 @@ import {
     Droplets,
 } from "lucide-react";
 import Link from "next/link";
+import Logo from "@/components/brand/Logo";
 import { usePathname } from "next/navigation";
 
 const menuItems = [
@@ -65,17 +65,10 @@ export default function PublicLeftSidebar() {
     const currentRoute = usePathname();
 
     return (
-        <Sidebar className="border-r border-purple-100">
+        <Sidebar className="border-r border-border">
             <SidebarHeader className="p-6">
-                <Link className="flex items-center gap-3" href="/dashboard">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED] text-white">
-                        <Activity className="h-5 w-5" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">
-                            FitDose
-                        </h1>
-                    </div>
+                <Link className="flex items-center" href="/dashboard">
+                    <Logo variant="wordmark" height={28} priority />
                 </Link>
             </SidebarHeader>
 
@@ -91,7 +84,7 @@ export default function PublicLeftSidebar() {
                                     <SidebarMenuButton
                                         asChild
                                         isActive={currentRoute === item.url}
-                                        className="h-11 rounded-xl hover:bg-purple-50 data-[active=true]:bg-gradient-to-r data-[active=true]:from-[#5E4AE3] data-[active=true]:to-[#7C3AED] data-[active=true]:text-white pl-2.5"
+                                        className="h-11 rounded-xl hover:bg-accent/50 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground pl-2.5"
                                     >
                                         <a
                                             href={item.url}

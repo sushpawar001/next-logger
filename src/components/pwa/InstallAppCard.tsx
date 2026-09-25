@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Activity, Download, Share, SquarePlus, Zap } from "lucide-react";
+import { Download, Share, SquarePlus, Zap } from "lucide-react";
 import {
     Sheet,
     SheetContent,
@@ -10,6 +10,7 @@ import {
     SheetTitle,
 } from "@/components/ui/sheet";
 import { useInstallPrompt } from "@/hooks/use-install-prompt";
+import Logo from "@/components/brand/Logo";
 
 /**
  * Bottom-sheet install prompt.
@@ -59,9 +60,7 @@ export default function InstallAppCard() {
             <SheetContent side="bottom" className="rounded-t-2xl">
                 <SheetHeader className="text-left">
                     <div className="mb-2 flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED] text-white">
-                            <Activity className="h-5 w-5" />
-                        </div>
+                        <Logo variant="icon" height={40} className="shrink-0" />
                         <div>
                             <SheetTitle className="text-lg">
                                 Keep FitDose one tap away
@@ -78,16 +77,16 @@ export default function InstallAppCard() {
                     <div className="mt-2 space-y-3">
                         <ol className="space-y-2 text-sm text-gray-700">
                             <li className="flex items-center gap-2">
-                                <Share className="h-4 w-4 shrink-0 text-[#5E4AE3]" />
+                                <Share className="h-4 w-4 shrink-0 text-primary" />
                                 Tap <strong>Share</strong> in the Safari toolbar
                             </li>
                             <li className="flex items-center gap-2">
-                                <SquarePlus className="h-4 w-4 shrink-0 text-[#5E4AE3]" />
+                                <SquarePlus className="h-4 w-4 shrink-0 text-primary" />
                                 Choose <strong>Add to Home Screen</strong>
                             </li>
                         </ol>
-                        <p className="flex items-start gap-2 rounded-lg bg-purple-50 p-3 text-xs text-gray-600">
-                            <Zap className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#5E4AE3]" />
+                        <p className="flex items-start gap-2 rounded-lg bg-accent/50 p-3 text-xs text-gray-600">
+                            <Zap className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
                             <span>
                                 On iPhone this is also what lets us send you log
                                 reminders later. You may need to sign in once
@@ -107,7 +106,7 @@ export default function InstallAppCard() {
                         <button
                             type="button"
                             onClick={promptInstall}
-                            className="flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] py-2.5 text-sm font-medium text-white transition-all duration-300 hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90"
+                            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-2.5 text-sm font-medium text-primary-foreground transition-all duration-300 hover:bg-primary/90"
                         >
                             <Download className="h-4 w-4" />
                             Install

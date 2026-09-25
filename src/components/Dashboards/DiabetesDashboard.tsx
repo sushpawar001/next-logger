@@ -24,7 +24,7 @@ export default function DiabetesDashboard() {
         <div className="h-full flex justify-center items-center py-5 px-5 md:px-10 bg-zinc-50">
             <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-6 gap-4 md:gap-5">
                 <div className="w-full md:col-span-3">
-                    <div className="p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
+                    <div className="p-3 md:px-6 rounded-lg bg-white border border-border transition-all duration-300 shadow-md">
                         <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                             Glucose history
                         </h3>
@@ -51,7 +51,7 @@ export default function DiabetesDashboard() {
                     </div>
                 </div>
                 <div className="w-full md:col-span-3">
-                    <div className="h-full p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
+                    <div className="h-full p-3 md:px-6 rounded-lg bg-white border border-border transition-all duration-300 shadow-md">
                         <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                             Weight history
                         </h3>

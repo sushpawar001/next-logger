@@ -42,11 +42,11 @@ export default function TagFilterCard({
 
     return (
         <div
-            className={`bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow-md flex items-center justify-between relative ${className}`}
+            className={`bg-white p-4 rounded-lg border border-border transition-all duration-300 shadow-md flex items-center justify-between relative ${className}`}
         >
             <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
-                    <Filter className="h-4 w-4 text-white" />
+                <div className="p-2 rounded-lg bg-primary">
+                    <Filter className="h-4 w-4 text-primary-foreground" />
                 </div>
                 <div>
                     <h3 className="font-semibold text-gray-900">
@@ -68,7 +68,7 @@ export default function TagFilterCard({
                     variant="outline"
                     size="sm"
                     onClick={() => setIsOpen(!isOpen)}
-                    className="border-purple-200 hover:border-[#5E4AE3] hover:bg-purple-50"
+                    className="border-border hover:border-primary hover:bg-accent/50"
                 >
                     <ChevronDown className="h-4 w-4" />
                 </Button>
@@ -76,7 +76,7 @@ export default function TagFilterCard({
 
             {/* Dropdown menu */}
             {isOpen && (
-                <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-purple-100 rounded-lg shadow-lg z-50">
+                <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-border rounded-lg shadow-lg z-50">
                     <div className="p-4">
                         <div className="flex items-center justify-between mb-3">
                             <h4 className="font-semibold text-gray-900">
@@ -96,13 +96,13 @@ export default function TagFilterCard({
                             {entryTags.map((tag) => (
                                 <label
                                     key={tag}
-                                    className="flex items-center space-x-3 p-2 hover:bg-purple-50 rounded cursor-pointer"
+                                    className="flex items-center space-x-3 p-2 hover:bg-accent/50 rounded cursor-pointer"
                                 >
                                     <input
                                         type="checkbox"
                                         checked={selectedTags.includes(tag)}
                                         onChange={() => handleTagToggle(tag)}
-                                        className="w-4 h-4 text-[#5E4AE3] bg-gray-100 border-gray-300 rounded focus:ring-[#5E4AE3] focus:ring-2"
+                                        className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-ring focus:ring-2"
                                     />
                                     <span className="text-sm text-gray-700">
                                         {tag}

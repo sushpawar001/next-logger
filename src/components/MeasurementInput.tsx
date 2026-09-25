@@ -24,7 +24,7 @@ export default function MeasurementInput({
                 min={0}
                 id={id}
                 name={id}
-                className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] outline-none h-9"
+                className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring outline-none h-9"
                 placeholder={LabelText}
                 value={value}
                 onChange={onChange}

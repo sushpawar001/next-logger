@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import Logo from "@/components/brand/Logo";
 import runningImage from "../../../public/images/Fitness stats-amico.svg";
 
 export default function HeroSection() {
@@ -10,9 +11,12 @@ export default function HeroSection() {
                 <div className="py-2.5 flex justify-between flex-shrink-0">
                     <div className="my-auto">
                         <Link href="/">
-                            <h1 className="text-xl xl:text-3xl font-semibold text-secondary">
-                                FitDose
-                            </h1>
+                            <Logo
+                                variant="wordmark"
+                                height={32}
+                                className="h-7 w-auto xl:h-8"
+                                priority
+                            />
                         </Link>
                     </div>
                     <div className="flex gap-1.5 md:gap-4">
@@ -29,7 +33,7 @@ export default function HeroSection() {
                         <div>
                             <Link href="/signup">
                                 <button
-                                    className="rounded-md md:rounded-lg px-5 lg:my-auto py-1 lg:py-2 text-sm lg:text-base font-semibold transition duration-500 h-full w-full hover:-translate-y-1 bg-primary hover:bg-primary-dark hover:outline-primary-dark text-white"
+                                    className="rounded-md md:rounded-lg px-5 lg:my-auto py-1 lg:py-2 text-sm lg:text-base font-semibold transition duration-500 h-full w-full hover:-translate-y-1 bg-primary hover:bg-primary-dark hover:outline-primary-dark text-primary-foreground"
                                     onClick={null}
                                 >
                                     Sign up
@@ -51,7 +55,7 @@ export default function HeroSection() {
                     <div className="flex flex-col justify-center gap-4 md:gap-6">
                         <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-secondary">
                             Take Control of Your Health with{" "}
-                            <span className="bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent">
+                            <span className="text-primary">
                                 Precision Data Tracking
                             </span>
                         </h1>
@@ -61,7 +65,7 @@ export default function HeroSection() {
                         </p>
                         <Link href="/signup">
                             <button
-                                className="rounded-md md:rounded-lg px-5 py-1.5 lg:py-2.5 text-sm lg:text-base font-semibold transition duration-500 w-fit md:w-1/3 hover:-translate-y-1 bg-gradient-to-r from-primary-ring to-primary-dark text-white"
+                                className="rounded-md md:rounded-lg px-5 py-1.5 lg:py-2.5 text-sm lg:text-base font-semibold transition duration-500 w-fit md:w-1/3 hover:-translate-y-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                                 onClick={null}
                             >
                                 Join Now for Free

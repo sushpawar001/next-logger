@@ -63,9 +63,9 @@ export default function ChartPage() {
                 <div className="grid gap-2 md:gap-3 h-full">
                     <ChartsHeader />
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                        <div className="bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow-md flex items-center justify-between">
+                        <div className="bg-white p-4 rounded-lg border border-border transition-all duration-300 shadow-md flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                                <div className="p-2 rounded-lg bg-primary">
                                     <Calendar className="h-4 w-4 text-white" />
                                 </div>
                                 <div>
@@ -81,7 +81,7 @@ export default function ChartPage() {
                                 value={daysOfData.toString()}
                                 onValueChange={changeDaysOfData}
                             >
-                                <SelectTrigger className="w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] bg-white">
+                                <SelectTrigger className="w-32 border-border focus:border-primary focus:ring-ring bg-white">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -102,7 +102,7 @@ export default function ChartPage() {
                             className=""
                         />
                     </div>
-                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
+                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
@@ -123,7 +123,7 @@ export default function ChartPage() {
                             )}
                         </div>
                     </div>
-                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
+                    <div className=" w-full p-2.5 md:p-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
@@ -144,7 +144,7 @@ export default function ChartPage() {
                             )}
                         </div>
                     </div>
-                    <div className="w-full p-2.5 md:p-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md">
+                    <div className="w-full p-2.5 md:p-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
                                 className={`p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600`}
@@ -173,10 +173,10 @@ export default function ChartPage() {
 
 function ChartsHeader() {
     return (
-        <Card className="border-purple-100 transition-all duration-300 w-full">
+        <Card className="border-border transition-all duration-300 w-full">
             <CardContent className="p-5">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                    <div className="p-3 rounded-xl bg-primary">
                         <TrendingUp className="h-5 w-5 text-white" />
                     </div>
                     <div>

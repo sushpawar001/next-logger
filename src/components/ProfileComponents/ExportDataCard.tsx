@@ -86,11 +86,11 @@ export default function ExportDataCard({
     };
 
     return (
-        <Card className={`border-purple-100 shadow-md ${className}`}>
+        <Card className={`border-border shadow-md ${className}`}>
             <CardHeader>
                 <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
-                        <Download className="h-5 w-5 text-white" />
+                    <div className="p-2 rounded-lg bg-primary">
+                        <Download className="h-5 w-5 text-primary-foreground" />
                     </div>
                     <div>
                         <h3 className="font-semibold text-gray-900">
@@ -113,13 +113,13 @@ export default function ExportDataCard({
                         {METRICS.map((key) => (
                             <label
                                 key={key}
-                                className="flex items-center space-x-3 p-2 hover:bg-purple-50 rounded cursor-pointer"
+                                className="flex items-center space-x-3 p-2 hover:bg-accent/50 rounded cursor-pointer"
                             >
                                 <input
                                     type="checkbox"
                                     checked={selected.includes(key)}
                                     onChange={() => toggleMetric(key)}
-                                    className="w-4 h-4 text-[#5E4AE3] bg-gray-100 border-gray-300 rounded focus:ring-[#5E4AE3] focus:ring-2"
+                                    className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-ring focus:ring-2"
                                 />
                                 <span className="text-sm text-gray-700">
                                     {metricMeta[key].label}
@@ -205,7 +205,7 @@ export default function ExportDataCard({
                 <Button
                     onClick={handleExport}
                     disabled={selected.length === 0 || isExporting}
-                    className="w-full bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] text-white hover:opacity-90"
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
                     {isExporting ? (
                         <>

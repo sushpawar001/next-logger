@@ -39,7 +39,7 @@ export default function TermsService() {
                     </div>
                     <div className="h-full flex flex-grow text-center items-center justify-center">
                         <div>
-                            <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-secondary mb-2 bg-gradient-to-br from-[#503ac8] to-[#8384f6]  text-transparent bg-clip-text p-1">
+                            <h1 className="text-2xl md:text-3xl lg:text-5xl font-bold text-primary mb-2 p-1">
                                 Terms of Service
                             </h1>
                             <p className="font-light">
@@ -280,7 +280,7 @@ export default function TermsService() {
                     </div>
                 </div>
             </div>
-            <div className="bg-gradient-to-r from-primary-ring to-primary-dark text-white text-center flex flex-col gap-2">
+            <div className="bg-primary text-primary-foreground text-center flex flex-col gap-2">
                 <div className="container flex-shrink flex justify-between py-3 text-sm lg:text-base w-11/12 lg:w-full">
                     <p className="text-left">© Designed by Sushant Pawar</p>
                     <div className="flex gap-2 md:gap-5 text-center">

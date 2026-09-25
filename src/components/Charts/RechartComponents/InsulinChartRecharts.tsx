@@ -19,7 +19,7 @@ const colors = [
     { background: "#00304995", border: "#003049" },
     { background: "#d6282895", border: "#d62828" },
     { background: "#2A9D8F95", border: "#2A9D8F" },
-    { background: "#3d348b95", border: "#3d348b" },
+    { background: "#4A347095", border: "#4A3470" },
 ];
 
 // Custom tooltip for human-readable date

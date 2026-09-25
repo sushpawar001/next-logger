@@ -59,7 +59,7 @@ export function StatsTableCard({
     };
 
     return (
-        <Card className="border-purple-100 shadow-md transition-all duration-300">
+        <Card className="border-border shadow-md transition-all duration-300">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-900">
                     <div className={`p-2 rounded-lg ${gradient}`}>
@@ -69,19 +69,19 @@ export function StatsTableCard({
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="rounded-lg border border-purple-100 overflow-hidden">
+                <div className="rounded-lg border border-border overflow-hidden">
                     <Table>
                         <TableHeader>
-                            <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
-                                <TableHead className="text-white font-medium">
+                            <TableRow className="bg-primary hover:bg-primary">
+                                <TableHead className="text-primary-foreground font-medium">
                                     Param
                                 </TableHead>
                                 {oldData && (
-                                    <TableHead className="text-white font-medium">
+                                    <TableHead className="text-primary-foreground font-medium">
                                         Previous
                                     </TableHead>
                                 )}
-                                <TableHead className="text-white font-medium">
+                                <TableHead className="text-primary-foreground font-medium">
                                     Current
                                 </TableHead>
                             </TableRow>
@@ -90,7 +90,7 @@ export function StatsTableCard({
                             {Object.keys(newData).map((key, index) => (
                                 <TableRow
                                     key={key}
-                                    className={`hover:bg-purple-50 transition-colors ${
+                                    className={`hover:bg-accent/50 transition-colors ${
                                         index % 2 === 0
                                             ? "bg-white"
                                             : "bg-gray-50/50"

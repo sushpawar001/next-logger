@@ -92,7 +92,7 @@ export default function WeightPage() {
                         className=""
                     />
                 </div>
-                <div className="mx-auto p-4 md:px-6 md:py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md h-full w-full md:col-span-2 flex flex-col">
+                <div className="mx-auto p-4 md:px-6 md:py-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md h-full w-full md:col-span-2 flex flex-col">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Weight Trends
                     </h3>
@@ -106,7 +106,7 @@ export default function WeightPage() {
                 <div className="w-full">
                     <WeightAdd autoFocus={quickLog} />
                 </div>
-                <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
+                <div className="border border-border transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
@@ -116,10 +116,10 @@ export default function WeightPage() {
                             </div>
                             Weight History
                         </div>
-                        <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
+                        <div className="rounded-lg border border-border overflow-hidden w-full">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
+                                    <TableRow className="bg-primary hover:bg-primary/90 text-primary-foreground">
                                         <TableHead className="text-white font-medium">
                                             Body Weight
                                         </TableHead>
@@ -151,7 +151,7 @@ export default function WeightPage() {
                                             (entry, index) => (
                                                 <TableRow
                                                     key={entry.id}
-                                                    className={`hover:bg-purple-50 transition-colors ${
+                                                    className={`hover:bg-accent/50 transition-colors ${
                                                         index % 2 === 0
                                                             ? "bg-white"
                                                             : "bg-gray-50/50"

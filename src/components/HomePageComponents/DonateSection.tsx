@@ -3,7 +3,7 @@ import React from "react";
 
 export default function DonateSection() {
     return (
-        <div className="bg-gradient-to-r from-primary-ring to-primary-dark min-h-[50vh] text-white text-center flex flex-col gap-2">
+        <div className="bg-primary min-h-[50vh] text-primary-foreground text-center flex flex-col gap-2">
             <div className="container flex-grow flex flex-col justify-center px-6 md:px-0">
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-3">
                     Support Us, Keep It Free for Everyone

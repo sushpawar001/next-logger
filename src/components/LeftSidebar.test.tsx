@@ -33,6 +33,9 @@ describe("LeftSidebar", () => {
             .map((a) => a.getAttribute("href"));
 
         expect(hrefs).toContain("/dashboard");
+        expect(
+            screen.getByRole("img", { name: "FitDose" }).closest("a")
+        ).toHaveAttribute("href", "/dashboard");
     });
 
     it.each([

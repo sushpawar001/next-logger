@@ -58,7 +58,7 @@ const CopyUrlButton: React.FC<CopyUrlButtonProps> = ({
                     content={currentUrl}
                     variant="outline"
                     size="md"
-                    className="border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 hover:text-purple-800 dark:border-purple-700 dark:bg-purple-950/30 dark:hover:bg-purple-950/50 dark:text-purple-300 dark:hover:text-purple-200"
+                    className="border-border bg-accent/50 hover:bg-accent text-primary hover:text-primary"
                     aria-label="Copy page URL"
                     onCopy={handleCopy}
                 />

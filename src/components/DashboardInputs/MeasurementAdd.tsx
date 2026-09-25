@@ -111,7 +111,7 @@ export default function MeasurementAdd({ className = "", autoFocus = false }) {
     return (
         <form
             ref={formRef}
-            className={`max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full shadow-md ${className}`}
+            className={`max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-border transition-all duration-300 h-full shadow-md ${className}`}
             onSubmit={submitForm}
         >
             <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
@@ -143,7 +143,7 @@ export default function MeasurementAdd({ className = "", autoFocus = false }) {
                         id="insulin_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-9 bg-white"
+                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-9 bg-white"
                     >
                         <option value="" disabled>
                             Select Tag
@@ -156,7 +156,7 @@ export default function MeasurementAdd({ className = "", autoFocus = false }) {
                 <div className="flex flex-col md:flex-row gap-1">
                     <button
                         type="submit"
-                        className="text-white font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300 primary-gradient md:w-2/3"
+                        className="font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300 bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring md:w-2/3"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? (

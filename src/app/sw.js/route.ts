@@ -13,12 +13,18 @@ import { NextResponse } from "next/server";
  * decrypted /api responses would write plaintext health data to the device.
  */
 
-const VERSION = "v1";
+const VERSION = "v2";
 
 const SERVICE_WORKER = `
 const VERSION = "${VERSION}";
 const STATIC_CACHE = "fitdose-static-" + VERSION;
-const PRECACHE = ["/offline", "/icons/icon-192.png", "/icons/icon-512.png"];
+const PRECACHE = [
+    "/offline",
+    "/icons/icon-192.png",
+    "/icons/icon-512.png",
+    // The offline page renders this logo, so it must be available without a network.
+    "/brand/svg/fitdose-wordmark.svg",
+];
 
 self.addEventListener("install", (event) => {
     event.waitUntil(
@@ -56,10 +62,11 @@ self.addEventListener("fetch", (event) => {
     if (url.pathname.startsWith("/api/")) return;
     if (url.pathname.startsWith("/_next/image")) return;
 
-    // Hashed immutable build assets and our own icons: cache-first.
+    // Hashed immutable build assets and our own icons/logo files: cache-first.
     if (
         url.pathname.startsWith("/_next/static/") ||
-        url.pathname.startsWith("/icons/")
+        url.pathname.startsWith("/icons/") ||
+        url.pathname.startsWith("/brand/")
     ) {
         event.respondWith(
             caches.match(request).then(

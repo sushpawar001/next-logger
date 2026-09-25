@@ -103,7 +103,7 @@ export default function MeasurementsPage() {
                         className=""
                     />
                 </div>
-                <div className="mx-auto p-3 md:px-6 rounded-lg border border-purple-100 transition-all duration-300 shadow-md h-full w-full md:col-span-2 flex flex-col bg-white">
+                <div className="mx-auto p-3 md:px-6 rounded-lg border border-border transition-all duration-300 shadow-md h-full w-full md:col-span-2 flex flex-col bg-white">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Measurement Trends
                     </h3>
@@ -117,7 +117,7 @@ export default function MeasurementsPage() {
                 <div className="w-full">
                     <MeasurementAdd autoFocus={quickLog} />
                 </div>
-                <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
+                <div className="border border-border transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
@@ -127,10 +127,10 @@ export default function MeasurementsPage() {
                             </div>
                             Measurement History
                         </div>
-                        <div className="rounded-lg border border-purple-100 overflow-y-auto w-full md:max-h-96">
+                        <div className="rounded-lg border border-border overflow-y-auto w-full md:max-h-96">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
+                                    <TableRow className="bg-primary hover:bg-primary/90 text-primary-foreground">
                                         <TableHead className="text-white font-medium">
                                             Arms
                                         </TableHead>
@@ -180,7 +180,7 @@ export default function MeasurementsPage() {
                                             (entry, index) => (
                                                 <TableRow
                                                     key={entry._id}
-                                                    className={`hover:bg-purple-50 transition-colors ${
+                                                    className={`hover:bg-accent/50 transition-colors ${
                                                         index % 2 === 0
                                                             ? "bg-white"
                                                             : "bg-gray-50/50"

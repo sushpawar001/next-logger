@@ -100,7 +100,7 @@ export default function InsulinPage() {
                         className=""
                     />
                 </div>
-                <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md h-full w-full md:col-span-2">
+                <div className="mb-4 md:mb-6 mx-auto p-3 md:px-6 rounded-lg bg-white border border-border transition-all duration-300 shadow-md h-full w-full md:col-span-2">
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Insulin Trends
                     </h3>
@@ -124,7 +124,7 @@ export default function InsulinPage() {
                 <div className="w-full">
                     <InsulinAdd autoFocus={quickLog} />
                 </div>
-                <div className="border border-purple-100 transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
+                <div className="border border-border transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
                     <div className="max-w-full overflow-x-auto rounded-lg">
                         <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
                             <div
@@ -134,10 +134,10 @@ export default function InsulinPage() {
                             </div>
                             Insulin History
                         </div>
-                        <div className="rounded-lg border border-purple-100 overflow-hidden w-full">
+                        <div className="rounded-lg border border-border overflow-hidden w-full">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3] hover:to-[#7C3AED]">
+                                    <TableRow className="bg-primary hover:bg-primary/90 text-primary-foreground">
                                         <TableHead className="text-white font-medium">
                                             Insulin Units
                                         </TableHead>
@@ -172,7 +172,7 @@ export default function InsulinPage() {
                                             (entry, index) => (
                                                 <TableRow
                                                     key={entry._id}
-                                                    className={`hover:bg-purple-50 transition-colors ${
+                                                    className={`hover:bg-accent/50 transition-colors ${
                                                         index % 2 === 0
                                                             ? "bg-white"
                                                             : "bg-gray-50/50"

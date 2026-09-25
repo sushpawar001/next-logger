@@ -4,7 +4,7 @@ const LoadingSkeleton = () => (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
                 <div className="p-4 border  shadow-md flex items-center justify-between md:col-span-3">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 from-[#5E4AE3]">
+                        <div className="p-2">
                             <SVGSkeleton className="w-[24px] h-[24px]" />
                         </div>
                         <div>
@@ -58,7 +58,7 @@ const LoadingSkeleton = () => (
                                 </label>
                                 <div className="border   block w-full px-2.5 py-2 h-10"></div>
                             </div>
-                            <div className="from-[#5E4AE3] hover:from-[#5E4AE3]/90 w-full py-2">
+                            <div className="w-full py-2">
                                 <Skeleton className="w-[48px] max-w-full" />
                             </div>
                         </div>
@@ -76,7 +76,7 @@ const LoadingSkeleton = () => (
                             <div className="relative w-full overflow-auto">
                                 <table className="w-full caption-bottom">
                                     <thead className="[&amp;_tr]:border-b">
-                                        <tr className="border-b transition-colors from-[#5E4AE3] hover:from-[#5E4AE3]">
+                                        <tr className="border-b transition-colors">
                                             <th className="h-12 px-4 text-left align-middle [&amp;:has([role=checkbox])]:pr-0">
                                                 <Skeleton className="w-[104px] max-w-full" />
                                             </th>

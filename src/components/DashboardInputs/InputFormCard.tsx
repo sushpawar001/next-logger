@@ -31,7 +31,7 @@ export function InputFormCard({
     fields,
 }: InputFormCardProps) {
     return (
-        <Card className="border-purple-100 hover:shadow-lg transition-all duration-300">
+        <Card className="border-border hover:shadow-lg transition-all duration-300">
             <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-900">
                     <div className={`p-2 rounded-lg ${gradient}`}>
@@ -50,12 +50,12 @@ export function InputFormCard({
                             <Input
                                 placeholder={field.placeholder}
                                 defaultValue={field.value}
-                                className="border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3]"
+                                className="border-border focus:border-primary focus:ring-ring"
                             />
                         )}
                         {field.type === "select" && (
                             <Select defaultValue={field.value}>
-                                <SelectTrigger className="border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3]">
+                                <SelectTrigger className="border-border focus:border-primary focus:ring-ring">
                                     <SelectValue
                                         placeholder={field.placeholder}
                                     />
@@ -73,13 +73,13 @@ export function InputFormCard({
                             <Input
                                 type="datetime-local"
                                 defaultValue={field.value}
-                                className="border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3]"
+                                className="border-border focus:border-primary focus:ring-ring"
                             />
                         )}
                     </div>
                 ))}
 
-                <Button className="w-full bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 text-white font-medium py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg">
+                <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 rounded-lg transition-all duration-300 hover:shadow-lg">
                     Submit
                 </Button>
             </CardContent>

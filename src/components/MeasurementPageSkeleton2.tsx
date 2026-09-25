@@ -6,9 +6,9 @@ export default function MeasurementPageSkeleton2() {
         <div className="flex justify-center w-full h-full p-10">
             <section className="h-full flex justify-center items-center p-5">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
-                    <div className="p-4 border border-purple-100 flex items-center justify-between md:col-span-3">
+                    <div className="p-4 border border-border flex items-center justify-between md:col-span-3">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 from-[#5E4AE3]">
+                            <div className="p-2">
                                 <SVGSkeleton className="w-[24px] h-[24px]" />
                             </div>
                             <div>
@@ -18,9 +18,9 @@ export default function MeasurementPageSkeleton2() {
                                     <Skeleton className="w-[240px] max-w-full" />
                             </div>
                         </div>
-                        <div className="border block p-2.5 w-32 border-purple-200 focus:border-[#5E4AE3]"></div>
+                        <div className="border block p-2.5 w-32 border-border focus:border-primary"></div>
                     </div>
-                    <div className="mx-auto p-4 md:px-6 md:py-5 border border-purple-100 h-full w-full md:col-span-2 flex flex-col">
+                    <div className="mx-auto p-4 md:px-6 md:py-5 border border-border h-full w-full md:col-span-2 flex flex-col">
                         <h3 className="block p-0 mb-3">
                             <Skeleton className="w-[104px] max-w-full" />
                         </h3>
@@ -29,7 +29,7 @@ export default function MeasurementPageSkeleton2() {
                         </div>
                     </div>
                     <div className="w-full">
-                        <form className="max-w-full mx-auto p-4 md:px-6 py-5 border border-purple-100 h-full">
+                        <form className="max-w-full mx-auto p-4 md:px-6 py-5 border border-border h-full">
                             <div className="flex items-center gap-3 mb-3">
                                 <Skeleton className="w-[88px] max-w-full" />
                                 <div className="p-2 from-orange-500">
@@ -41,7 +41,7 @@ export default function MeasurementPageSkeleton2() {
                                     <label>
                                         <Skeleton className="w-[88px] max-w-full" />
                                     </label>
-                                    <div className="border block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] h-10">
+                                    <div className="border block w-full px-2.5 py-2 border-border focus:border-primary h-10">
                                         <Skeleton className="w-[40px] max-w-full" />
                                     </div>
                                 </div>
@@ -49,13 +49,13 @@ export default function MeasurementPageSkeleton2() {
                                     <label>
                                         <Skeleton className="w-[88px] max-w-full" />
                                     </label>
-                                    <div className="border block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] h-10"></div>
+                                    <div className="border block w-full px-2.5 py-2 border-border focus:border-primary h-10"></div>
                                 </div>
                                 <div className="space-y-2">
                                     <label>
                                         <Skeleton className="w-[120px] max-w-full" />
                                     </label>
-                                    <div className="border border-purple-200 focus:border-[#5E4AE3] block w-full px-2.5 py-2 h-10"></div>
+                                    <div className="border border-border focus:border-primary block w-full px-2.5 py-2 h-10"></div>
                                 </div>
                                 <div className="w-full py-2">
                                     <Skeleton className="w-[48px] max-w-full" />
@@ -63,7 +63,7 @@ export default function MeasurementPageSkeleton2() {
                             </div>
                         </form>
                     </div>
-                    <div className="border border-purple-100 p-4 md:px-6 md:col-span-3">
+                    <div className="border border-border p-4 md:px-6 md:col-span-3">
                         <div className="max-w-full overflow-x-auto">
                             <div className="flex items-center gap-3 mb-3">
                                 <Skeleton className="w-[112px] max-w-full" />
@@ -71,11 +71,11 @@ export default function MeasurementPageSkeleton2() {
                                     <SVGSkeleton className="w-[24px] h-[24px]" />
                                 </div>
                             </div>
-                            <div className="border border-purple-100 w-full">
+                            <div className="border border-border w-full">
                                 <div className="relative w-full overflow-auto">
                                     <table className="w-full caption-bottom">
                                         <thead className="[&amp;_tr]:border-b">
-                                            <tr className="border-b transition-colors from-[#5E4AE3] hover:from-[#5E4AE3]">
+                                            <tr className="border-b transition-colors">
                                                 <th className="h-12 px-4 text-left align-middle [&amp;:has([role=checkbox])]:pr-0">
                                                     <Skeleton className="w-[88px] max-w-full" />
                                                 </th>

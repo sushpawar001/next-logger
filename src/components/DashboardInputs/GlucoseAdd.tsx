@@ -65,7 +65,7 @@ export default function GlucoseAdd(props) {
     };
     return (
         <form
-            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-purple-100 transition-all duration-300 h-full shadow-md"
+            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-border transition-all duration-300 h-full shadow-md"
             onSubmit={submitForm}
         >
             <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
@@ -88,7 +88,7 @@ export default function GlucoseAdd(props) {
                         type="number"
                         id="glucose"
                         ref={valueInputRef}
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10 outline-none"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-none"
                         placeholder="98 mg/dl"
                         value={glucose}
                         onChange={changeGlucose}
@@ -105,7 +105,7 @@ export default function GlucoseAdd(props) {
                     <input
                         type="datetime-local"
                         id="glucoseDate"
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 bg-white border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] h-10 outline-none"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 bg-white border-border focus:border-primary focus:ring-ring h-10 outline-none"
                         value={DatetimeLocalFormat(selectedDate)}
                         // value={selectedDate}
                         onChange={handleDateChange}
@@ -122,7 +122,7 @@ export default function GlucoseAdd(props) {
                         id="glucose_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
+                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
                     >
                         <option value="">Select Tag</option>
                         {entryTags.map((data) => (
@@ -132,7 +132,7 @@ export default function GlucoseAdd(props) {
                 </div>
                 <button
                     type="submit"
-                    className="text-white bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (

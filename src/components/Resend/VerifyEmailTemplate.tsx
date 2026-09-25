@@ -19,6 +19,23 @@ export const VerifyEmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
             borderRadius: "8px",
         }}
     >
+        {/* Email clients do not render SVG, so the logo is the 1000px PNG shown
+            at 155 x 40 (its 1000 x 258 ratio). It needs an absolute URL. */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+            src={`${process.env.NEXT_PUBLIC_BASE_URL}/brand/png/fitdose-wordmark@1000w.png`}
+            alt="FitDose"
+            width={155}
+            height={40}
+            style={{
+                display: "block",
+                width: "155px",
+                height: "40px",
+                border: 0,
+                marginBottom: "24px",
+            }}
+        />
+
         <h2
             style={{
                 marginBottom: "20px",

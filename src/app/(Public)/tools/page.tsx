@@ -52,7 +52,7 @@ const tools = [
             "Frame size consideration",
             "Personalized ranges",
         ],
-        color: "bg-purple-50 border-purple-200",
+        color: "bg-accent/50 border-border",
         textColor: "text-purple-900",
         badgeColor: "bg-purple-100 text-purple-800",
     },
@@ -96,10 +96,10 @@ export default function ToolsPage() {
                     const IconComponent = tool.icon;
                     return (
                         <Link href={tool.href} key={index} className="block">
-                            <Card className="border-purple-100 shadow-sm hover:shadow-md-md transition-shadow-md duration-200 cursor-pointer">
+                            <Card className="border-border shadow-sm hover:shadow-md-md transition-shadow-md duration-200 cursor-pointer">
                                 <CardHeader>
                                     <div className="flex items-center gap-3">
-                                        <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                                        <div className="p-2 rounded-lg bg-primary">
                                             <IconComponent className="w-5 h-5 text-white" />
                                         </div>
                                         <div>
@@ -146,7 +146,7 @@ export default function ToolsPage() {
 
             {/* Information Section */}
             <div className="mt-12">
-                <Card className="border-purple-100 bg-gray-50">
+                <Card className="border-border bg-gray-50">
                     <CardHeader>
                         <CardTitle className="text-lg font-semibold text-gray-900">
                             About Our Tools

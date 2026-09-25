@@ -113,7 +113,7 @@ export default function PricingSection() {
                         </div>
                         <div className="px-6 pb-8">
                             <Link href="/signup">
-                                <button className="w-full px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
+                                <button className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-ring transition">
                                     Start Your 30-Day Free Trial
                                 </button>
                             </Link>

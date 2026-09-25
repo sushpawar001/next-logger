@@ -10,7 +10,6 @@ import {
     Syringe,
     Weight,
     Ruler,
-    Activity,
     Settings,
     TrendingUp,
     Calculator,
@@ -30,6 +29,7 @@ import {
     SidebarFooter,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
+import Logo from "@/components/brand/Logo";
 
 const menuItems = [
     {
@@ -86,17 +86,10 @@ export default function LeftSidebar() {
     const { installed, isSupported } = useInstallPrompt();
 
     return (
-        <Sidebar className="border-r border-purple-100">
+        <Sidebar className="border-r border-border">
             <SidebarHeader className="p-6">
-                <Link className="flex items-center gap-3" href="/dashboard">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED] text-white">
-                        <Activity className="h-5 w-5" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-gray-900">
-                            FitDose
-                        </h1>
-                    </div>
+                <Link className="flex items-center" href="/dashboard">
+                    <Logo variant="wordmark" height={28} priority />
                 </Link>
             </SidebarHeader>
 
@@ -112,7 +105,7 @@ export default function LeftSidebar() {
                                     <SidebarMenuButton
                                         asChild
                                         isActive={currentRoute === item.url}
-                                        className="h-11 rounded-xl hover:bg-purple-50 data-[active=true]:bg-gradient-to-r data-[active=true]:from-[#5E4AE3] data-[active=true]:to-[#7C3AED] data-[active=true]:text-white pl-2.5"
+                                        className="h-11 rounded-xl hover:bg-accent/50 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground pl-2.5"
                                     >
                                         <a
                                             href={item.url}
@@ -139,7 +132,7 @@ export default function LeftSidebar() {
                                                 )
                                             )
                                         }
-                                        className="h-11 rounded-xl hover:bg-purple-50 pl-2.5"
+                                        className="h-11 rounded-xl hover:bg-accent/50 pl-2.5"
                                     >
                                         <div className="flex items-center gap-3">
                                             <Smartphone className="h-5 w-5" />
@@ -158,11 +151,11 @@ export default function LeftSidebar() {
             <SidebarFooter className="p-4">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton className="h-12 rounded-xl hover:bg-purple-50">
+                        <SidebarMenuButton className="h-12 rounded-xl hover:bg-accent/50">
                             <div className="flex items-center gap-3 w-full">
                                 {/* <Avatar className="h-8 w-8">
                                     <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                                    <AvatarFallback className="bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED] text-white text-sm">
+                                    <AvatarFallback className="bg-primary text-primary-foreground text-sm">
                                         JD
                                     </AvatarFallback>
                                 </Avatar> */}

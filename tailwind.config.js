@@ -15,9 +15,9 @@ module.exports = {
     	extend: {
     		colors: {
     			primary: {
-    				DEFAULT: '#5E4AE3',
-    				dark: '#503ac8',
-    				ring: '#8384f6',
+    				DEFAULT: 'hsl(var(--primary))',
+    				dark: '#241A33',
+    				ring: 'hsl(var(--ring))',
     				foreground: 'hsl(var(--primary-foreground))'
     			},
     			secondary: {

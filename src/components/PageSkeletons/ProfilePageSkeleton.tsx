@@ -43,7 +43,7 @@ const ProfilePageSkeleton = () => (
                                     </div>
                                 </div>
                                 <div className="flex justify-stretch sm:justify-end">
-                                    <div className="inline-flex items-center justify-center gap-2 [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 h-10 w-full sm:w-auto from-[#5E4AE3] hover:from-[#5E4AE3]/90 py-2.5 px-8 hover:shadow-lg">
+                                    <div className="inline-flex items-center justify-center gap-2 [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 h-10 w-full sm:w-auto py-2.5 px-8 hover:shadow-lg">
                                         <SVGSkeleton className="lucide-crown mr-2 w-[24px] h-[24px]" />
                                         <span>
                                             <Skeleton className="w-[144px] max-w-full" />

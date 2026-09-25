@@ -7,7 +7,7 @@ export function randomGradient(num: number): string[] {
                 Math.random() * 100
             )}% ${Math.floor(
                 Math.random() * 100
-            )}%, rgb(224, 224, 224), rgb(94, 74, 227))`
+            )}%, rgb(232, 223, 208), rgb(74, 52, 112))`
         );
     }
 
@@ -20,8 +20,8 @@ export function randomGradient2(num: number): string[] {
     let gradients = [];
     const firstElem = `radial-gradient(
         circle at 30% 65%,
-        rgb(94, 74, 227),
-        rgb(32, 33, 37)
+        rgb(74, 52, 112),
+        rgb(36, 26, 51)
     )`;
 
     for (let index = 0; index < num; index++) {
@@ -30,7 +30,7 @@ export function randomGradient2(num: number): string[] {
                 Math.random() * 100
             )}% ${Math.floor(
                 Math.random() * 100
-            )}%, rgb(224, 224, 224), rgb(94, 74, 227))`
+            )}%, rgb(232, 223, 208), rgb(74, 52, 112))`
         );
     }
 
@@ -40,7 +40,7 @@ export function randomGradient2(num: number): string[] {
                 Math.random() * 100
             )}% ${Math.floor(
                 Math.random() * 100
-            )}%, rgb(94, 74, 227), rgb(32, 33, 37))`
+            )}%, rgb(74, 52, 112), rgb(36, 26, 51))`
         );
     }
     gradients.sort(() => Math.random() - 0.5);
@@ -56,7 +56,7 @@ export function randomLinearGradient(num: number): string[] {
         gradients.push(
             `linear-gradient(${Math.floor(
                 Math.random() * 360
-            )}deg, rgb(94, 74, 227), rgb(80, 58, 200), rgb(32, 33, 37))`
+            )}deg, rgb(74, 52, 112), rgb(142, 120, 196), rgb(36, 26, 51))`
         );
     }
 
@@ -78,12 +78,12 @@ export function randomPattern(num: number): string[] {
         gradients.push(
             `radial-gradient(
             circle at ${x1}% ${y1}%,
-            #5e4ae3 ${Math.floor(Math.random() * 40)}%,
-            #5e4ae3 ${Math.floor(Math.random() * 50)}%,
+            #4A3470 ${Math.floor(Math.random() * 40)}%,
+            #4A3470 ${Math.floor(Math.random() * 50)}%,
             transparent 12%,
             transparent 100%
         ),
-        radial-gradient(circle at ${x3}% ${y3}%, #5e4ae3 ${Math.floor(
+        radial-gradient(circle at ${x3}% ${y3}%, #4A3470 ${Math.floor(
                 Math.random() * 100
             )}%, transparent 12%)`
         );

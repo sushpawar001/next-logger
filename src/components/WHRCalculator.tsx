@@ -135,7 +135,7 @@ const ResultsCard: React.FC<{
     result: WHRResult;
     gender: "male" | "female";
 }> = ({ result, gender }) => (
-    <Card className="border border-purple-100 shadow-md">
+    <Card className="border border-border shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Your Results
@@ -148,7 +148,7 @@ const ResultsCard: React.FC<{
 );
 
 const EmptyResultsCard: React.FC = () => (
-    <Card className="border border-purple-100 shadow-md">
+    <Card className="border border-border shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Your Results
@@ -219,7 +219,7 @@ const MeasurementInput: React.FC<{
                     }
                     min="0"
                     step="0.1"
-                    className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
             </div>
             <ToggleGroup
@@ -228,8 +228,8 @@ const MeasurementInput: React.FC<{
                 onValueChange={(value) => {
                     if (value) onUnitChange(value as "cm" | "in");
                 }}
-                className="border border-purple-200 rounded-md text-sm font-medium"
-                activeClassName="bg-[#5E4AE3]"
+                className="border border-border rounded-md text-sm font-medium"
+                activeClassName="bg-primary"
             >
                 <ToggleGroupItem
                     value="cm"
@@ -266,7 +266,7 @@ const GenderSelection: React.FC<{
                 <RadioGroupItem
                     value="male"
                     id={`male${suffix}`}
-                    className="w-4 h-4 text-[#5E4AE3]"
+                    className="w-4 h-4 text-primary"
                 />
                 <Label htmlFor={`male${suffix}`}>Male</Label>
             </div>
@@ -274,7 +274,7 @@ const GenderSelection: React.FC<{
                 <RadioGroupItem
                     value="female"
                     id={`female${suffix}`}
-                    className="w-4 h-4 text-[#5E4AE3]"
+                    className="w-4 h-4 text-primary"
                 />
                 <Label htmlFor={`female${suffix}`}>Female</Label>
             </div>
@@ -300,7 +300,7 @@ const InputForm: React.FC<{
     onClear,
     suffix = "",
 }) => (
-    <Card className="border border-purple-100 shadow-md">
+    <Card className="border border-border shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Enter Your Information

@@ -65,7 +65,7 @@ export default function UserInsulins({
 
     return (
         <div
-            className={`p-5 md:p-7 rounded-lg bg-white border border-purple-100 transition-all duration-300 shadow-md ${className}`}
+            className={`p-5 md:p-7 rounded-lg bg-white border border-border transition-all duration-300 shadow-md ${className}`}
         >
             <div className="flex items-center gap-3 text-lg text-gray-900 mb-4 md:mb-6">
                 <div
@@ -90,7 +90,7 @@ export default function UserInsulins({
                     id="insulinType"
                     value={selectedInsulin}
                     onChange={selectInsulinAndAdd}
-                    className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
+                    className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
                 >
                     <option value="" disabled>
                         Select Insulin
@@ -103,7 +103,7 @@ export default function UserInsulins({
                 </select>
                 <button
                     type="submit"
-                    className="text-white primary-gradient focus:outline-none font-medium rounded-lg text-sm min-w-fit w-full md:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring focus:outline-none font-medium rounded-lg text-sm min-w-fit w-full md:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
                     disabled={isSubmitting || !isChanged}
                 >
                     {isSubmitting ? (

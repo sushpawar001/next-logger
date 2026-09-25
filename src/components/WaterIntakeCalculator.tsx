@@ -213,7 +213,7 @@ const WeightInput: React.FC<{
                 onChange={(e) => onWeightChange(e.target.value)}
                 min="1"
                 max="500"
-                className="flex-1 border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="flex-1 border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
             />
             <ToggleGroup
                 type="single"
@@ -221,8 +221,8 @@ const WeightInput: React.FC<{
                 onValueChange={(value) => {
                     if (value) onWeightUnitChange(value as "kg" | "lbs");
                 }}
-                className="border border-purple-200 rounded-md text-sm font-medium"
-                activeClassName="bg-[#5E4AE3]"
+                className="border border-border rounded-md text-sm font-medium"
+                activeClassName="bg-primary"
             >
                 <ToggleGroupItem
                     value="kg"
@@ -273,7 +273,7 @@ const HeightInput: React.FC<{
                     onChange={(e) => onHeightCmChange(e.target.value)}
                     min="1"
                     max="300"
-                    className="flex-1 border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="flex-1 border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
             ) : (
                 <div className="flex gap-2 flex-1">
@@ -284,7 +284,7 @@ const HeightInput: React.FC<{
                         onChange={(e) => onHeightFeetChange(e.target.value)}
                         min="1"
                         max="10"
-                        className="flex-1 border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="flex-1 border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                     <Input
                         type="number"
@@ -293,7 +293,7 @@ const HeightInput: React.FC<{
                         onChange={(e) => onHeightInchesChange(e.target.value)}
                         min="0"
                         max="11"
-                        className="flex-1 border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="flex-1 border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                 </div>
             )}
@@ -303,8 +303,8 @@ const HeightInput: React.FC<{
                 onValueChange={(value) => {
                     if (value) onHeightUnitChange(value as "cm" | "ft");
                 }}
-                className="border border-purple-200 rounded-md text-sm font-medium"
-                activeClassName="bg-[#5E4AE3]"
+                className="border border-border rounded-md text-sm font-medium"
+                activeClassName="bg-primary"
             >
                 <ToggleGroupItem
                     value="cm"
@@ -384,7 +384,7 @@ const ActivityLevelSelect: React.FC<{
         <Select value={activityLevel} onValueChange={onActivityLevelChange}>
             <SelectTrigger
                 id={`activity${suffix}`}
-                className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
             >
                 <SelectValue placeholder="Select activity level" />
             </SelectTrigger>
@@ -434,7 +434,7 @@ const InputForm: React.FC<{
     onClear,
     suffix = "",
 }) => (
-    <Card className="border border-purple-100 shadow-md">
+    <Card className="border border-border shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Enter Your Details
@@ -460,7 +460,7 @@ const InputForm: React.FC<{
                         }
                         min="1"
                         max="120"
-                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                 </div>
 

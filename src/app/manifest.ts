@@ -17,8 +17,8 @@ export default function manifest(): MetadataRoute.Manifest {
         scope: "/",
         display: "standalone",
         // No orientation lock: /charts is materially more readable in landscape.
-        background_color: "#FAFAFA",
-        theme_color: "#5E4AE3",
+        background_color: "#FAF7F2",
+        theme_color: "#4A3470",
         categories: ["health", "medical", "lifestyle"],
         icons: [
             {

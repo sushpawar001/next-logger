@@ -19,8 +19,8 @@ const colors = [
     { background: "#fca31195", border: "#fca311", maBorder: "#DF2935" },
     { background: "#00304995", border: "#003049", maBorder: "#48ACF0" },
     { background: "#d6282895", border: "#d62828", maBorder: "#1f2937" },
-    { background: "#2A9D8F95", border: "#2A9D8F", maBorder: "#3d348b" },
-    { background: "#3d348b95", border: "#3d348b", maBorder: "#2A9D8F" },
+    { background: "#2A9D8F95", border: "#2A9D8F", maBorder: "#4A3470" },
+    { background: "#4A347095", border: "#4A3470", maBorder: "#2A9D8F" },
 ];
 
 const CustomTooltip = ({ active, payload, label }: any) => {

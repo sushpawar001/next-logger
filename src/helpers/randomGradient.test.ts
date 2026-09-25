@@ -96,7 +96,7 @@ describe("randomGradient", () => {
     it("uses the brand purple", () => {
         seedRandom();
 
-        expect(randomGradient(2)[0]).toContain("94, 74, 227");
+        expect(randomGradient(2)[0]).toContain("74, 52, 112");
     });
 
     it("varies with the random source", () => {

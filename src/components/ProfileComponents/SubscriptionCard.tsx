@@ -65,7 +65,7 @@ export function SubscriptionCard({
 
     return (
         <Card
-            className={`border-purple-100 transition-all duration-300 ${className}`}
+            className={`border-border transition-all duration-300 ${className}`}
         >
             <CardHeader className="pb-4">
                 <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-900">
@@ -92,9 +92,9 @@ export function SubscriptionCard({
 
                 {/* Days Remaining and Expiry */}
                 {subscriptionPlan !== "free" && (
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 border border-purple-100 rounded-lg">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 border border-border rounded-lg">
                         <div className="flex items-center gap-3">
-                            <Calendar className="h-5 w-5 text-purple-600 flex-shrink-0" />
+                            <Calendar className="h-5 w-5 text-primary flex-shrink-0" />
                             <div>
                                 <div
                                     className={`text-lg md:text-2xl font-bold ${getUrgencyColor()}`}
@@ -122,7 +122,7 @@ export function SubscriptionCard({
 
                 {/* Action Button */}
                 <div className="flex justify-stretch sm:justify-end">
-                    <Button className="w-full sm:w-auto bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 text-white font-medium py-2.5 px-8 rounded-lg transition-all duration-300 hover:shadow-lg">
+                    <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 px-8 rounded-lg transition-all duration-300 hover:shadow-lg">
                         <Crown className="h-4 w-4 mr-2" />
                         <span className="sm:inline">{getButtonText()}</span>
                     </Button>

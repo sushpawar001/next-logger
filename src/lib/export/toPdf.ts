@@ -14,8 +14,8 @@ export interface Dataset {
     rows: any[];
 }
 
-/** Brand purple (#5E4AE3) for table headers. */
-const BRAND: [number, number, number] = [94, 74, 227];
+/** Brand Aubergine (#4A3470) for table headers. */
+const BRAND: [number, number, number] = [74, 52, 112];
 
 export async function exportPdf(
     datasets: Dataset[],

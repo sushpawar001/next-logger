@@ -42,7 +42,7 @@ export default function ContactUsForm() {
                 onSubmit={handleSubmit}
             >
                 <div className="col-span-1 md:col-span-2 text-center">
-                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-secondary mb-2 bg-gradient-to-br from-[#503ac8] to-[#8384f6] text-transparent bg-clip-text p-1">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-primary mb-2 p-1">
                         Contact Us
                     </h1>
                 </div>
@@ -97,7 +97,7 @@ export default function ContactUsForm() {
                 <div className="col-span-1 md:col-span-2 flex">
                     <button
                         type="submit"
-                        className="text-white bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2.5 text-center transition duration-300 mx-auto"
+                        className="text-primary-foreground bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2.5 text-center transition duration-300 mx-auto"
                     >
                         Submit
                     </button>

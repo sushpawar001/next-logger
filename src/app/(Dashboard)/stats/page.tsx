@@ -233,11 +233,11 @@ export default function Stats() {
     return (
         <div className="h-full flex justify-center items-center bg-background py-5 px-5 lg:px-20">
             <div className="w-full lg:w-fit grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                <Card className="border-purple-100 shadow-md transition-all duration-300 lg:col-span-2">
+                <Card className="border-border shadow-md transition-all duration-300 lg:col-span-2">
                     <CardContent className="p-4">
                         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                                <div className="p-3 rounded-xl bg-primary">
                                     <BarChart3 className="h-5 w-5 text-white" />
                                 </div>
                                 <div>
@@ -251,7 +251,7 @@ export default function Stats() {
                             </div>
                             <div className="flex items-center gap-3 w-full lg:w-fit">
                                 <Link href="/charts">
-                                    <Button className="bg-gradient-to-r from-[#5E4AE3] to-[#7C3AED] hover:from-[#5E4AE3]/90 hover:to-[#7C3AED]/90 text-white font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg">
+                                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg">
                                         <TrendingUp className="h-4 w-4 mr-2" />
                                         See Charts
                                     </Button>
@@ -262,9 +262,9 @@ export default function Stats() {
                 </Card>
 
                 <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                    <div className="bg-white p-4 rounded-lg border border-purple-100 transition-all duration-300 shadow-md flex items-center justify-between">
+                    <div className="bg-white p-4 rounded-lg border border-border transition-all duration-300 shadow-md flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
+                            <div className="p-2 rounded-lg bg-primary">
                                 <BarChart3 className="h-4 w-4 text-white" />
                             </div>
                             <div>
@@ -280,7 +280,7 @@ export default function Stats() {
                             value={daysOfData.toString()}
                             onValueChange={changeDaysOfData}
                         >
-                            <SelectTrigger className="w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] bg-white">
+                            <SelectTrigger className="w-32 border-border focus:border-primary focus:ring-ring bg-white">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -301,7 +301,7 @@ export default function Stats() {
                         className=""
                     />
                 </div>
-                <div className="bg-white border border-purple-100 transition-all duration-300 shadow-md lg:col-span-2 rounded-lg lg:flex gap-1">
+                <div className="bg-white border border-border transition-all duration-300 shadow-md lg:col-span-2 rounded-lg lg:flex gap-1">
                     <div
                         className={`w-full lg:w-fit p-2 xl:p-4 rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none  ${
                             riskLevel === "high"

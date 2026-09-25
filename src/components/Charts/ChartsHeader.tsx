@@ -27,13 +27,13 @@ export function ChartsHeader({
     onDurationChange,
 }: ChartsHeaderProps) {
     return (
-        <Card className="border-purple-100 transition-all duration-300 w-full">
+        <Card className="border-border transition-all duration-300 w-full">
             <CardContent className="p-5">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                         <div className="flex items-center gap-3">
-                            <div className="p-3 rounded-xl bg-gradient-to-br from-[#5E4AE3] to-[#7C3AED]">
-                                <TrendingUp className="h-5 w-5 text-white" />
+                            <div className="p-3 rounded-xl bg-primary">
+                                <TrendingUp className="h-5 w-5 text-primary-foreground" />
                             </div>
                             <div>
                                 <h1 className="text-lg font-bold text-gray-900">
@@ -54,7 +54,7 @@ export function ChartsHeader({
                             value={selectedDuration}
                             onValueChange={onDurationChange}
                         >
-                            <SelectTrigger className="lg:w-32 border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3]">
+                            <SelectTrigger className="lg:w-32 border-border focus:border-primary focus:ring-ring">
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>

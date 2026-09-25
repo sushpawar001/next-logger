@@ -204,7 +204,7 @@ const ErrorMessages: React.FC<{ errors: string[] }> = ({ errors }) => {
 };
 
 const ResultsCard: React.FC<{ results: BMRResult }> = ({ results }) => (
-    <Card className="border border-purple-100 shadow-md">
+    <Card className="border border-border shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 BMR Results
@@ -222,7 +222,7 @@ const ResultsCard: React.FC<{ results: BMRResult }> = ({ results }) => (
 );
 
 const EmptyResultsCard: React.FC = () => (
-    <Card className="border border-purple-100 shadow-md">
+    <Card className="border border-border shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Results
@@ -288,7 +288,7 @@ const HeightInput: React.FC<{
                 <RadioGroupItem
                     value="cm"
                     id={`cm${suffix}`}
-                    className="w-4 h-4 text-[#5E4AE3]"
+                    className="w-4 h-4 text-primary"
                 />
                 <Label htmlFor={`cm${suffix}`}>Centimeters (cm)</Label>
             </div>
@@ -296,7 +296,7 @@ const HeightInput: React.FC<{
                 <RadioGroupItem
                     value="ft"
                     id={`ft${suffix}`}
-                    className="w-4 h-4 text-[#5E4AE3]"
+                    className="w-4 h-4 text-primary"
                 />
                 <Label htmlFor={`ft${suffix}`}>Feet & Inches</Label>
             </div>
@@ -310,7 +310,7 @@ const HeightInput: React.FC<{
                 onChange={(e) => onHeightCmChange(e.target.value)}
                 min="50"
                 max="300"
-                className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
             />
         ) : (
             <div className="flex gap-4">
@@ -324,7 +324,7 @@ const HeightInput: React.FC<{
                         onChange={(e) => onHeightFeetChange(e.target.value)}
                         min="1"
                         max="8"
-                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                 </div>
                 <div className="flex-1">
@@ -337,7 +337,7 @@ const HeightInput: React.FC<{
                         onChange={(e) => onHeightInchesChange(e.target.value)}
                         min="0"
                         max="11"
-                        className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                        className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
                     />
                 </div>
             </div>
@@ -369,7 +369,7 @@ const WeightInput: React.FC<{
                 <RadioGroupItem
                     value="kg"
                     id={`kg${suffix}`}
-                    className="w-4 h-4 text-[#5E4AE3]"
+                    className="w-4 h-4 text-primary"
                 />
                 <Label htmlFor={`kg${suffix}`}>Kilograms (kg)</Label>
             </div>
@@ -377,7 +377,7 @@ const WeightInput: React.FC<{
                 <RadioGroupItem
                     value="lbs"
                     id={`lbs${suffix}`}
-                    className="w-4 h-4 text-[#5E4AE3]"
+                    className="w-4 h-4 text-primary"
                 />
                 <Label htmlFor={`lbs${suffix}`}>Pounds (lbs)</Label>
             </div>
@@ -394,7 +394,7 @@ const WeightInput: React.FC<{
             onChange={(e) => onWeightChange(e.target.value)}
             min="1"
             max="500"
-            className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+            className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
         />
     </div>
 );
@@ -417,7 +417,7 @@ const GenderSelection: React.FC<{
                 <RadioGroupItem
                     value="male"
                     id={`male${suffix}`}
-                    className="w-4 h-4 text-[#5E4AE3]"
+                    className="w-4 h-4 text-primary"
                 />
                 <Label htmlFor={`male${suffix}`}>Male</Label>
             </div>
@@ -425,7 +425,7 @@ const GenderSelection: React.FC<{
                 <RadioGroupItem
                     value="female"
                     id={`female${suffix}`}
-                    className="w-4 h-4 text-[#5E4AE3]"
+                    className="w-4 h-4 text-primary"
                 />
                 <Label htmlFor={`female${suffix}`}>Female</Label>
             </div>
@@ -451,7 +451,7 @@ const InputForm: React.FC<{
     onClear,
     suffix = "",
 }) => (
-    <Card className="border border-purple-100 shadow-md">
+    <Card className="border border-border shadow-md">
         <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-900">
                 Enter Your Information
@@ -474,7 +474,7 @@ const InputForm: React.FC<{
                     onChange={(e) => onFormDataChange("age", e.target.value)}
                     min="1"
                     max="120"
-                    className="border border-purple-200 focus:border-[#5E4AE3] focus:ring-[#5E4AE3] focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
             </div>
 

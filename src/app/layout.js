@@ -22,15 +22,28 @@ export const metadata = {
         statusBarStyle: "default",
     },
     formatDetection: { telephone: false },
+    // Explicit icons are the single source of <link rel="icon"> tags. In Next
+    // 14.2 an explicit `metadata.icons` suppresses the tags the src/app/icon.ico
+    // file convention would emit (that file is still served at /icon.ico), so
+    // there is no duplicate. The SVG comes second so browsers that support it
+    // pick the vector; older ones fall back to the .ico.
     icons: {
-        icon: "/icon.ico",
+        icon: [
+            { url: "/icon.ico", sizes: "any" },
+            { url: "/brand/favicon/favicon.svg", type: "image/svg+xml" },
+        ],
         apple: "/icons/apple-touch-icon.png",
     },
+    // Default social card for every route comes from the src/app/opengraph-image.png
+    // and twitter-image.png file convention. Don't set `openGraph`/`twitter` here or
+    // in a child segment without `images`: Next's merge is shallow, and a child
+    // `openGraph` object replaces the parent's, dropping the default image.
 };
 
 // Must be a separate export in Next 14 — themeColor inside `metadata` is deprecated.
+// Single value: the .dark CSS variables exist but nothing ever toggles the class.
 export const viewport = {
-    themeColor: "#5E4AE3",
+    themeColor: "#4A3470",
     width: "device-width",
     initialScale: 1,
     viewportFit: "cover",

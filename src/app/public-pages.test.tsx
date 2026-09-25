@@ -101,6 +101,14 @@ describe("home page", () => {
         expect(container.textContent!.length).toBeGreaterThan(200);
     });
 
+    it("shows the wordmark logo in the hero, linking home", () => {
+        renderWithProviders(<HomePage />);
+
+        const logo = screen.getByRole("img", { name: "FitDose" });
+        expect(logo).toHaveAttribute("src", "/brand/svg/fitdose-wordmark.svg");
+        expect(logo.closest("a")).toHaveAttribute("href", "/");
+    });
+
     it("renders at least one call to action", () => {
         renderWithProviders(<HomePage />);
 
@@ -115,6 +123,15 @@ describe("offline fallback", () => {
         const { container } = renderWithProviders(<OfflinePage />);
 
         expect(container.textContent).toMatch(/offline/i);
+    });
+
+    it("shows the wordmark logo", () => {
+        renderWithProviders(<OfflinePage />);
+
+        expect(screen.getByRole("img", { name: "FitDose" })).toHaveAttribute(
+            "src",
+            "/brand/svg/fitdose-wordmark.svg"
+        );
     });
 
     it("exports metadata for the precached page", async () => {
@@ -187,5 +204,12 @@ describe("metadata routes", () => {
         expect(result.start_url).toBeTruthy();
         expect(result.display).toBe("standalone");
         expect(result.icons!.length).toBeGreaterThan(0);
+    });
+
+    it("the manifest uses the Aubergine & Oat brand colours", () => {
+        const result = manifest();
+
+        expect(result.theme_color).toBe("#4A3470");
+        expect(result.background_color).toBe("#FAF7F2");
     });
 });
