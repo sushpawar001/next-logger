@@ -112,13 +112,8 @@ describe("stats page", () => {
     it("refetches when the period changes", async () => {
         const user = userEvent.setup();
         renderWithProviders(<StatsPage />);
-        await waitFor(() =>
-            expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0)
-        );
 
-        // Unlike the list pages, stats uses a Radix Select: open it, then pick.
-        await user.click(screen.getAllByRole("combobox")[0]);
-        await user.click(await screen.findByRole("option", { name: "30 days" }));
+        await user.click(await screen.findByRole("button", { name: "30 days" }));
 
         await waitFor(() =>
             expect(
@@ -130,9 +125,9 @@ describe("stats page", () => {
     it("offers a tag filter", async () => {
         renderWithProviders(<StatsPage />);
 
-        await waitFor(() =>
-            expect(screen.getAllByText(/filter by tags/i).length).toBeGreaterThan(0)
-        );
+        expect(
+            await screen.findByRole("group", { name: "Filter by tag" })
+        ).toBeInTheDocument();
     });
 
     it("renders with no data at all", async () => {
@@ -203,6 +198,36 @@ describe("profile page", () => {
         const { container } = renderWithProviders(<ProfilePage />);
 
         await waitFor(() => expect(container.textContent).toMatch(/trial/i));
+    });
+
+    it("lays out account, insulins, plan and export", async () => {
+        profileGets();
+
+        renderWithProviders(<ProfilePage />);
+
+        expect(
+            await screen.findByRole("heading", { level: 1, name: "Profile" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("region", { name: "Account" })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "My insulins" })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Free trial" })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Export data" })).toBeInTheDocument();
+        // The saved insulin shows as a removable chip.
+        expect(screen.getByRole("button", { name: "Remove Lantus" })).toBeInTheDocument();
+        // Upgrade is the page's one primary action.
+        expect(
+            screen.getByRole("button", { name: /upgrade to premium/i })
+        ).toBeInTheDocument();
+    });
+
+    it("shows an error when a load fails", async () => {
+        get.mockRejectedValue(new Error("network down"));
+
+        renderWithProviders(<ProfilePage />);
+
+        expect(
+            await screen.findByText(/failed to load profile data/i)
+        ).toBeInTheDocument();
     });
 
     it("survives a failed load", async () => {

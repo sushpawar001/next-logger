@@ -1,11 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
+import { useParams, useRouter } from "next/navigation";
 import notify from "@/helpers/notify";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
-import { useParams, useRouter } from "next/navigation";
 import { entryTags } from "@/constants/constants";
-import { Droplets, ArrowLeft, Save, Trash2, Loader2 } from "lucide-react";
-import Link from "next/link";
 import { useEntry } from "@/hooks/queries/useEntries";
 import {
     useUpdateEntry,
@@ -13,6 +12,16 @@ import {
     mutationErrorMessage,
 } from "@/hooks/queries/useEntryMutations";
 import { useUserInsulins } from "@/hooks/queries/useReferenceData";
+import { EditEntryShell } from "@/components/app-ui/EditEntryShell";
+import {
+    Chip,
+    Field,
+    TagPicker,
+    TextInput,
+    inputControl,
+    inputShell,
+} from "@/components/app-ui/controls";
+import InsulinDot from "@/components/InsulinComponents/InsulinDot";
 
 export default function EditEntry() {
     const params = useParams<{ entryId: string }>();
@@ -41,19 +50,6 @@ export default function EditEntry() {
             createdAt: DatetimeLocalFormat(entry.data.createdAt),
         });
     }, [entry.data]);
-    const changeValue = (event) => {
-        setData({ ...data, units: event.target.value });
-    };
-    const changeDate = (event) => {
-        setData({ ...data, createdAt: event.target.value });
-    };
-    const changeInsulinType = (event) => {
-        setData({ ...data, name: event.target.value });
-    };
-
-    const changeTag = (event) => {
-        setData({ ...data, tag: event.target.value });
-    };
 
     const deleteData = async (id: string) => {
         try {
@@ -68,8 +64,10 @@ export default function EditEntry() {
     const submitForm = async (e) => {
         e.preventDefault();
         try {
-            data.createdAt = new Date(data.createdAt).toISOString();
-            const response = await updateEntry.mutateAsync(data);
+            const response = await updateEntry.mutateAsync({
+                ...data,
+                createdAt: new Date(data.createdAt).toISOString(),
+            });
             notify(response.message, "success");
             router.push("/insulin/");
         } catch (error) {
@@ -77,153 +75,95 @@ export default function EditEntry() {
         }
     };
 
+    // Keep the entry's own insulin selectable even if it was since removed
+    // from the profile list.
+    const insulinNames = Array.from(
+        new Set([...userInsulinType.map((t) => t.name), data.name].filter(Boolean))
+    );
+    const loggedAt = data.createdAt
+        ? dayjs(data.createdAt).format("D MMM YYYY, HH:mm")
+        : undefined;
+
     return (
-        <section className="h-full w-full flex flex-col justify-center items-center bg-background p-5 space-y-6">
-            <div className="max-w-2xl mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md w-full">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-                            <Droplets className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                            <p className="text-xl font-semibold text-gray-900">
-                                Edit Insulin Entry
-                            </p>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Update your insulin measurement details
-                            </p>
-                        </div>
-                    </div>
-                    <Link
-                        href={"/insulin"}
-                        className="border-border hover:bg-accent/50 hover:border-primary flex items-center gap-2 border rounded-lg px-3 py-2 transition-all duration-300"
-                    >
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back
-                    </Link>
+        <EditEntryShell
+            backHref="/insulin"
+            backLabel="Insulin"
+            title="Edit dose"
+            subtitle={loggedAt ? `Logged on ${loggedAt}` : undefined}
+            formId="edit-insulin"
+            onSubmit={submitForm}
+            isSubmitting={isSubmitting}
+            isLoading={entry.isPending}
+            noun="dose"
+            deleteDescription={
+                data.units !== ""
+                    ? `${data.units} IU ${data.name}${data.tag ? ` · ${data.tag}` : ""}${loggedAt ? ` · ${loggedAt}` : ""}`
+                    : undefined
+            }
+            onDelete={() => deleteData(params.entryId)}
+            loggedAt={loggedAt}
+        >
+            <Field label="Dose" htmlFor="insulin">
+                <TextInput
+                    type="number"
+                    id="insulin"
+                    inputMode="decimal"
+                    step="any"
+                    min="0"
+                    placeholder="10"
+                    value={data.units}
+                    onChange={(e) => setData({ ...data, units: e.target.value })}
+                    suffix="IU"
+                    shellClassName="h-auto px-5 py-4"
+                    className="w-[3.4ch] flex-none text-[40px] leading-[1.1] font-semibold tracking-[-0.02em] lg:text-[52px]"
+                    required
+                />
+            </Field>
+
+            <div>
+                <span
+                    id="insulinType-label"
+                    className="mb-1.5 block text-[13px] font-semibold text-brand-ink"
+                >
+                    Insulin
+                </span>
+                <div
+                    role="radiogroup"
+                    aria-labelledby="insulinType-label"
+                    className="flex flex-wrap gap-2"
+                >
+                    {insulinNames.map((name) => (
+                        <Chip
+                            key={name}
+                            radio
+                            pressed={data.name === name}
+                            onClick={() => setData({ ...data, name })}
+                            leading={<InsulinDot name={name} />}
+                        >
+                            {name}
+                        </Chip>
+                    ))}
                 </div>
             </div>
-            <form
-                className="max-w-2xl w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md"
-                onSubmit={submitForm}
-            >
-                <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
-                    <div
-                        className={`p-2 rounded-lg bg-primary`}
-                    >
-                        <Save className="h-4 w-4 text-white" />
-                    </div>
-                    Insulin
+
+            <TagPicker
+                id="insulin_tag"
+                tags={entryTags}
+                value={data.tag}
+                onChange={(tag) => setData({ ...data, tag })}
+            />
+
+            <Field label="Date & time" htmlFor="insulinDate">
+                <div className={inputShell}>
+                    <input
+                        type="datetime-local"
+                        id="insulinDate"
+                        className={inputControl}
+                        value={DatetimeLocalFormat(data.createdAt)}
+                        onChange={(e) => setData({ ...data, createdAt: e.target.value })}
+                    />
                 </div>
-                <div className="flex flex-col space-y-3">
-                    <div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0">
-                        <div className="w-full lg:w-1/2 space-y-2">
-                            <label
-                                className="block text-sm leading-6 font-medium text-gray-700"
-                                htmlFor="glucose"
-                            >
-                                Dose (units)
-                            </label>
-                            <input
-                                type="number"
-                                id="insulin"
-                                className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10"
-                                placeholder="10 IU"
-                                value={data.units}
-                                onChange={changeValue}
-                                required
-                            />
-                        </div>
-                        <div className="w-full lg:w-1/2 space-y-2">
-                            <label
-                                className="block text-sm leading-6 font-medium text-gray-700"
-                                htmlFor="glucose"
-                            >
-                                Insulin Type
-                            </label>
-                            <select
-                                id="insulinType"
-                                value={data.name}
-                                onChange={changeInsulinType}
-                                className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10"
-                                required
-                            >
-                                <option value="" disabled>
-                                    Select Type
-                                </option>
-                                {userInsulinType.map((data) => (
-                                    <option key={data._id}>{data.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                    <div className="space-y-2">
-                        <label
-                            className="block text-sm leading-6 font-medium text-gray-700"
-                            htmlFor="glucoseDate"
-                        >
-                            Date & Time
-                        </label>
-                        <input
-                            type="datetime-local"
-                            id="glucoseDate"
-                            className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
-                            value={DatetimeLocalFormat(data.createdAt)}
-                            onChange={changeDate}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label
-                            className="block text-sm leading-6 font-medium text-gray-700"
-                            htmlFor="glucose_tag"
-                        >
-                            Measurement Tag
-                        </label>
-                        <select
-                            id="glucose_tag"
-                            value={data.tag ?? ""}
-                            onChange={changeTag}
-                            className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 outline-hidden"
-                        >
-                            <option value="">Select Tag</option>
-                            {entryTags.map((data) => (
-                                <option key={data}>{data}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="flex flex-row gap-2 w-full">
-                        <button
-                            type="submit"
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary-ring font-medium rounded-lg text-sm w-full  md:w-2/3 py-2 text-center transition-all duration-300"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
-                            ) : (
-                                <div className="flex items-center justify-center gap-2">
-                                    <Save className="h-4 w-4" />
-                                    Update Entry
-                                </div>
-                            )}
-                        </button>
-                        <button
-                            type="button"
-                            className="text-white bg-destructive hover:bg-destructive/90 font-medium rounded-lg text-sm md:w-1/3  w-full py-2 text-center transition-all duration-300"
-                            disabled={isSubmitting}
-                            onClick={() => deleteData(params.entryId)}
-                        >
-                            {isSubmitting ? (
-                                <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
-                            ) : (
-                                <div className="flex items-center justify-center gap-2">
-                                    <Trash2 className="h-4 w-4" />
-                                    Delete
-                                </div>
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </section>
+            </Field>
+        </EditEntryShell>
     );
 }

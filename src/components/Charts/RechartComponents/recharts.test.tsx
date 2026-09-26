@@ -271,6 +271,40 @@ describe("MeasurementChartRecharts", () => {
             expect(get).toHaveBeenCalledWith(expect.stringContaining("/14"))
         );
     });
+
+    it("offers a legend toggle per series when no field is chosen", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <MeasurementChartRecharts fetch={false} data={measurementRows as any} />
+        );
+
+        const legend = screen.getByRole("group", { name: "Series" });
+        expect(legend.querySelectorAll("button")).toHaveLength(7);
+        const waist = screen.getByRole("button", { name: "Waist" });
+        expect(waist).toHaveAttribute("aria-pressed", "false");
+
+        await user.click(waist);
+
+        expect(waist).toHaveAttribute("aria-pressed", "true");
+    });
+
+    it("plots only the chosen field, without a legend", () => {
+        renderWithProviders(
+            <MeasurementChartRecharts
+                fetch={false}
+                data={measurementRows as any}
+                field="waist"
+            />
+        );
+
+        expect(screen.queryByRole("group", { name: "Series" })).not.toBeInTheDocument();
+    });
+
+    it("does not fetch when the page hands down an empty list", () => {
+        renderWithProviders(<MeasurementChartRecharts fetch={false} data={[]} />);
+
+        expect(get).not.toHaveBeenCalled();
+    });
 });
 
 describe("AdvInsulinChartSeparateRecharts", () => {

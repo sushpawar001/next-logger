@@ -1,43 +1,49 @@
-import React from "react";
-import { Calendar, History } from "lucide-react";
+"use client";
+import { Segmented } from "@/components/app-ui/controls";
 
+/** "All" is a very large window rather than a separate endpoint. */
+export const ALL_DAYS = 365 * 100;
+
+const PERIODS = [
+    { value: 7, label: "7 days", short: "7d" },
+    { value: 14, label: "14 days", short: "14d" },
+    { value: 30, label: "30 days", short: "30d" },
+    { value: 90, label: "90 days", short: "90d" },
+    { value: 365, label: "1 year", short: "1y" },
+    { value: ALL_DAYS, label: "All", short: "All" },
+] as const;
+
+/**
+ * The period selector shared by every (Dashboard) page, as a segmented
+ * control. The callback still receives an event-shaped object so callers can
+ * keep their `parseInt(event.target.value)` handlers.
+ */
 export default function DataPeriodSelectCard({
     daysOfData,
     changeDaysOfData,
     className = "",
+    periods,
+    short = false,
 }: {
     daysOfData: number;
     changeDaysOfData: (event: { target: { value: string } }) => void;
     className?: string;
+    /** Limit the choices, e.g. `[7, 14, 30, 90]` on a dashboard card. */
+    periods?: readonly number[];
+    /** Compact labels ("7d") for use inside a card header. */
+    short?: boolean;
 }) {
+    const options = PERIODS.filter(
+        (p) => !periods || periods.includes(p.value)
+    ).map((p) => ({ value: p.value as number, label: short ? p.short : p.label }));
+
     return (
-        <div
-            className={`bg-white p-4 rounded-lg border border-border transition-all duration-300 shadow-md flex items-center justify-between ${className}`}
-        >
-            <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary">
-                    <Calendar className="h-4 w-4 text-primary-foreground" />
-                </div>
-                <div>
-                    <h3 className="font-semibold text-gray-900">Data Period</h3>
-                    <p className="text-sm text-gray-500">
-                        Select time range for analysis
-                    </p>
-                </div>
-            </div>
-            <select
-                id="daysOfDataInput"
-                value={daysOfData}
-                onChange={changeDaysOfData}
-                className="border text-gray-900 text-sm rounded-lg  block p-2.5 w-32 border-border focus:border-primary focus:ring-ring outline-hidden bg-white"
-            >
-                <option defaultValue="7">7</option>
-                <option>14</option>
-                <option>30</option>
-                <option>90</option>
-                <option>365</option>
-                <option value={365 * 100}>All</option>
-            </select>
-        </div>
+        <Segmented
+            label="Period"
+            options={options}
+            value={daysOfData}
+            onChange={(value) => changeDaysOfData({ target: { value: String(value) } })}
+            className={className}
+        />
     );
 }

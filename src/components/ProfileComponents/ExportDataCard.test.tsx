@@ -70,11 +70,31 @@ describe("ExportDataCard", () => {
         const user = userEvent.setup();
         renderWithProviders(<ExportDataCard />);
 
-        expect(screen.queryByLabelText("PDF layout")).toBeNull();
+        expect(screen.queryByRole("group", { name: "PDF layout" })).toBeNull();
 
-        await user.click(screen.getByLabelText("Format"));
-        await user.click(screen.getByRole("option", { name: /^PDF$/i }));
+        await user.click(screen.getByRole("radio", { name: "PDF" }));
 
-        expect(screen.getByLabelText("PDF layout")).toBeInTheDocument();
+        expect(screen.getByRole("group", { name: "PDF layout" })).toBeInTheDocument();
+    });
+
+    it("exports with the chosen period, format and PDF layout", async () => {
+        runExportMock.mockResolvedValue(3);
+        const user = userEvent.setup();
+        renderWithProviders(<ExportDataCard />);
+
+        await user.click(screen.getByLabelText("Weight"));
+        await user.selectOptions(screen.getByLabelText("Period"), "Last 90 days");
+        await user.click(screen.getByRole("radio", { name: "PDF" }));
+        await user.click(screen.getByRole("radio", { name: /separate PDF/i }));
+        await user.click(screen.getByRole("button", { name: /export/i }));
+
+        await waitFor(() =>
+            expect(runExportMock).toHaveBeenCalledWith({
+                metrics: ["weight"],
+                days: 90,
+                format: "pdf",
+                pdfMode: "separate",
+            })
+        );
     });
 });

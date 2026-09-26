@@ -1,12 +1,14 @@
 import LoadCalc from "@/components/LoadCalc";
-import React from "react";
+import { PageHeader } from "@/components/app-ui/layout";
 
 export default function Load() {
     return (
-        <div className="h-full flex justify-center items-center bg-background py-5 px-5">
-            <div className="max-w-full p-5 md:p-7 rounded-lg bg-white shadow-md">
-                <LoadCalc />
-            </div>
-        </div>
+        <>
+            <PageHeader
+                title="Plate calculator"
+                subtitle="Work out which plates to load on each side of the bar."
+            />
+            <LoadCalc />
+        </>
     );
 }

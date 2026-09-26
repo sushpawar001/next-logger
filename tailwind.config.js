@@ -100,6 +100,16 @@ module.exports = {
     				'on-dark': '#D9CFEA',
     				'night-line': '#3A2E4D'
     			},
+    			// Glucose status (brand-guidelines.md §3). Reserved for reading
+    			// status; `low` doubles as the destructive colour.
+    			status: {
+    				in: '#2E7D5B',
+    				'in-bg': '#E2F0E9',
+    				high: '#9A6412',
+    				'high-bg': '#F5E9D6',
+    				low: '#C0392B',
+    				'low-bg': '#F6DEDB'
+    			},
     			secondary: {
     				DEFAULT: '#111827',
     				foreground: 'hsl(var(--secondary-foreground))'

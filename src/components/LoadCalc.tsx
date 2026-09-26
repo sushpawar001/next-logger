@@ -1,241 +1,336 @@
 "use client";
 import {
-  greedyApproach,
-  calcOneSideWeight,
-  robustApproach,
+    greedyApproach,
+    calcOneSideWeight,
+    robustApproach,
 } from "@/helpers/loadCalcHelpers";
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useMemo, useState } from "react";
+import { Check } from "lucide-react";
+import { Eyebrow, Panel, PanelHead, PanelSub, PanelTitle } from "@/components/app-ui/layout";
+import { Chip, Field, Segmented, TextInput } from "@/components/app-ui/controls";
+import { DataTable } from "@/components/app-ui/table";
 
-export default function LoadCalc() {
-  const [barWeight, setBarWeight] = useState(20);
-  const [Load, setLoad] = useState(0);
-  const [OneSideLoad, setOneSideLoad] = useState(0);
-  const [availablePlates, setAvailablePlates] = useState([
-    2.5, 5, 10, 15, 20,
-  ]);
-  const [availablePlatesInput, setAvailablePlatesInput] = useState(
-    String(availablePlates)
-  );
-  const [platesToLoad, setplatesToLoad] = useState([]);
-  const [isGreedy, setIsGreedy] = useState(false);
+/** Standard plates offered as chips. Any custom plates saved earlier are added. */
+const STANDARD_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
+const DEFAULT_PLATES = [2.5, 5, 10, 15, 20];
 
-  const changeBarWeight = (event: { target: { value: string } }): void => {
-    setBarWeight(parseFloat(event.target.value));
-  };
+/**
+ * Plates are coloured by size with brand colours only; red, amber and green
+ * stay reserved for glucose status. [fill, drawn height, label colour].
+ */
+const PLATE_STYLE: Record<string, [string, number, string]> = {
+    25: ["#4A3470", 170, "#FAF7F2"],
+    20: ["#241A33", 160, "#FAF7F2"],
+    15: ["#8E78C4", 146, "#241A33"],
+    10: ["#E8DFD0", 126, "#241A33"],
+    5: ["#FFFFFF", 100, "#241A33"],
+    2.5: ["#E8DFD0", 82, "#241A33"],
+    1.25: ["#FFFFFF", 66, "#241A33"],
+};
+const plateStyle = (p: number): [string, number, string] =>
+    PLATE_STYLE[String(p)] ?? ["#B9A9DC", Math.max(60, Math.min(170, 60 + p * 4)), "#241A33"];
+const isLight = (fill: string) => fill === "#FFFFFF" || fill === "#E8DFD0";
 
-  const changeLoad = (event: { target: { value: string } }): void => {
-    setLoad(parseFloat(event.target.value));
-  };
+const fmt = (n: number) => String(Math.round(n * 100) / 100);
 
-  const changeAvailablePlates = (event: {
-    target: { value: string };
-  }): void => {
-    let numbersString = event.target.value;
-    setAvailablePlatesInput(numbersString);
-    let numbersArray = numbersString.split(",").filter(Boolean).map(Number);
-    numbersArray = numbersArray.filter((number) => !isNaN(number));
-    setAvailablePlates(numbersArray);
-    localStorage.setItem("availablePlates", JSON.stringify(numbersArray));
-  };
+type Mode = "robust" | "greedy";
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const item = JSON.parse(localStorage.getItem("availablePlates"));
-      if (item) {
-        setAvailablePlates(item);
-        setAvailablePlatesInput(String(item));
-      }
+const MODES = [
+    { value: "robust" as Mode, label: "Robust" },
+    { value: "greedy" as Mode, label: "Greedy" },
+];
+
+function readSavedPlates(): number[] | null {
+    try {
+        const item = JSON.parse(localStorage.getItem("availablePlates"));
+        return Array.isArray(item) ? item.filter((n) => typeof n === "number") : null;
+    } catch {
+        return null;
     }
-  }, []);
-
-  useEffect(() => {
-    setOneSideLoad(calcOneSideWeight(Load, barWeight));
-  }, [Load, barWeight]);
-
-  useEffect(() => {
-    const platesToLoad = isGreedy
-      ? greedyApproach(OneSideLoad, availablePlates)
-      : robustApproach(Load, barWeight, availablePlates);
-    setplatesToLoad(platesToLoad);
-  }, [Load, OneSideLoad, availablePlates, barWeight, isGreedy]);
-
-  const TdStyle = {
-    ThStyle: `w-1/6 min-w-[70px] border-l border-transparent px-3 py-2 text-base font-medium text-white lg:px-4`,
-    TdStyle2: `text-dark border border-[#E8E8E8] bg-white p-2 text-center font-normal text-base`,
-  };
-
-  return (
-    <div className="w-full md:w-fit grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-5 justify-center items-center">
-      <div className="text-secondary p-2 col-span-1 text-center">
-        <p>One side weight: {OneSideLoad}kg</p>
-        {platesToLoad.length > 0 ? (
-          <motion.table
-            className="table-auto my-2"
-            initial={{ opacity: 0, y: "-10%" }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{
-              type: "spring",
-              duration: 0.5,
-              stiffness: 150,
-            }}
-          >
-            <thead className="bg-secondary">
-              <motion.tr
-                initial={{ opacity: 0, y: "-50%" }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{
-                  type: "spring",
-                  duration: 0.3,
-                  stiffness: 150,
-                }}
-              >
-                <th
-                  className={`${TdStyle.ThStyle} rounded-tl-lg`}
-                >
-                  Set
-                </th>
-                <th className={`${TdStyle.ThStyle}`}>Plates</th>
-                <th
-                  className={`${TdStyle.ThStyle} rounded-tr-lg`}
-                >
-                  Progression
-                </th>
-              </motion.tr>
-            </thead>
-            <tbody>
-              {platesToLoad.map((elem, id, array) => {
-                const cumulativeSum = array
-                  .slice(0, id + 1)
-                  .reduce((acc, val) => acc + val, 0);
-                return (
-                  <motion.tr
-                    key={id}
-                    initial={{ opacity: 0, y: "-50%" }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{
-                      type: "spring",
-                      duration: 0.3,
-                      stiffness: 150,
-                      delay: id < 6 ? id * 0.15 : 0.15 * 6,
-                    }}
-                  >
-                    <td className={TdStyle.TdStyle2}>
-                      {id + 1}
-                    </td>
-                    <td className={TdStyle.TdStyle2}>
-                      {elem} kg
-                    </td>
-                    <td className={TdStyle.TdStyle2}>
-                      {cumulativeSum * 2 + barWeight} kg
-                    </td>
-                  </motion.tr>
-                );
-              })}
-            </tbody>
-          </motion.table>
-        ) : (
-          <p>Enter weight to see sets</p>
-        )}
-      </div>
-
-      <div className="order-1 md:order-first col-span-1 justify-center">
-        <div className="mb-4">
-          <Switcher isGreedy={isGreedy} setIsGreedy={setIsGreedy} />
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="Load"
-            className="block mb-2 text-sm font-medium text-secondary"
-          >
-            Enter Load to lift (kg)
-          </label>
-          <input
-            type="number"
-            id="Load"
-            className="bg-gray-50 border border-gray-300  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
-            value={Load}
-            onChange={changeLoad}
-            min={0}
-            max={1000}
-            step="any"
-            required
-          />
-        </div>
-
-        <div className="mb-4">
-          <label
-            htmlFor="availablePlates"
-            className="block mb-2 text-sm font-medium text-secondary"
-          >
-            Enter available plates
-          </label>
-          <input
-            type="text"
-            id="availablePlates"
-            className="bg-gray-50 border border-gray-300  text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
-            value={availablePlatesInput}
-            onChange={changeAvailablePlates}
-            required
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="barWeight"
-            className="block mb-2 text-sm font-medium text-secondary"
-          >
-            Enter bar weight (kg)
-          </label>
-          <input
-            type="number"
-            id="barWeight"
-            className="bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
-            value={barWeight}
-            onChange={changeBarWeight}
-            min={0}
-            required
-          />
-        </div>
-      </div>
-    </div>
-  );
 }
 
-const Switcher = ({
-  isGreedy,
-  setIsGreedy,
-}: {
-  isGreedy: boolean;
-  setIsGreedy: any;
-}) => {
-  const handleCheckboxChange = () => {
-    setIsGreedy(!isGreedy);
-  };
+export default function LoadCalc() {
+    const [barWeight, setBarWeight] = useState(20);
+    const [Load, setLoad] = useState(0);
+    const [availablePlates, setAvailablePlates] = useState<number[]>(DEFAULT_PLATES);
+    const [mode, setMode] = useState<Mode>("robust");
 
-  return (
-    <>
-      <label className="w-full border border-primary inline-flex cursor-pointer select-none items-center justify-center rounded-lg bg-white">
-        <input
-          type="checkbox"
-          className="sr-only"
-          checked={isGreedy}
-          onChange={handleCheckboxChange}
-        />
-        <span
-          className={`flex grow items-center justify-center rounded-l-lg py-2 px-4 text-sm font-medium ${!isGreedy ? "text-white bg-primary" : "text-body-color"
-            }`}
+    useEffect(() => {
+        const saved = readSavedPlates();
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage is only readable after hydration
+        if (saved) setAvailablePlates(saved);
+    }, []);
+
+    const togglePlate = (plate: number) => {
+        const next = availablePlates.includes(plate)
+            ? availablePlates.filter((p) => p !== plate)
+            : [...availablePlates, plate];
+        setAvailablePlates(next);
+        localStorage.setItem("availablePlates", JSON.stringify(next));
+    };
+
+    const plateChoices = useMemo(
+        () =>
+            [...new Set([...STANDARD_PLATES, ...availablePlates])].sort(
+                (a, b) => b - a
+            ),
+        [availablePlates]
+    );
+
+    const oneSideLoad = calcOneSideWeight(Load, barWeight);
+    const platesToLoad = useMemo(
+        () =>
+            mode === "greedy"
+                ? greedyApproach(oneSideLoad, availablePlates)
+                : robustApproach(Load, barWeight, availablePlates),
+        [mode, oneSideLoad, availablePlates, Load, barWeight]
+    );
+
+    const loaded = platesToLoad.reduce((a, b) => a + b, 0);
+    const total = barWeight + loaded * 2;
+    const exact = Math.abs(total - Load) < 0.001;
+    const hasTarget = Load > barWeight;
+
+    const number = (setter: (n: number) => void) => (e: { target: { value: string } }) =>
+        setter(parseFloat(e.target.value));
+
+    return (
+        <form
+            className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5"
+            onSubmit={(e) => e.preventDefault()}
         >
-          Robust Mode
-        </span>
-        <span
-          className={`flex grow items-center justify-center rounded-r-lg py-2 px-4 text-sm font-medium ${isGreedy ? "text-white bg-primary" : "text-body-color"
-            }`}
+            <Panel aria-labelledby="setup-title" className="order-2 lg:order-none lg:col-span-5">
+                <PanelHead>
+                    <PanelTitle id="setup-title">Your setup</PanelTitle>
+                </PanelHead>
+
+                <div>
+                    <span id="mode-label" className="mb-1.5 block text-[13px] font-semibold text-brand-ink">
+                        Mode
+                    </span>
+                    <Segmented<Mode>
+                        label="Mode"
+                        options={MODES}
+                        value={mode}
+                        onChange={setMode}
+                        size="lg"
+                        fill
+                    />
+                    <p className="mt-1.5 text-[13px] text-brand-muted">
+                        {mode === "robust"
+                            ? "Robust prefers matching plates, so each set builds up in even steps."
+                            : "Greedy loads the heaviest plates first."}
+                    </p>
+                </div>
+
+                <div className="mt-5 grid grid-cols-2 gap-4">
+                    <Field label="Target load" htmlFor="Load">
+                        <TextInput
+                            type="number"
+                            id="Load"
+                            inputMode="decimal"
+                            value={Number.isNaN(Load) ? "" : Load}
+                            onChange={number(setLoad)}
+                            min={0}
+                            max={1000}
+                            step="any"
+                            required
+                            suffix="kg"
+                        />
+                    </Field>
+                    <Field label="Bar weight" htmlFor="barWeight">
+                        <TextInput
+                            type="number"
+                            id="barWeight"
+                            inputMode="decimal"
+                            value={Number.isNaN(barWeight) ? "" : barWeight}
+                            onChange={number(setBarWeight)}
+                            min={0}
+                            step="any"
+                            required
+                            suffix="kg"
+                        />
+                    </Field>
+                </div>
+
+                <div className="mt-5">
+                    <span id="plates-label" className="mb-1.5 block text-[13px] font-semibold text-brand-ink">
+                        Available plates (kg)
+                    </span>
+                    <div role="group" aria-labelledby="plates-label" className="flex flex-wrap gap-2">
+                        {plateChoices.map((p) => (
+                            <Chip
+                                key={p}
+                                pressed={availablePlates.includes(p)}
+                                onClick={() => togglePlate(p)}
+                            >
+                                {fmt(p)}
+                            </Chip>
+                        ))}
+                    </div>
+                    <p className="mt-1.5 text-[13px] text-brand-muted">
+                        Tap a plate to include or exclude it.
+                    </p>
+                </div>
+            </Panel>
+
+            <div className="order-1 flex min-w-0 flex-col gap-4 lg:order-none lg:col-span-7 lg:gap-5">
+                <Panel aria-labelledby="result-label" aria-live="polite">
+                    <div className="mb-1 flex items-start justify-between gap-3">
+                        <Eyebrow id="result-label">Each side</Eyebrow>
+                        {hasTarget && (
+                            <strong className="text-[13px] tabular-nums">
+                                {fmt(total)} kg total
+                            </strong>
+                        )}
+                    </div>
+                    <span className="flex items-baseline gap-[0.12em] text-[40px] font-semibold leading-none tracking-[-0.02em] tabular-nums text-brand-ink">
+                        {fmt(loaded)}
+                        <span className="ml-[0.12em] text-[15px] font-medium tracking-normal text-brand-muted">
+                            kg
+                        </span>
+                    </span>
+                    <p className="mt-2 text-xl font-semibold text-brand-aubergine">
+                        {!hasTarget
+                            ? "Enter a target load above the bar weight"
+                            : platesToLoad.length
+                              ? platesToLoad.map(fmt).join(" + ")
+                              : "Bar only"}
+                    </p>
+                    <div className="my-4">
+                        <Barbell plates={platesToLoad} />
+                    </div>
+                    {hasTarget && (
+                        <p className="flex flex-wrap items-center justify-center gap-1.5 text-center text-[13px] text-brand-muted">
+                            Bar {fmt(barWeight)} kg + 2 × {fmt(loaded)} kg = {fmt(total)} kg
+                            {exact ? (
+                                <Check
+                                    className="h-4 w-4 text-brand-aubergine"
+                                    strokeWidth={2.6}
+                                    aria-label="Exact match"
+                                />
+                            ) : (
+                                <span>(closest to {fmt(Load)} kg with these plates)</span>
+                            )}
+                        </p>
+                    )}
+                </Panel>
+
+                <Panel aria-labelledby="list-title">
+                    <PanelHead>
+                        <div>
+                            <PanelTitle id="list-title">Plate list</PanelTitle>
+                            <PanelSub>
+                                Load one plate on each side per step, in this order.
+                            </PanelSub>
+                        </div>
+                    </PanelHead>
+                    {platesToLoad.length > 0 ? (
+                        <DataTable>
+                            <thead>
+                                <tr>
+                                    <th>Step</th>
+                                    <th>Plate</th>
+                                    <th className="text-right!">Bar total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {platesToLoad.map((p, i) => {
+                                    const [fill] = plateStyle(p);
+                                    const soFar = platesToLoad
+                                        .slice(0, i + 1)
+                                        .reduce((a, b) => a + b, 0);
+                                    return (
+                                        <tr key={i}>
+                                            <td className="tabular-nums text-brand-muted">{i + 1}</td>
+                                            <td>
+                                                <span className="inline-flex items-center gap-2">
+                                                    <span
+                                                        className="inline-block h-[18px] w-1.5 rounded-[3px]"
+                                                        style={{
+                                                            background: fill,
+                                                            boxShadow: isLight(fill)
+                                                                ? "inset 0 0 0 1px #DDD3C2"
+                                                                : undefined,
+                                                        }}
+                                                        aria-hidden="true"
+                                                    />
+                                                    <strong className="tabular-nums">{fmt(p)} kg</strong>
+                                                </span>
+                                            </td>
+                                            <td className="pr-0! text-right tabular-nums">
+                                                <strong>{fmt(soFar * 2 + barWeight)} kg</strong>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </DataTable>
+                    ) : (
+                        <p className="text-sm text-brand-muted">Enter weight to see sets</p>
+                    )}
+                </Panel>
+            </div>
+        </form>
+    );
+}
+
+/** The bar with the per-side plates drawn from the collar outwards. */
+function Barbell({ plates }: { plates: number[] }) {
+    const W = 780;
+    const H = 190;
+    const cx = W / 2;
+    const cy = H / 2;
+
+    const sides = [-1, 1].map((side) => {
+        let off = 219;
+        const shapes: React.ReactNode[] = [];
+        for (const [i, p] of plates.entries()) {
+            const [fill, h, fg] = plateStyle(p);
+            const w = p >= 10 ? 30 : 20;
+            if (off + w > W / 2 - 12) break;
+            const x = side > 0 ? cx + off : cx - off - w;
+            shapes.push(
+                <g key={`${side}-${i}`}>
+                    <rect
+                        x={x}
+                        y={cy - h / 2}
+                        width={w}
+                        height={h}
+                        rx={6}
+                        fill={fill}
+                        stroke={isLight(fill) ? "#DDD3C2" : undefined}
+                    />
+                    <text
+                        x={x + w / 2}
+                        y={cy + 4}
+                        fontSize={11}
+                        fontWeight={700}
+                        fill={fg}
+                        textAnchor="middle"
+                        transform={`rotate(-90 ${x + w / 2} ${cy})`}
+                    >
+                        {fmt(p)}
+                    </text>
+                </g>
+            );
+            off += w + 3;
+        }
+        return shapes;
+    });
+
+    return (
+        <svg
+            viewBox={`0 0 ${W} ${H}`}
+            className="block h-auto w-full"
+            role="img"
+            aria-label={`Barbell loaded with ${plates.length ? plates.map(fmt).join(", ") : "no"} kg plates on each side`}
         >
-          Greedy Mode
-        </span>
-      </label>
-    </>
-  );
-};
+            <rect x={10} y={cy - 6} width={W - 20} height={12} rx={6} fill="#8A8198" />
+            <rect x={cx - 200} y={cy - 9} width={400} height={18} rx={4} fill="#6E667B" />
+            <rect x={cx - 216} y={cy - 22} width={16} height={44} rx={4} fill="#241A33" />
+            <rect x={cx + 200} y={cy - 22} width={16} height={44} rx={4} fill="#241A33" />
+            {sides}
+        </svg>
+    );
+}

@@ -1,16 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Panel, PanelHead, PanelSub, PanelTitle } from "@/components/app-ui/layout";
+import { AppButton, Field, SelectInput } from "@/components/app-ui/controls";
 import notify from "@/helpers/notify";
 import {
     runExport,
@@ -30,8 +23,8 @@ const PERIODS: { value: number; label: string }[] = [
 ];
 
 const FORMATS: { value: ExportFormat; label: string }[] = [
-    { value: "csv", label: "CSV (one file per metric)" },
-    { value: "json", label: "JSON (single file)" },
+    { value: "csv", label: "CSV" },
+    { value: "json", label: "JSON" },
     { value: "pdf", label: "PDF" },
 ];
 
@@ -39,6 +32,10 @@ const PDF_MODES: { value: PdfMode; label: string }[] = [
     { value: "combined", label: "One combined PDF" },
     { value: "separate", label: "A separate PDF per dataset" },
 ];
+
+const legend = "mb-2.5 text-[13px] font-semibold text-brand-ink";
+const choice = "inline-flex cursor-pointer items-center gap-2.5 text-[15px] text-brand-ink";
+const control = "m-0 h-5 w-5 flex-none cursor-pointer accent-brand-aubergine";
 
 export default function ExportDataCard({
     className = "",
@@ -86,140 +83,125 @@ export default function ExportDataCard({
     };
 
     return (
-        <Card className={`border-border shadow-md ${className}`}>
-            <CardHeader>
-                <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-primary">
-                        <Download className="h-5 w-5 text-primary-foreground" />
-                    </div>
-                    <div>
-                        <h3 className="font-semibold text-gray-900">
-                            Export data
-                        </h3>
-                        <p className="text-sm text-gray-500">
-                            Download your records as CSV, JSON or PDF
-                        </p>
-                    </div>
-                </div>
-            </CardHeader>
-
-            <CardContent className="space-y-5">
-                {/* Datasets */}
+        <Panel
+            as="form"
+            className={className}
+            aria-labelledby="export-title"
+            onSubmit={(e: React.FormEvent) => {
+                e.preventDefault();
+                handleExport();
+            }}
+        >
+            <PanelHead>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Datasets
-                    </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {METRICS.map((key) => (
-                            <label
-                                key={key}
-                                className="flex items-center space-x-3 p-2 hover:bg-accent/50 rounded cursor-pointer"
-                            >
+                    <PanelTitle id="export-title">Export data</PanelTitle>
+                    <PanelSub>Download a copy of your records.</PanelSub>
+                </div>
+            </PanelHead>
+
+            <fieldset className="m-0 border-0 p-0">
+                <legend className={legend}>Include</legend>
+                <div className="grid grid-cols-2 gap-3">
+                    {METRICS.map((key) => (
+                        <label key={key} className={choice}>
+                            <input
+                                type="checkbox"
+                                checked={selected.includes(key)}
+                                onChange={() => toggleMetric(key)}
+                                className={control}
+                            />
+                            {metricMeta[key].label}
+                        </label>
+                    ))}
+                </div>
+            </fieldset>
+
+            <Field label="Period" htmlFor="export-period" className="mt-5">
+                <SelectInput
+                    id="export-period"
+                    value={String(days)}
+                    onChange={(e) => setDays(Number(e.target.value))}
+                >
+                    {PERIODS.map((p) => (
+                        <option key={p.value} value={String(p.value)}>
+                            {p.label}
+                        </option>
+                    ))}
+                </SelectInput>
+            </Field>
+
+            <fieldset className="m-0 mt-5 border-0 p-0">
+                <legend className={legend}>Format</legend>
+                <div className="flex flex-wrap gap-x-6 gap-y-3">
+                    {FORMATS.map((f) => (
+                        <label key={f.value} className={choice}>
+                            <input
+                                type="radio"
+                                name="export-format"
+                                value={f.value}
+                                checked={format === f.value}
+                                onChange={() => setFormat(f.value)}
+                                className={control}
+                            />
+                            {f.label}
+                        </label>
+                    ))}
+                </div>
+                {format !== "pdf" && (
+                    <p className="mt-2 text-[13px] text-brand-muted">
+                        {format === "csv"
+                            ? "One file per dataset."
+                            : "Everything in a single file."}
+                    </p>
+                )}
+            </fieldset>
+
+            {/* PDF layout choice — combined vs one file per dataset */}
+            {format === "pdf" && (
+                <fieldset className="m-0 mt-5 border-0 p-0">
+                    <legend className={legend}>PDF layout</legend>
+                    <div className="grid gap-3">
+                        {PDF_MODES.map((m) => (
+                            <label key={m.value} className={choice}>
                                 <input
-                                    type="checkbox"
-                                    checked={selected.includes(key)}
-                                    onChange={() => toggleMetric(key)}
-                                    className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-ring focus:ring-2"
+                                    type="radio"
+                                    name="export-pdf-mode"
+                                    value={m.value}
+                                    checked={pdfMode === m.value}
+                                    onChange={() => setPdfMode(m.value)}
+                                    className={control}
                                 />
-                                <span className="text-sm text-gray-700">
-                                    {metricMeta[key].label}
-                                </span>
+                                {m.label}
                             </label>
                         ))}
                     </div>
-                </div>
+                </fieldset>
+            )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {/* Time period */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Time period
-                        </label>
-                        <Select
-                            value={String(days)}
-                            onValueChange={(v) => setDays(Number(v))}
-                        >
-                            <SelectTrigger aria-label="Time period">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {PERIODS.map((p) => (
-                                    <SelectItem
-                                        key={p.value}
-                                        value={String(p.value)}
-                                    >
-                                        {p.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    {/* Format */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Format
-                        </label>
-                        <Select
-                            value={format}
-                            onValueChange={(v) => setFormat(v as ExportFormat)}
-                        >
-                            <SelectTrigger aria-label="Format">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {FORMATS.map((f) => (
-                                    <SelectItem key={f.value} value={f.value}>
-                                        {f.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-
-                {/* PDF layout choice — combined vs one file per dataset */}
-                {format === "pdf" && (
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            PDF layout
-                        </label>
-                        <Select
-                            value={pdfMode}
-                            onValueChange={(v) => setPdfMode(v as PdfMode)}
-                        >
-                            <SelectTrigger aria-label="PDF layout">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {PDF_MODES.map((m) => (
-                                    <SelectItem key={m.value} value={m.value}>
-                                        {m.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
+            <AppButton
+                type="submit"
+                variant="secondary"
+                block
+                className="mt-6"
+                disabled={selected.length === 0 || isExporting}
+            >
+                {isExporting ? (
+                    <>
+                        <Loader2 className="animate-spin" aria-hidden="true" />
+                        Exporting…
+                    </>
+                ) : (
+                    <>
+                        <Download aria-hidden="true" />
+                        Export
+                    </>
                 )}
-
-                <Button
-                    onClick={handleExport}
-                    disabled={selected.length === 0 || isExporting}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                >
-                    {isExporting ? (
-                        <>
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            Exporting…
-                        </>
-                    ) : (
-                        <>
-                            <Download className="h-4 w-4" />
-                            Export
-                        </>
-                    )}
-                </Button>
-            </CardContent>
-        </Card>
+            </AppButton>
+            {selected.length === 0 && (
+                <p className="mt-2 text-center text-[13px] text-brand-muted">
+                    Choose at least one dataset.
+                </p>
+            )}
+        </Panel>
     );
 }

@@ -1,12 +1,18 @@
 import React, { useEffect, useState, SetStateAction, useRef } from "react";
-import { FaSyringe } from "react-icons/fa";
-import { Syringe, Loader2 } from "lucide-react";
+import { Check, Loader2, X } from "lucide-react";
 import type { InsulinNameType } from "@/types/models";
 import notify from "@/helpers/notify";
 import autoAnimate from "@formkit/auto-animate";
 import { useSaveUserInsulins } from "@/hooks/queries/useInsulinMutations";
 import { mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
+import { AppButton, Field, SelectInput } from "@/components/app-ui/controls";
+import { SERIES } from "@/components/Charts/RechartComponents/chartTheme";
+import { cn } from "@/lib/utils";
 
+/**
+ * The user's insulins as removable chips, plus a picker for the known types.
+ * Renders bare: the profile page puts it inside its "My insulins" card.
+ */
 export default function UserInsulins({
     className = "",
     allAvailableInsulins,
@@ -22,7 +28,6 @@ export default function UserInsulins({
     const saveInsulins = useSaveUserInsulins();
     const isSubmitting = saveInsulins.isPending;
     const [isChanged, setIsChanged] = useState(false);
-    const [selectedInsulin, setSelectedInsulin] = useState("");
     const parent = useRef(null);
 
     const submitInsulin = async (e) => {
@@ -37,25 +42,19 @@ export default function UserInsulins({
     };
 
     const selectInsulinAndAdd = (e) => {
-        e.preventDefault();
         const newInsulin = e.target.value;
         if (!userInsulins.find((data) => data.name === newInsulin)) {
-            setIsChanged(true);
-            setSelectedInsulin(newInsulin);
-            let currentSelected = allAvailableInsulins.find(
+            const currentSelected = allAvailableInsulins.find(
                 (data) => data.name === newInsulin
             );
+            if (!currentSelected) return;
+            setIsChanged(true);
             setUserInsulins([...userInsulins, currentSelected]);
-            setSelectedInsulin("");
         }
     };
 
-    const removeInsulin = (e) => {
-        e.preventDefault();
-        const removedInsulin = e.target.value;
-        setUserInsulins(
-            userInsulins.filter((data) => data.name !== removedInsulin)
-        );
+    const removeInsulin = (name: string) => {
+        setUserInsulins(userInsulins.filter((data) => data.name !== name));
         setIsChanged(true);
     };
 
@@ -63,73 +62,73 @@ export default function UserInsulins({
         parent.current && autoAnimate(parent.current);
     }, [parent]);
 
+    const notChosen = allAvailableInsulins.filter(
+        (a) => !userInsulins.some((u) => u.name === a.name)
+    );
+
     return (
-        <div
-            className={`p-5 md:p-7 rounded-lg bg-white border border-border transition-all duration-300 shadow-md ${className}`}
-        >
-            <div className="flex items-center gap-3 text-lg text-gray-900 mb-4 md:mb-6">
-                <div
-                    className={`p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600`}
-                >
-                    <Syringe className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                    <h2 className="text-lg font-semibold text-gray-900">
-                        Your Insulins
-                    </h2>
-                    <p className="text-gray-600 text-sm">
-                        Add insulin to your profile to use it for logging
+        <div className={cn("min-w-0", className)}>
+            <div className="flex flex-wrap gap-2" ref={parent}>
+                {userInsulins.length === 0 && (
+                    <p className="text-sm text-brand-muted">
+                        No insulins yet. Pick one below.
                     </p>
-                </div>
+                )}
+                {userInsulins.map((data, i) => (
+                    <span
+                        key={data._id}
+                        className="inline-flex h-10 items-center gap-1.5 rounded-[20px] border border-border bg-white pr-2 pl-4 text-sm font-semibold text-brand-ink"
+                    >
+                        <span
+                            className="h-2.5 w-2.5 flex-none rounded-full"
+                            style={{ background: SERIES[i % SERIES.length] }}
+                            aria-hidden="true"
+                        />
+                        {data.name}
+                        <button
+                            type="button"
+                            aria-label={`Remove ${data.name}`}
+                            onClick={() => removeInsulin(data.name)}
+                            className="inline-grid h-7 w-7 place-items-center rounded-lg text-brand-muted hover:bg-brand-cream hover:text-brand-ink"
+                        >
+                            <X className="h-4 w-4" aria-hidden="true" />
+                        </button>
+                    </span>
+                ))}
             </div>
             <form
-                className="flex flex-col md:flex-row gap-2 mb-4"
+                className="mt-5 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3"
                 onSubmit={submitInsulin}
             >
-                <select
-                    id="insulinType"
-                    value={selectedInsulin}
-                    onChange={selectInsulinAndAdd}
-                    className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-hidden"
-                >
-                    <option value="" disabled>
-                        Select Insulin
-                    </option>
-                    {allAvailableInsulins.map((data) => (
-                        <option key={data._id} value={data.name}>
-                            {data.name}
+                <Field label="Add from the list" htmlFor="insulinType">
+                    <SelectInput
+                        id="insulinType"
+                        value=""
+                        onChange={selectInsulinAndAdd}
+                    >
+                        <option value="" disabled>
+                            Select insulin
                         </option>
-                    ))}
-                </select>
-                <button
+                        {notChosen.map((data) => (
+                            <option key={data._id} value={data.name}>
+                                {data.name}
+                            </option>
+                        ))}
+                    </SelectInput>
+                </Field>
+                <AppButton
                     type="submit"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring focus:outline-hidden font-medium rounded-lg text-sm min-w-fit w-full md:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
+                    size="field"
                     disabled={isSubmitting || !isChanged}
                 >
                     {isSubmitting ? (
-                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
+                        <Loader2 className="animate-spin" aria-hidden="true" />
                     ) : (
-                        "Save"
+                        <Check aria-hidden="true" />
                     )}
-                </button>
+                    Save
+                </AppButton>
             </form>
-            <div className="flex flex-wrap gap-1" ref={parent}>
-                {userInsulins.map((data) => (
-                    <div
-                        key={data._id}
-                        className="text-sm text-center text-white bg-gray-900 hover:bg-gray-700 py-0.5 px-1.5 md:px-2.5 rounded-full flex items-center justify-center gap-1 w-fit"
-                    >
-                        <p>{data.name}</p>
-                        <button
-                            className="p-1 text-white/85"
-                            value={data.name}
-                            onClick={removeInsulin}
-                        >
-                            x
-                        </button>
-                    </div>
-                ))}
-            </div>
         </div>
     );
 }

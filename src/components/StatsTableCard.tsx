@@ -1,151 +1,123 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { TrendingUp, TrendingDown } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { Delta } from "@/components/app-ui/data";
+import { Panel, PanelHead, PanelSub, PanelTitle } from "@/components/app-ui/layout";
+import { DataTable, DataTableWrap } from "@/components/app-ui/table";
+import { cn } from "@/lib/utils";
 
-interface StatRow {
-    param: string;
-    previous: string | number;
-    current: string | number;
-    trend?: "up" | "down" | "neutral";
+export interface StatRow {
+    label: ReactNode;
+    current: number | null;
+    /** Omit for a metric without a previous period; null means "no data then". */
+    previous?: number | null;
+    /** Decimal places to show. */
+    decimals?: number;
+    /** Appended to values, e.g. "%". */
+    suffix?: string;
+    /** Appended to the change, e.g. " pts" for percentages. */
+    changeSuffix?: string;
 }
 
-interface statsObjType {
-    mean: number;
-    median: number;
-    mode: number[];
-    min: number;
-    max: number;
-    sum?: number;
-    dailyAvg?: number;
+const DASH = "—";
+
+function format(value: number | null | undefined, decimals = 0, suffix = "") {
+    if (value === null || value === undefined || !Number.isFinite(value)) return DASH;
+    return `${value.toFixed(decimals)}${suffix}`;
 }
 
-interface StatsTableCardProps {
-    title: string;
-    icon: LucideIcon;
-    gradient: string;
-    newData: statsObjType;
-    oldData?: statsObjType;
-    showTrend?: boolean;
-}
-
+/**
+ * Period-over-period statistics: Metric · Previous · Current · Change.
+ * Changes are neutral arrows in muted text — a lower average isn't "good"
+ * and a higher one isn't "bad" (brand-guidelines.md, voice).
+ */
 export function StatsTableCard({
     title,
-    icon: Icon,
-    gradient,
-    newData,
-    oldData = null,
-    showTrend = true,
-}: StatsTableCardProps) {
-    const getTrendIcon = (trend?: "up" | "down" | "neutral") => {
-        if (!trend || trend === "neutral") return null;
-        return trend === "up" ? (
-            <TrendingUp className="h-3 w-3 text-red-500" />
-        ) : (
-            <TrendingDown className="h-3 w-3 text-green-500" />
-        );
-    };
-
-    const getTrendColor = (trend?: "up" | "down" | "neutral") => {
-        if (!trend || trend === "neutral") return "text-gray-900";
-        return trend === "up" ? "text-red-600" : "text-green-600";
-    };
+    subtitle,
+    rows,
+    metricLabel = "Metric",
+    previousLabel = "Previous",
+    currentLabel = "Current",
+    note,
+    className,
+}: {
+    title: ReactNode;
+    subtitle?: ReactNode;
+    rows: StatRow[];
+    metricLabel?: string;
+    previousLabel?: string;
+    currentLabel?: string;
+    /** Small print under the table, e.g. "All values in kg." */
+    note?: ReactNode;
+    className?: string;
+}) {
+    const hasPrevious = rows.some((r) => r.previous !== undefined);
 
     return (
-        <Card className="border-border shadow-md transition-all duration-300">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-900">
-                    <div className={`p-2 rounded-lg ${gradient}`}>
-                        <Icon className="h-5 w-5 text-white" />
-                    </div>
-                    {title}
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                <div className="rounded-lg border border-border overflow-hidden">
-                    <Table>
-                        <TableHeader>
-                            <TableRow className="bg-primary hover:bg-primary">
-                                <TableHead className="text-primary-foreground font-medium">
-                                    Param
-                                </TableHead>
-                                {oldData && (
-                                    <TableHead className="text-primary-foreground font-medium">
-                                        Previous
-                                    </TableHead>
-                                )}
-                                <TableHead className="text-primary-foreground font-medium">
-                                    Current
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {Object.keys(newData).map((key, index) => (
-                                <TableRow
-                                    key={key}
-                                    className={`hover:bg-accent/50 transition-colors ${
-                                        index % 2 === 0
-                                            ? "bg-white"
-                                            : "bg-gray-50/50"
-                                    }`}
-                                >
-                                    <TableCell className="font-medium text-gray-900">
-                                        {key}
-                                    </TableCell>
-                                    {oldData && (
-                                        <TableCell className="text-gray-600">
-                                            {showData(oldData, key)}
-                                        </TableCell>
-                                    )}
-                                    <TableCell
-                                        className={`font-medium ${getTrendColor(
-                                            oldData
-                                                ? newData[key] > oldData[key]
-                                                    ? "up"
-                                                    : newData[key] <
-                                                      oldData[key]
-                                                    ? "down"
-                                                    : "neutral"
-                                                : "neutral"
-                                        )}`}
-                                    >
-                                        <div className="flex items-center gap-2">
-                                            {showData(newData, key)}
-                                            {showTrend &&
-                                                getTrendIcon(
-                                                    oldData
-                                                        ? newData[key] >
-                                                          oldData[key]
-                                                            ? "up"
-                                                            : newData[key] <
-                                                              oldData[key]
-                                                            ? "down"
-                                                            : "neutral"
-                                                        : "neutral"
-                                                )}
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+        <Panel className={className}>
+            <PanelHead>
+                <div>
+                    <PanelTitle>{title}</PanelTitle>
+                    {subtitle && <PanelSub>{subtitle}</PanelSub>}
                 </div>
-            </CardContent>
-        </Card>
+            </PanelHead>
+            <DataTableWrap>
+                <DataTable>
+                    <thead>
+                        <tr>
+                            <th>{metricLabel}</th>
+                            {hasPrevious && <th className="text-right!">{previousLabel}</th>}
+                            <th className={cn("text-right!", !hasPrevious && "pr-0!")}>
+                                {currentLabel}
+                            </th>
+                            {hasPrevious && <th className="pr-0! text-right!">Change</th>}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {rows.map((row, i) => {
+                            const decimals = row.decimals ?? 0;
+                            const change =
+                                row.previous != null && row.current != null
+                                    ? Number(
+                                          (row.current - row.previous).toFixed(decimals)
+                                      )
+                                    : null;
+                            return (
+                                <tr key={i}>
+                                    <td>{row.label}</td>
+                                    {hasPrevious && (
+                                        <td className="text-right tabular-nums text-brand-muted">
+                                            {format(row.previous, decimals, row.suffix)}
+                                        </td>
+                                    )}
+                                    <td
+                                        className={cn(
+                                            "text-right tabular-nums",
+                                            !hasPrevious && "pr-0!"
+                                        )}
+                                    >
+                                        <strong>
+                                            {format(row.current, decimals, row.suffix)}
+                                        </strong>
+                                    </td>
+                                    {hasPrevious && (
+                                        <td className="pr-0! text-right">
+                                            {change === null ? (
+                                                <span className="text-brand-muted">{DASH}</span>
+                                            ) : (
+                                                <Delta value={change} diagonal>
+                                                    {change > 0 ? "+" : change < 0 ? "−" : ""}
+                                                    {Math.abs(change).toFixed(decimals)}
+                                                    {row.changeSuffix ?? ""}
+                                                </Delta>
+                                            )}
+                                        </td>
+                                    )}
+                                </tr>
+                            );
+                        })}
+                    </tbody>
+                </DataTable>
+            </DataTableWrap>
+            {note && <p className="mt-3 text-xs text-brand-muted">{note}</p>}
+        </Panel>
     );
-}
-
-function showData(newData: statsObjType, key: string) {
-    return Array.isArray(newData[key])
-        ? newData[key].join(", ")
-        : typeof newData[key] === "number"
-        ? newData[key].toFixed(2)
-        : newData[key];
 }

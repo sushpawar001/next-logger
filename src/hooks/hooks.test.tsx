@@ -31,14 +31,14 @@ describe("useIsMobile", () => {
         });
     };
 
-    it("is true below the 768px breakpoint", () => {
+    it("is true below the 960px breakpoint", () => {
         setViewport(500);
 
         expect(renderHook(() => useIsMobile()).result.current).toBe(true);
     });
 
     it("is false at and above the breakpoint", () => {
-        setViewport(768);
+        setViewport(960);
         expect(renderHook(() => useIsMobile()).result.current).toBe(false);
 
         setViewport(1200);
@@ -46,7 +46,7 @@ describe("useIsMobile", () => {
     });
 
     it("is true at one pixel below the breakpoint", () => {
-        setViewport(767);
+        setViewport(959);
 
         expect(renderHook(() => useIsMobile()).result.current).toBe(true);
     });

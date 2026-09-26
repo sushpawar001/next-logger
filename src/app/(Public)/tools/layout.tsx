@@ -29,7 +29,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <SidebarProvider>
             <PublicLeftSidebar />
             <SidebarInset>
-                <DashboardHeader />
+                <DashboardHeader showAccount={false} />
                 <main className="w-full h-full">{children}</main>
             </SidebarInset>
         </SidebarProvider>

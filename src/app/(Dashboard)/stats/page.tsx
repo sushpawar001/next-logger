@@ -1,61 +1,69 @@
 "use client";
-import React, { useEffect, useState, useMemo } from "react";
+import { useMemo, useState } from "react";
+import Link from "next/link";
+import { ArrowDown, ArrowRight, ArrowUp, Check, Info, Loader2 } from "lucide-react";
 import { useEntries, useEntryRange } from "@/hooks/queries/useEntries";
 import { EMPTY_ROWS } from "@/lib/query/keys";
-import { mean, median, mode, min, max, sum } from "mathjs";
 import { glucose, weight, insulin } from "@/types/models";
-import { getDailyInsulinValues, getHba1cValue } from "@/helpers/statsHelpers";
-import { filterByTags } from "@/helpers/tagFilterHelpers";
-import { FaChartLine, FaInfoCircle } from "react-icons/fa";
-import { LuInfo } from "react-icons/lu";
-import Link from "next/link";
-import { set } from "mongoose";
-import { ChartLine, Droplets } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { BarChart3, TrendingUp, Loader2 } from "lucide-react";
-import { StatsTableCard } from "@/components/StatsTableCard";
+    countDistinctDays,
+    getDailyInsulinValues,
+    getHba1cPrecise,
+    summarize,
+} from "@/helpers/statsHelpers";
+import { timeInRange } from "@/helpers/glucoseStatus";
+import { filterByTags } from "@/helpers/tagFilterHelpers";
+import { GLUCOSE_TARGET } from "@/constants/constants";
+import { StatsTableCard, type StatRow } from "@/components/StatsTableCard";
+import DataPeriodSelectCard, { ALL_DAYS } from "@/components/DataPeriodSelectCard";
 import TagFilterCard from "@/components/TagFilterCard";
+import { SERIES } from "@/components/Charts/RechartComponents/chartTheme";
+import { Eyebrow, PageHeader, Panel, PanelHead, PanelTitle } from "@/components/app-ui/layout";
+import { Reading, Stat, TimeInRangeBar } from "@/components/app-ui/data";
 
-interface statsObjType {
-    mean: number;
-    median: number;
-    mode: number[];
-    min: number;
-    max: number;
-    sum?: number;
-    dailyAvg?: number;
+/** Roughly three months of readings before an HbA1c estimate means much. */
+const HBA1C_DAYS_NEEDED = 90;
+
+function periodPhrase(days: number) {
+    if (days >= ALL_DAYS) return "All time";
+    if (days === 365) return "The last year";
+    return `The last ${days} days`;
 }
-const statsObj = {
-    mean: 0,
-    median: 0,
-    mode: [0],
-    min: 0,
-    max: 0,
-};
 
-const daysOfDataOptions = [
-    { value: 7, label: "7 days" },
-    { value: 14, label: "14 days" },
-    { value: 30, label: "30 days" },
-    { value: 90, label: "90 days" },
-    { value: 365, label: "365 days" },
-    { value: 365 * 100, label: "All" },
-];
+function TirRow({
+    label,
+    split,
+    count,
+}: {
+    label: string;
+    split: ReturnType<typeof timeInRange>;
+    count: number;
+}) {
+    return (
+        <div>
+            <div className="flex justify-between text-[13px]">
+                <span className="text-brand-muted">{label}</span>
+                <strong className="text-[15px] tabular-nums">
+                    {count > 0 ? `${split.in}%` : "—"}
+                </strong>
+            </div>
+            <TimeInRangeBar
+                split={count > 0 ? split : { low: 0, in: 0, high: 0 }}
+                showLegend={false}
+                className="mt-2"
+            />
+        </div>
+    );
+}
+
 export default function Stats() {
     const [daysOfData, setDaysOfData] = useState(90);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-    // Same three requests as the Promise.all this replaces. The glucose and
-    // weight ranges carry the current and preceding window together, which is
-    // what the period-over-period figures below compare.
+    // Same three requests as before. The glucose and weight ranges carry the
+    // current and preceding window together, which is what the
+    // period-over-period figures below compare. Insulin has no /get-range/,
+    // so it is shown for the current period only.
     const glucoseRange = useEntryRange<glucose>("glucose", daysOfData);
     const weightRange = useEntryRange<weight>("weight", daysOfData);
     const insulinQuery = useEntries<insulin>("insulin", daysOfData);
@@ -68,313 +76,278 @@ export default function Stats() {
 
     const isLoading =
         glucoseRange.isPending || weightRange.isPending || insulinQuery.isPending;
-    const [glucoseStats, setGlucoseStats] = useState<statsObjType>(statsObj);
-    const [estHbA1c, setEstHbA1c] = useState(0);
-    const [riskLevel, setRiskLevel] = useState("normal");
-    const [riskText, setRiskText] = useState("Normal");
 
-    const [glucoseStatsOld, setGlucoseStatsOld] =
-        useState<statsObjType>(statsObj);
+    // Encrypted values can't be aggregated in MongoDB, so all of this is JS.
+    const stats = useMemo(() => {
+        const g = filterByTags(glucoseData, selectedTags);
+        const gOld = filterByTags(glucoseDataOld, selectedTags);
+        const w = filterByTags(weightData, selectedTags);
+        const wOld = filterByTags(weightDataOld, selectedTags);
+        const ins = filterByTags(insulinData, selectedTags);
 
-    const [weightStats, setWeightStats] = useState<statsObjType>(statsObj);
-    const [weightStatsOld, setWeightStatsOld] =
-        useState<statsObjType>(statsObj);
+        const gValues = g.map((d) => d.value);
+        const gOldValues = gOld.map((d) => d.value);
 
-    const [insulinStats, setInsulinStats] = useState<{
-        [key: string]: statsObjType;
-    }>({});
-
-    const changeDaysOfData = (value: string) => {
-        console.log(value);
-        const daysInput = value;
-        setDaysOfData(parseInt(daysInput));
-    };
-
-    // Filter data based on selected tags using useMemo to prevent infinite loops
-    const filteredGlucoseData = useMemo(
-        () => filterByTags(glucoseData, selectedTags),
-        [glucoseData, selectedTags]
-    );
-    const filteredGlucoseDataOld = useMemo(
-        () => filterByTags(glucoseDataOld, selectedTags),
-        [glucoseDataOld, selectedTags]
-    );
-    const filteredWeightData = useMemo(
-        () => filterByTags(weightData, selectedTags),
-        [weightData, selectedTags]
-    );
-    const filteredWeightDataOld = useMemo(
-        () => filterByTags(weightDataOld, selectedTags),
-        [weightDataOld, selectedTags]
-    );
-    const filteredInsulinData = useMemo(
-        () => filterByTags(insulinData, selectedTags),
-        [insulinData, selectedTags]
-    );
-
-    useEffect(() => {
-        if (filteredGlucoseData.length > 0) {
-            const glucoseArr = filteredGlucoseData.map((data) => data.value);
-
-            setGlucoseStats({
-                mean: mean(glucoseArr),
-                median: median(glucoseArr),
-                mode: mode(glucoseArr),
-                min: min(glucoseArr),
-                max: max(glucoseArr),
-            });
-
-            const hba1c = getHba1cValue(mean(glucoseArr));
-            setEstHbA1c(hba1c);
-
-            if (hba1c >= 8.5) {
-                setRiskLevel("high");
-                setRiskText("High Risk");
-            } else if (hba1c >= 7) {
-                setRiskLevel("moderate");
-                setRiskText("Moderate Risk");
-            }
-        } else {
-            setGlucoseStats(statsObj);
+        const byType = new Map<string, insulin[]>();
+        for (const row of ins) {
+            byType.set(row.name, [...(byType.get(row.name) ?? []), row]);
         }
-    }, [filteredGlucoseData]);
+        const dailyAvg = (rows: insulin[]) =>
+            summarize(getDailyInsulinValues(rows)).avg;
 
-    useEffect(() => {
-        if (filteredWeightData.length > 0) {
-            const weightArr = filteredWeightData.map((data) => data.value);
+        return {
+            glucose: summarize(gValues),
+            glucoseOld: summarize(gOldValues),
+            tir: timeInRange(gValues),
+            tirOld: timeInRange(gOldValues),
+            glucoseDays: countDistinctDays(g),
+            weight: summarize(w.map((d) => d.value)),
+            weightOld: summarize(wOld.map((d) => d.value)),
+            insulinTypes: [...byType.entries()].map(([name, rows]) => ({
+                name,
+                perDay: dailyAvg(rows),
+            })),
+            insulinTotalPerDay: ins.length ? dailyAvg(ins) : null,
+        };
+    }, [
+        glucoseData,
+        glucoseDataOld,
+        weightData,
+        weightDataOld,
+        insulinData,
+        selectedTags,
+    ]);
 
-            setWeightStats({
-                mean: mean(weightArr),
-                median: median(weightArr),
-                mode: mode(weightArr),
-                min: min(weightArr),
-                max: max(weightArr),
-            });
-        } else {
-            setWeightStats(statsObj);
-        }
-    }, [filteredWeightData]);
+    const hasGlucose = stats.glucose.count > 0;
+    const hasOldGlucose = stats.glucoseOld.count > 0;
+    const hba1c = hasGlucose ? getHba1cPrecise(stats.glucose.avg) : null;
+    const daysCollected = Math.min(stats.glucoseDays, HBA1C_DAYS_NEEDED);
+    const daysToGo = HBA1C_DAYS_NEEDED - daysCollected;
+    const period = periodPhrase(daysOfData);
+    const oldOrNull = (v: number | null) => (hasOldGlucose ? v : null);
 
-    useEffect(() => {
-        if (filteredInsulinData.length > 0) {
-            const insulinsArrObj = {};
-            filteredInsulinData.forEach((insulin) => {
-                if (!(insulin.name in insulinsArrObj)) {
-                    insulinsArrObj[insulin.name] = [];
-                }
-                insulinsArrObj[insulin.name].push(insulin.units);
-            });
-            const insulinsStatsObj = {};
+    const glucoseRows: StatRow[] = [
+        { label: "Average", previous: stats.glucoseOld.avg, current: stats.glucose.avg },
+        { label: "Highest", previous: stats.glucoseOld.max, current: stats.glucose.max },
+        { label: "Lowest", previous: stats.glucoseOld.min, current: stats.glucose.min },
+        { label: "Readings", previous: stats.glucoseOld.count, current: stats.glucose.count },
+        {
+            label: "In range",
+            previous: oldOrNull(stats.tirOld.in),
+            current: hasGlucose ? stats.tir.in : null,
+            suffix: "%",
+            changeSuffix: " pts",
+        },
+        {
+            label: "Above range",
+            previous: oldOrNull(stats.tirOld.high),
+            current: hasGlucose ? stats.tir.high : null,
+            suffix: "%",
+            changeSuffix: " pts",
+        },
+        {
+            label: "Below range",
+            previous: oldOrNull(stats.tirOld.low),
+            current: hasGlucose ? stats.tir.low : null,
+            suffix: "%",
+            changeSuffix: " pts",
+        },
+    ];
 
-            Object.keys(insulinsArrObj).forEach((key) => {
-                const tempData = filteredInsulinData.filter(
-                    (data) => data.name === key
-                );
-                const daily = getDailyInsulinValues(tempData);
+    const weightRows: StatRow[] = [
+        { label: "Average", previous: stats.weightOld.avg, current: stats.weight.avg, decimals: 1 },
+        { label: "Highest", previous: stats.weightOld.max, current: stats.weight.max, decimals: 1 },
+        { label: "Lowest", previous: stats.weightOld.min, current: stats.weight.min, decimals: 1 },
+        { label: "Weigh-ins", previous: stats.weightOld.count, current: stats.weight.count },
+    ];
 
-                insulinsStatsObj[key] = {
-                    mean: mean(insulinsArrObj[key]),
-                    median: median(insulinsArrObj[key]),
-                    mode: mode(insulinsArrObj[key]),
-                    min: min(insulinsArrObj[key]),
-                    max: max(insulinsArrObj[key]),
-                    sum: sum(insulinsArrObj[key]),
-                    dailyAvg: mean(daily),
-                };
-            });
-
-            setInsulinStats(insulinsStatsObj);
-        } else {
-            setInsulinStats({});
-        }
-    }, [filteredInsulinData]);
-
-    useEffect(() => {
-        if (filteredGlucoseDataOld.length > 0) {
-            const glucoseArr = filteredGlucoseDataOld.map((data) => data.value);
-
-            setGlucoseStatsOld({
-                mean: mean(glucoseArr),
-                median: median(glucoseArr),
-                mode: mode(glucoseArr),
-                min: min(glucoseArr),
-                max: max(glucoseArr),
-            });
-        } else {
-            setGlucoseStatsOld(statsObj);
-        }
-    }, [filteredGlucoseDataOld]);
-
-    useEffect(() => {
-        if (filteredWeightDataOld.length > 0) {
-            const weightArr = filteredWeightDataOld.map((data) => data.value);
-
-            setWeightStatsOld({
-                mean: mean(weightArr),
-                median: median(weightArr),
-                mode: mode(weightArr),
-                min: min(weightArr),
-                max: max(weightArr),
-            });
-        } else {
-            setWeightStatsOld(statsObj);
-        }
-    }, [filteredWeightDataOld]);
-
-    if (isLoading === true) {
-        return (
-            <div className="w-full h-full flex justify-center items-center font-bold text-secondary text-xl gap-2">
-                <p>Loading</p>
-                <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-        );
-    }
+    const insulinRows: StatRow[] = [
+        ...stats.insulinTypes.map((t, idx) => ({
+            label: (
+                <span className="inline-flex items-center gap-2">
+                    <span
+                        aria-hidden="true"
+                        className="inline-block h-[18px] w-1.5 rounded-[3px]"
+                        style={{ background: SERIES[idx % SERIES.length] }}
+                    />
+                    {t.name}
+                </span>
+            ),
+            current: t.perDay,
+            decimals: 1,
+        })),
+        { label: "Total", current: stats.insulinTotalPerDay, decimals: 1 },
+    ];
 
     return (
-        <div className="h-full flex justify-center items-center bg-background py-5 px-5 lg:px-20">
-            <div className="w-full lg:w-fit grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                <Card className="border-border shadow-md transition-all duration-300 lg:col-span-2">
-                    <CardContent className="p-4">
-                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-                            <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-xl bg-primary">
-                                    <BarChart3 className="h-5 w-5 text-white" />
+        <>
+            <PageHeader
+                title="Stats"
+                subtitle="This period compared with the one before it."
+                actions={
+                    <DataPeriodSelectCard
+                        daysOfData={daysOfData}
+                        changeDaysOfData={(e) => setDaysOfData(parseInt(e.target.value))}
+                    />
+                }
+            />
+
+            <TagFilterCard selectedTags={selectedTags} onTagsChange={setSelectedTags} />
+
+            {isLoading ? (
+                <div className="grid h-64 place-items-center" role="status">
+                    <Loader2 className="h-6 w-6 animate-spin text-brand-muted" />
+                    <span className="sr-only">Loading</span>
+                </div>
+            ) : (
+                <>
+                    <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-5 lg:grid-cols-12 lg:gap-5">
+                        <Panel aria-labelledby="a1c-label" className="lg:col-span-8">
+                            <div className="grid h-full grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+                                <div className="flex flex-col pb-5 lg:pr-7 lg:pb-0">
+                                    <Eyebrow id="a1c-label">Estimated HbA1c</Eyebrow>
+                                    <Reading
+                                        value={hba1c ?? "—"}
+                                        unit={hba1c !== null ? "%" : undefined}
+                                        size="lg"
+                                        className="mt-4"
+                                    />
+                                    <p className="mt-4 text-sm">
+                                        {hasGlucose
+                                            ? `Based on your average glucose of ${Math.round(stats.glucose.avg)} mg/dL.`
+                                            : "Log glucose readings to see an estimate."}
+                                    </p>
+                                    <p className="mt-1 text-[13px] text-brand-muted">
+                                        It becomes reliable after about 3 months of
+                                        readings.
+                                    </p>
                                 </div>
-                                <div>
-                                    <h1 className="text-lg font-bold text-gray-900">
-                                        Analytics Overview
-                                    </h1>
-                                    <p className="text-gray-600 lg:mt-1 text-sm">
-                                        Track your health metrics over time
+                                <div className="flex flex-col border-t border-border pt-5 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-7">
+                                    <Stat label="Data collected">
+                                        <Reading
+                                            value={daysCollected}
+                                            unit={`of ${HBA1C_DAYS_NEEDED} days`}
+                                            size="sm"
+                                        />
+                                    </Stat>
+                                    <div
+                                        className="mt-4 h-2.5 overflow-hidden rounded-[5px] bg-brand-oat"
+                                        role="progressbar"
+                                        aria-label="Days of data"
+                                        aria-valuemin={0}
+                                        aria-valuemax={HBA1C_DAYS_NEEDED}
+                                        aria-valuenow={daysCollected}
+                                    >
+                                        <span
+                                            className="block h-full rounded-[5px] bg-brand-aubergine"
+                                            style={{
+                                                width: `${(daysCollected / HBA1C_DAYS_NEEDED) * 100}%`,
+                                            }}
+                                        />
+                                    </div>
+                                    <p className="mt-3 text-[13px] text-brand-muted">
+                                        {daysToGo > 0
+                                            ? daysOfData < HBA1C_DAYS_NEEDED
+                                                ? "Days with readings in this period. Choose 90 days or more to see the full picture."
+                                                : `Keep logging for ${daysToGo} more ${daysToGo === 1 ? "day" : "days"}.`
+                                            : "Enough data for a steadier estimate."}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 w-full lg:w-fit">
-                                <Link href="/charts">
-                                    <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-lg">
-                                        <TrendingUp className="h-4 w-4 mr-2" />
-                                        See Charts
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </Panel>
 
-                <div className="lg:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
-                    <div className="bg-white p-4 rounded-lg border border-border transition-all duration-300 shadow-md flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 rounded-lg bg-primary">
-                                <BarChart3 className="h-4 w-4 text-white" />
+                        <Panel aria-labelledby="tir-title" className="lg:col-span-4">
+                            <PanelHead>
+                                <PanelTitle id="tir-title">Time in range</PanelTitle>
+                            </PanelHead>
+                            <div className="space-y-4">
+                                <TirRow
+                                    label="This period"
+                                    split={stats.tir}
+                                    count={stats.glucose.count}
+                                />
+                                <TirRow
+                                    label="Previous period"
+                                    split={stats.tirOld}
+                                    count={stats.glucoseOld.count}
+                                />
                             </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-900">
-                                    Data Period
-                                </h3>
-                                <p className="text-sm text-gray-500">
-                                    Select time range for analysis
-                                </p>
+                            <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1.5 text-xs font-semibold">
+                                <span className="inline-flex items-center gap-1 text-status-low">
+                                    <ArrowDown className="h-[13px] w-[13px]" strokeWidth={2.8} aria-hidden="true" />
+                                    Low
+                                </span>
+                                <span className="inline-flex items-center gap-1 text-status-in">
+                                    <Check className="h-[13px] w-[13px]" strokeWidth={2.8} aria-hidden="true" />
+                                    In range
+                                </span>
+                                <span className="inline-flex items-center gap-1 text-status-high">
+                                    <ArrowUp className="h-[13px] w-[13px]" strokeWidth={2.8} aria-hidden="true" />
+                                    High
+                                </span>
                             </div>
-                        </div>
-                        <Select
-                            value={daysOfData.toString()}
-                            onValueChange={changeDaysOfData}
-                        >
-                            <SelectTrigger className="w-32 border-border focus:border-primary focus:ring-ring bg-white">
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {daysOfDataOptions.map((option) => (
-                                    <SelectItem
-                                        key={option.value}
-                                        value={option.value.toString()}
-                                    >
-                                        {option.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <TagFilterCard
-                        selectedTags={selectedTags}
-                        onTagsChange={setSelectedTags}
-                        className=""
-                    />
-                </div>
-                <div className="bg-white border border-border transition-all duration-300 shadow-md lg:col-span-2 rounded-lg lg:flex gap-1">
-                    <div
-                        className={`w-full lg:w-fit p-2 xl:p-4 rounded-t-lg lg:rounded-l-lg lg:rounded-tr-none  ${
-                            riskLevel === "high"
-                                ? "bg-red-50 text-red-900"
-                                : riskLevel === "moderate"
-                                ? "bg-amber-50 text-amber-900"
-                                : "bg-green-50 text-green-900"
-                        }`}
-                    >
-                        <div className="flex gap-2 font-semibold">
-                            <h2 className="text-sm xl:text-base">
-                                Estimated HbA1c
-                            </h2>
-                            <p
-                                className={`text-xs my-auto px-3 py-0.5 rounded-full ${
-                                    riskLevel === "high"
-                                        ? "bg-red-100 text-red-900"
-                                        : riskLevel === "moderate"
-                                        ? "bg-amber-100 text-amber-900"
-                                        : "bg-green-100 text-green-900"
-                                }`}
-                            >
-                                {riskText}
+                            <p className="mt-2 text-xs text-brand-muted">
+                                Target {GLUCOSE_TARGET.low}–{GLUCOSE_TARGET.high} mg/dL
                             </p>
+                        </Panel>
+                    </div>
+
+                    <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-5 lg:grid-cols-12 lg:gap-5">
+                        <div className="flex flex-col gap-4 lg:col-span-8 lg:gap-5">
+                            <StatsTableCard
+                                title="Glucose"
+                                subtitle={`${period} compared with the period before · values in mg/dL`}
+                                rows={glucoseRows}
+                            />
+
+                            <Panel
+                                as="aside"
+                                aria-label="About the HbA1c estimate"
+                                className="flex gap-3.5"
+                            >
+                                <Info
+                                    className="mt-0.5 h-5 w-5 flex-none text-brand-aubergine"
+                                    aria-hidden="true"
+                                />
+                                <div>
+                                    <strong>
+                                        Estimated HbA1c is not a lab result.
+                                    </strong>
+                                    <p className="mt-1 text-[13px] text-brand-muted">
+                                        It is based on your average glucose levels.
+                                        Share your exported data with your care team
+                                        and compare it with your next blood test.
+                                    </p>
+                                    <Link
+                                        href="/profile#export"
+                                        className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand-aubergine no-underline"
+                                    >
+                                        Export data
+                                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                                    </Link>
+                                </div>
+                            </Panel>
                         </div>
-                        <h2 className="text-xl xl:text-3xl font-bold ">
-                            {estHbA1c}%
-                        </h2>
+
+                        <div className="flex flex-col gap-4 lg:col-span-4 lg:gap-5">
+                            <StatsTableCard
+                                title="Weight"
+                                rows={weightRows}
+                                previousLabel="Before"
+                                currentLabel="Now"
+                                note="All values in kg."
+                            />
+                            <StatsTableCard
+                                title="Insulin"
+                                rows={insulinRows}
+                                metricLabel="Per day"
+                                currentLabel="Now"
+                                note="Average units per day on days with a dose."
+                            />
+                        </div>
                     </div>
-
-                    <div className="w-full lg:w-3/4 m-auto p-3 xl:p-4 text-gray-600 flex gap-2.5">
-                        <LuInfo className="m-auto text-xl" />
-                        <p className="text-xs lg:text-sm">
-                            Estimated HbA1c is based on your average glucose
-                            levels. Minimum 3 months of data required for better
-                            estimates.
-                        </p>
-                    </div>
-                </div>
-                <StatsTableCard
-                    title="Glucose Statistics"
-                    icon={Droplets}
-                    gradient="bg-gradient-to-br from-blue-500 to-blue-600"
-                    newData={glucoseStats}
-                    oldData={
-                        filteredGlucoseDataOld.length > 0
-                            ? glucoseStatsOld
-                            : null
-                    }
-                />
-
-                <StatsTableCard
-                    title="Weight Statistics"
-                    icon={Droplets}
-                    gradient="bg-gradient-to-br from-orange-500 to-orange-600"
-                    newData={weightStats}
-                    oldData={
-                        filteredWeightDataOld.length > 0 ? weightStatsOld : null
-                    }
-                />
-
-                {filteredInsulinData.length > 0
-                    ? Object.entries(insulinStats).map((data, index) => (
-                          <StatsTableCard
-                              key={data[0]}
-                              title={`Insulin: ${data[0]}`}
-                              icon={Droplets}
-                              gradient="bg-gradient-to-br from-green-500 to-green-600"
-                              newData={data[1]}
-                          />
-                      ))
-                    : ""}
-            </div>
-        </div>
+                </>
+            )}
+        </>
     );
 }

@@ -1,13 +1,28 @@
 "use client";
-import { entryTags } from "@/constants/constants";
+import { entryTags, GLUCOSE_TARGET } from "@/constants/constants";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
-import { Droplets, Loader2 } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 import { useEffect, useRef, useState } from "react";
+import {
+    AppButton,
+    Field,
+    SelectInput,
+    TextInput,
+} from "@/components/app-ui/controls";
+import { StatusBadge } from "@/components/app-ui/data";
 
-export default function GlucoseAdd(props) {
+/**
+ * Log one glucose reading. Rendered bare (no card) so it sits inside the
+ * "Log glucose" dialog; the dialog supplies the title.
+ */
+export default function GlucoseAdd(props: {
+    autoFocus?: boolean;
+    /** Called after a successful save, e.g. to close the dialog. */
+    onSaved?: () => void;
+}) {
     const valueInputRef = useRef<HTMLInputElement>(null);
 
     // Focused when arriving from a PWA manifest shortcut (?quick=1). Driven by an
@@ -32,12 +47,14 @@ export default function GlucoseAdd(props) {
     const isSubmitting = addEntry.isPending;
     const [selectedDate, setSelectedDate] = useState(new Date());
 
+    const reading = parseFloat(glucose);
+
     const changeGlucose = (event: { target: { value: string } }): void => {
         setGlucose(event.target.value);
     };
 
     const handleTagChange = (event: { target: { value: string } }) => {
-        setSelectTag(event.target.value);
+        setSelectTag(event.target.value || null);
     };
 
     const handleDateChange = (event: { target: { value: string } }) => {
@@ -59,89 +76,64 @@ export default function GlucoseAdd(props) {
             setSendTime(false);
             setSelectTag(null);
             setSelectedDate(new Date());
+            props.onSaved?.();
         } catch (error) {
             notify(mutationErrorMessage(error), "error");
         }
     };
     return (
-        <form
-            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-border transition-all duration-300 h-full shadow-md"
-            onSubmit={submitForm}
-        >
-            <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
-                <div
-                    className={`p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600`}
-                >
-                    <Droplets className="h-4 w-4 text-white" />
-                </div>
-                Blood Glucose
+        <form className="space-y-4" onSubmit={submitForm}>
+            <Field
+                label="Glucose reading"
+                htmlFor="glucose"
+                help={`Your target range is ${GLUCOSE_TARGET.low}–${GLUCOSE_TARGET.high} mg/dL.`}
+            >
+                <TextInput
+                    type="number"
+                    id="glucose"
+                    inputMode="decimal"
+                    ref={valueInputRef}
+                    placeholder="98"
+                    value={glucose}
+                    onChange={changeGlucose}
+                    suffix="mg/dL"
+                    required
+                />
+            </Field>
+            <div className="min-h-6" aria-live="polite">
+                {Number.isFinite(reading) && <StatusBadge value={reading} />}
             </div>
-            <div className="flex flex-col space-y-3">
-                <div className="space-y-2">
-                    <label
-                        className="block text-sm leading-6 font-medium text-gray-700"
-                        htmlFor="glucose"
-                    >
-                        Glucose Level
-                    </label>
-                    <input
-                        type="number"
-                        id="glucose"
-                        ref={valueInputRef}
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
-                        placeholder="98 mg/dl"
-                        value={glucose}
-                        onChange={changeGlucose}
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label
-                        className="block text-sm leading-6 font-medium text-gray-700"
-                        htmlFor="glucoseDate"
-                    >
-                        Date & Time
-                    </label>
-                    <input
-                        type="datetime-local"
-                        id="glucoseDate"
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 bg-white border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
-                        value={DatetimeLocalFormat(selectedDate)}
-                        // value={selectedDate}
-                        onChange={handleDateChange}
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label
-                        className="block text-sm leading-6 font-medium text-gray-700"
-                        htmlFor="glucose_tag"
-                    >
-                        Measurement Tag
-                    </label>
-                    <select
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field label="Tag" htmlFor="glucose_tag">
+                    <SelectInput
                         id="glucose_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-hidden"
                     >
                         <option value="">Select Tag</option>
                         {entryTags.map((data) => (
                             <option key={data}>{data}</option>
                         ))}
-                    </select>
-                </div>
-                <button
-                    type="submit"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
-                    ) : (
-                        "Submit"
-                    )}
-                </button>
+                    </SelectInput>
+                </Field>
+                <Field label="Date & time" htmlFor="glucoseDate">
+                    <TextInput
+                        type="datetime-local"
+                        id="glucoseDate"
+                        value={DatetimeLocalFormat(selectedDate)}
+                        onChange={handleDateChange}
+                        className="text-[15px]"
+                    />
+                </Field>
             </div>
+            <AppButton type="submit" size="lg" block disabled={isSubmitting}>
+                {isSubmitting ? (
+                    <Loader2 className="animate-spin" aria-hidden="true" />
+                ) : (
+                    <Check aria-hidden="true" />
+                )}
+                Save reading
+            </AppButton>
         </form>
     );
 }

@@ -1,9 +1,18 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Crown, Calendar, Zap, AlertTriangle } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
+import { Eyebrow } from "@/components/app-ui/layout";
+import { AppButton } from "@/components/app-ui/controls";
+import { cn } from "@/lib/utils";
+
+const TRIAL_DAYS = 30;
+
+/** Kept in step with PREMIUM_FEATURES on the homepage pricing section. */
+const PREMIUM_FEATURES = [
+    "Charts and stats for 90 days, a year or all time",
+    "Filter readings by tag",
+    "Everything in Free, including CSV, JSON and PDF exports",
+];
 
 interface SubscriptionCardProps {
     subscriptionPlan: "trial" | "premium" | "free";
@@ -18,116 +27,86 @@ export function SubscriptionCard({
     subscriptionEndDate,
     className,
 }: SubscriptionCardProps) {
-    const getPlanIcon = () => {
-        switch (subscriptionPlan) {
-            case "premium":
-                return <Crown className="h-5 w-5 text-white" />;
-            case "trial":
-                return <Zap className="h-5 w-5 text-white" />;
-            default:
-                return <Zap className="h-5 w-5 text-white" />;
-        }
-    };
+    const left = Math.max(0, remainingDays ?? 0);
+    const isPremium = subscriptionPlan === "premium";
+    const isTrial = subscriptionPlan === "trial";
+    const trialEnded = isTrial && left === 0;
 
-    const getPlanGradient = () => {
-        switch (subscriptionPlan) {
-            case "premium":
-                return "bg-gradient-to-br from-yellow-500 to-yellow-600";
-            case "trial":
-                return "bg-gradient-to-br from-blue-500 to-blue-600";
-            default:
-                return "bg-gradient-to-br from-gray-500 to-gray-600";
-        }
-    };
-
-    const getPlanBadgeColor = () => {
-        switch (subscriptionPlan) {
-            case "premium":
-                return "bg-yellow-100 text-yellow-800 border-yellow-200";
-            case "trial":
-                return "bg-blue-100 text-blue-800 border-blue-200";
-            default:
-                return "bg-gray-100 text-gray-800 border-gray-200";
-        }
-    };
-
-    const getUrgencyColor = () => {
-        if (remainingDays <= 3) return "text-red-600";
-        if (remainingDays <= 7) return "text-orange-600";
-        return "text-gray-900";
-    };
-
-    const getButtonText = () => {
-        if (subscriptionPlan === "trial" || subscriptionPlan === "free")
-            return "Upgrade to Premium";
-        if (subscriptionPlan === "premium") return "Renew Premium";
-    };
+    const planName = isPremium
+        ? "Premium"
+        : isTrial
+          ? trialEnded
+              ? "Trial ended"
+              : "Free trial"
+          : "Free";
+    const used = Math.min(TRIAL_DAYS, TRIAL_DAYS - left);
 
     return (
-        <Card
-            className={`border-border transition-all duration-300 ${className}`}
+        <section
+            aria-labelledby="plan-title"
+            className={cn(
+                "min-w-0 overflow-hidden rounded-2xl border border-border bg-white",
+                className
+            )}
         >
-            <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-3 text-lg font-semibold text-gray-900">
-                    <div className={`p-2 rounded-lg ${getPlanGradient()}`}>
-                        {getPlanIcon()}
-                    </div>
-                    Subscription Status
-                </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                {/* Plan Badge and Status */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <Badge className={getPlanBadgeColor() + " w-fit"}>
-                        {subscriptionPlan?.charAt(0).toUpperCase() +
-                            subscriptionPlan?.slice(1)}{" "}
-                        Plan
-                    </Badge>
-                    {remainingDays <= 7 && subscriptionPlan !== "free" && (
-                        <Badge className="bg-red-100 text-red-800 border-red-200 w-fit">
-                            Expires Soon
-                        </Badge>
+            <div className="bg-brand-oat p-5 lg:p-6">
+                <Eyebrow className="text-brand-ink">Your plan</Eyebrow>
+                <div className="mt-1.5 flex items-baseline justify-between gap-3">
+                    <h2 id="plan-title" className="text-2xl font-semibold text-brand-ink">
+                        {planName}
+                    </h2>
+                    {subscriptionPlan !== "free" && !trialEnded && (
+                        <span className="text-[13px] text-brand-ink">
+                            {left} {left === 1 ? "day" : "days"} left
+                        </span>
                     )}
                 </div>
-
-                {/* Days Remaining and Expiry */}
-                {subscriptionPlan !== "free" && (
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 border border-border rounded-lg">
-                        <div className="flex items-center gap-3">
-                            <Calendar className="h-5 w-5 text-primary shrink-0" />
-                            <div>
-                                <div
-                                    className={`text-lg md:text-2xl font-bold ${getUrgencyColor()}`}
-                                >
-                                    {remainingDays} days
-                                </div>
-                                <div className="text-sm text-gray-600">
-                                    remaining
-                                </div>
-                            </div>
-                        </div>
-                        <div className="text-left lg:text-right">
-                            <div className="text-sm text-gray-600">
-                                {subscriptionPlan === "premium"
-                                    ? "Renews"
-                                    : "Expires"}{" "}
-                                on
-                            </div>
-                            <div className="font-medium text-gray-900">
-                                {subscriptionEndDate}
-                            </div>
-                        </div>
+                {isTrial && (
+                    <div
+                        className="mt-3 h-2 overflow-hidden rounded-full bg-white"
+                        role="progressbar"
+                        aria-label="Trial used"
+                        aria-valuemin={0}
+                        aria-valuemax={TRIAL_DAYS}
+                        aria-valuenow={used}
+                    >
+                        <span
+                            className="block h-full rounded-full bg-brand-aubergine"
+                            style={{ width: `${(used / TRIAL_DAYS) * 100}%` }}
+                        />
                     </div>
                 )}
-
-                {/* Action Button */}
-                <div className="flex justify-stretch sm:justify-end">
-                    <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-medium py-2.5 px-8 rounded-lg transition-all duration-300 hover:shadow-lg">
-                        <Crown className="h-4 w-4 mr-2" />
-                        <span className="sm:inline">{getButtonText()}</span>
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
+                {subscriptionPlan !== "free" && (
+                    <p className="mt-3 text-[13px] text-brand-ink">
+                        {isPremium ? "Renews" : trialEnded ? "Ended" : "Ends"} on{" "}
+                        {subscriptionEndDate}
+                    </p>
+                )}
+            </div>
+            <div className="p-5 lg:px-6 lg:pb-6">
+                <p className="mb-2.5 text-sm font-semibold text-brand-ink">
+                    {isPremium || (isTrial && !trialEnded)
+                        ? "Premium keeps everything you have now:"
+                        : "Premium adds:"}
+                </p>
+                <ul className="grid gap-2 text-sm text-brand-ink">
+                    {PREMIUM_FEATURES.map((f) => (
+                        <li key={f} className="flex items-start gap-2">
+                            <Check
+                                className="mt-0.5 h-4 w-4 flex-none text-brand-aubergine"
+                                strokeWidth={2.6}
+                                aria-hidden="true"
+                            />
+                            {f}
+                        </li>
+                    ))}
+                </ul>
+                {/* The page's one primary action. Payments are not wired up yet. */}
+                <AppButton size="lg" block className="mt-5">
+                    <Sparkles aria-hidden="true" />
+                    {isPremium ? "Renew Premium" : "Upgrade to Premium"}
+                </AppButton>
+            </div>
+        </section>
     );
 }

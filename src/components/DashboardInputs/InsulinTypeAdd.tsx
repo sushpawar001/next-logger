@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import notify from "@/helpers/notify";
 import axios from "axios";
+import { AppButton, Field, SelectInput, TextInput } from "@/components/app-ui/controls";
 
 type InsulinType = {
     _id: string;
@@ -93,70 +94,50 @@ export default function InsulinTypeAdd(props: {
     }, []);
 
     return (
-        <>
-            <form
-                className="max-w-full mx-auto p-5 md:p-7 rounded-lg bg-white shadow-md mb-3 md:mb-5"
-                onSubmit={submitUserInsulin}
-            >
-                <label
-                    htmlFor="insulinType"
-                    className="block mb-2 text-sm font-medium text-secondary"
-                >
-                    Add insulin to your profile
-                </label>
-                <div className="flex flex-col md:flex-row gap-2">
-                    <select
-                        id="insulinType"
-                        value={insulinType}
-                        onChange={changeInsulinType}
-                        className="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5 invalid:text-gray-400"
-                        required
-                    >
-                        <option value="" disabled>
-                            Select Type
-                        </option>
-                        {allInsulinType.map((data) => (
-                            <option key={data._id} value={data.name}>
-                                {data.name}
+        <div className="space-y-5">
+            <form onSubmit={submitUserInsulin}>
+                <Field label="Add insulin to your profile" htmlFor="insulinType">
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                        <SelectInput
+                            id="insulinType"
+                            value={insulinType}
+                            onChange={changeInsulinType}
+                            shellClassName="flex-1"
+                            required
+                        >
+                            <option value="" disabled>
+                                Select Type
                             </option>
-                        ))}
-                    </select>
-                    <button
-                        type="submit"
-                        className="text-primary-foreground bg-primary hover:bg-primary-dark focus:ring-3 focus:outline-hidden focus:ring-primary-ring font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300"
-                    >
-                        Submit
-                    </button>
-                </div>
+                            {allInsulinType.map((data) => (
+                                <option key={data._id} value={data.name}>
+                                    {data.name}
+                                </option>
+                            ))}
+                        </SelectInput>
+                        <AppButton type="submit" size="field">
+                            Add
+                        </AppButton>
+                    </div>
+                </Field>
             </form>
-            <form
-                className="max-w-full mx-auto p-5 md:p-7 rounded-lg bg-white shadow-md"
-                onSubmit={submitNewInsulin}
-            >
-                <label
-                    htmlFor="newInsulinType"
-                    className="block mb-2 text-sm font-medium text-secondary"
-                >
-                    Add new insulin (if not available)
-                </label>
-                <div className="flex flex-col md:flex-row gap-2">
-                    <input
-                        type="text"
-                        id="newInsulinType"
-                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-ring focus:border-primary-ring block w-full p-2.5"
-                        placeholder="Actrapid"
-                        value={newInsulinType}
-                        onChange={changeNewInsulinType}
-                        required
-                    />
-                    <button
-                        type="submit"
-                        className="text-primary-foreground bg-primary hover:bg-primary-dark focus:ring-3 focus:outline-hidden focus:ring-primary-ring font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center transition duration-300"
-                    >
-                        Submit
-                    </button>
-                </div>
+            <form onSubmit={submitNewInsulin}>
+                <Field label="Add new insulin (if not available)" htmlFor="newInsulinType">
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                        <TextInput
+                            type="text"
+                            id="newInsulinType"
+                            placeholder="Actrapid"
+                            value={newInsulinType}
+                            onChange={changeNewInsulinType}
+                            shellClassName="flex-1"
+                            required
+                        />
+                        <AppButton type="submit" size="field" variant="secondary">
+                            Create
+                        </AppButton>
+                    </div>
+                </Field>
             </form>
-        </>
+        </div>
     );
 }

@@ -43,8 +43,10 @@ const urlsFor = (fragment: string) =>
 
 describe("cross-page request dedup", () => {
     /**
-     * Both default to 7 days, so /dashboard -> /glucose used to fetch the same
-     * payload twice. A staleTime-fresh entry now satisfies the second mount.
+     * /dashboard and /glucose both default to 7 days of glucose (and /dashboard
+     * and /weight to 30 days of weight), so navigating between them used to
+     * fetch the same payload twice. A staleTime-fresh entry now satisfies the
+     * second mount.
      */
     it("serves /glucose from the window /dashboard already fetched", async () => {
         // A single client, standing in for the one the (Dashboard) layout holds
@@ -65,7 +67,7 @@ describe("cross-page request dedup", () => {
         );
 
         expect(urlsFor("/api/glucose/get/7")).toHaveLength(1);
-        expect(urlsFor("/api/weight/get/7")).toHaveLength(1);
+        expect(urlsFor("/api/weight/get/30")).toHaveLength(1);
     });
 
     it("issues one request when two pages mount against the same window at once", async () => {
@@ -82,14 +84,14 @@ describe("cross-page request dedup", () => {
         );
 
         await waitFor(() =>
-            expect(urlsFor("/api/weight/get/7").length).toBeGreaterThan(0)
+            expect(urlsFor("/api/weight/get/30").length).toBeGreaterThan(0)
         );
         await waitFor(() =>
             expect(urlsFor("/api/glucose/get/7").length).toBeGreaterThan(0)
         );
 
         // In flight at the same moment: React Query collapses them to one.
-        expect(urlsFor("/api/weight/get/7")).toHaveLength(1);
+        expect(urlsFor("/api/weight/get/30")).toHaveLength(1);
     });
 
     it("refetches a window the cache has never seen", async () => {

@@ -91,30 +91,43 @@ const LIST_PAGES = [
         name: "glucose",
         Page: GlucosePage,
         endpoint: "/api/glucose/get/7",
+        otherPeriod: { label: "30 days", days: 30 },
         deleteEndpoint: "/api/glucose/delete/g1",
         rows: glucoseRows,
         sampleValue: /110/,
+        logLabel: "Log glucose",
+        saveLabel: /save reading/i,
+        tag: "Fasting",
     },
     {
         name: "weight",
         Page: WeightPage,
-        endpoint: "/api/weight/get/7",
+        // Weight opens on 30 days: a week of weigh-ins is mostly noise.
+        endpoint: "/api/weight/get/30",
+        otherPeriod: { label: "7 days", days: 7 },
         deleteEndpoint: "/api/weight/delete/w1",
         rows: weightRows,
         sampleValue: /72.4/,
+        logLabel: "Log weight",
+        saveLabel: /save weight/i,
+        tag: "Fasting",
     },
     {
         name: "insulin",
         Page: InsulinPage,
         endpoint: "/api/insulin/get/7",
+        otherPeriod: { label: "30 days", days: 30 },
         deleteEndpoint: "/api/insulin/delete/i1",
         rows: insulinRows,
         sampleValue: /12/,
+        logLabel: "Log dose",
+        saveLabel: /save dose/i,
+        tag: "Before meal",
     },
 ];
 
 describe.each(LIST_PAGES)("$name page", (p) => {
-    it("loads the last 7 days on mount", async () => {
+    it("loads its default period on mount", async () => {
         renderWithProviders(<p.Page />);
 
         await waitFor(() => expect(get).toHaveBeenCalledWith(p.endpoint));
@@ -132,24 +145,33 @@ describe.each(LIST_PAGES)("$name page", (p) => {
         const user = userEvent.setup();
         renderWithProviders(<p.Page />);
         await waitFor(() =>
-            expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0)
+            expect(screen.getAllByText(p.sampleValue).length).toBeGreaterThan(0)
         );
 
-        await user.selectOptions(screen.getAllByRole("combobox")[0], "30");
+        await user.click(
+            screen.getByRole("button", { name: p.otherPeriod.label })
+        );
 
         await waitFor(() =>
-            expect(get).toHaveBeenCalledWith(expect.stringContaining("/30"))
+            expect(get).toHaveBeenCalledWith(
+                expect.stringContaining(`/get/${p.otherPeriod.days}`)
+            )
         );
     });
 
-    it("renders an add form", async () => {
+    it("opens its add form from the header", async () => {
         renderWithProviders(<p.Page />);
 
-        await waitFor(() =>
-            expect(
-                screen.getAllByRole("button", { name: /submit/i }).length
-            ).toBeGreaterThan(0)
+        const user = userEvent.setup();
+        await user.click(
+            (await screen.findAllByRole("button", { name: p.logLabel }))[0]
         );
+
+        expect(
+            within(screen.getByRole("dialog")).getByRole("button", {
+                name: p.saveLabel,
+            })
+        ).toBeInTheDocument();
     });
 
     it("links each row to its edit page", async () => {
@@ -172,16 +194,13 @@ describe.each(LIST_PAGES)("$name page", (p) => {
             expect(screen.getAllByText(p.sampleValue).length).toBeGreaterThan(0)
         );
 
-        // The modal lives inside the row's action cell: trigger, then confirm.
-        const table = screen.getAllByRole("table")[0];
-        const rowButtons = within(table).getAllByRole("button");
-        await user.click(rowButtons[0]);
+        // Each row has a Delete trigger; the confirmation is a portalled dialog.
+        await user.click(screen.getAllByRole("button", { name: "Delete" })[0]);
         await user.click(
-            within(table).getAllByRole("button", { name: /^delete$/i }).slice(-1)[0]
+            within(screen.getByRole("dialog")).getByRole("button", { name: "Delete" })
         );
 
-        await waitFor(() => expect(del).toHaveBeenCalled());
-        expect(del.mock.calls[0][0]).toContain("/delete/");
+        await waitFor(() => expect(del).toHaveBeenCalledWith(p.deleteEndpoint));
     });
 
     it("still renders its form when the API returns a non-200", async () => {
@@ -189,11 +208,16 @@ describe.each(LIST_PAGES)("$name page", (p) => {
 
         renderWithProviders(<p.Page />);
 
-        await waitFor(() =>
-            expect(
-                screen.getAllByRole("button", { name: /submit/i }).length
-            ).toBeGreaterThan(0)
+        const user = userEvent.setup();
+        await user.click(
+            (await screen.findAllByRole("button", { name: p.logLabel }))[0]
         );
+
+        expect(
+            within(screen.getByRole("dialog")).getByRole("button", {
+                name: p.saveLabel,
+            })
+        ).toBeInTheDocument();
     });
 
     it("renders with no entries at all", async () => {
@@ -211,14 +235,15 @@ describe.each(LIST_PAGES)("$name page", (p) => {
             expect(screen.getAllByText(p.sampleValue).length).toBeGreaterThan(0)
         );
 
-        // The tag filter's toggle is the icon button in its own card.
-        const filterCard = screen
-            .getByText("Select tags to filter data")
-            .closest("div[class]")!.parentElement!.parentElement!;
-        await user.click(within(filterCard).getAllByRole("button").slice(-1)[0]);
-        await user.click(screen.getAllByRole("checkbox")[0]);
+        const chip = within(
+            screen.getByRole("group", { name: "Filter by tag" })
+        ).getByRole("button", { name: p.tag });
+        await user.click(chip);
 
-        expect(screen.getAllByRole("table").length).toBeGreaterThan(0);
+        expect(chip).toHaveAttribute("aria-pressed", "true");
+        // The matching entry stays listed. (Removed rows linger in jsdom, since
+        // auto-animate's exit never finishes, so absence isn't asserted.)
+        expect(screen.getAllByText(p.sampleValue).length).toBeGreaterThan(0);
     });
 });
 
@@ -231,13 +256,14 @@ describe("measurement page", () => {
         );
     });
 
-    it("renders every circumference column", async () => {
+    it("offers every circumference to chart", async () => {
         renderWithProviders(<MeasurementPage />);
 
-        await waitFor(() => expect(get).toHaveBeenCalled());
-        await waitFor(() =>
-            expect(screen.getAllByRole("table").length).toBeGreaterThan(0)
-        );
+        const strip = await screen.findByRole("group", {
+            name: "Choose a measurement to chart",
+        });
+
+        expect(within(strip).getAllByRole("button")).toHaveLength(7);
     });
 
     it("still renders when the API returns a non-200", async () => {
@@ -273,7 +299,9 @@ describe("charts page", () => {
         renderWithProviders(<ChartsPage />);
 
         await waitFor(() => expect(get).toHaveBeenCalled());
-        expect(screen.getAllByText(/filter by tags/i).length).toBeGreaterThan(0);
+        expect(
+            screen.getByRole("group", { name: "Filter by tag" })
+        ).toBeInTheDocument();
     });
 
     it("still renders when the API returns a non-200", async () => {
@@ -290,6 +318,23 @@ describe("dashboard page", () => {
         renderWithProviders(<DashboardPage />);
 
         await waitFor(() => expect(get).toHaveBeenCalled());
+        expect(screen.getByText("Latest glucose")).toBeInTheDocument();
+        expect(screen.getByText("Current weight")).toBeInTheDocument();
+    });
+
+    it("reads glucose and insulin at 7 days and weight at 30", async () => {
+        renderWithProviders(<DashboardPage />);
+
+        await waitFor(() => {
+            const urls = get.mock.calls.map((c) => String(c[0]));
+            expect(urls).toEqual(
+                expect.arrayContaining([
+                    "/api/glucose/get/7",
+                    "/api/insulin/get/7",
+                    "/api/weight/get/30",
+                ])
+            );
+        });
     });
 });
 
@@ -298,6 +343,17 @@ describe("load page", () => {
         const { container } = renderWithProviders(<LoadPage />);
 
         expect(container.textContent!.length).toBeGreaterThan(0);
+    });
+
+    it("titles the page and draws the setup, result and plate list", () => {
+        renderWithProviders(<LoadPage />);
+
+        expect(
+            screen.getByRole("heading", { level: 1, name: "Plate calculator" })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Your setup" })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Plate list" })).toBeInTheDocument();
+        expect(screen.getByRole("img", { name: /barbell loaded/i })).toBeInTheDocument();
     });
 });
 

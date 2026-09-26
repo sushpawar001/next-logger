@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, userEvent, waitFor } from "@/test/render";
+import { renderWithProviders, screen, userEvent, waitFor, within } from "@/test/render";
 import { rejectsWith } from "@/test/promises";
 
 vi.mock("axios");
@@ -91,6 +91,35 @@ describe("SubscriptionCard", () => {
         expect(container.textContent).toMatch(/Jan 31 2026/);
     });
 
+    it("makes Upgrade to Premium the card's action outside Premium", () => {
+        renderWithProviders(
+            <SubscriptionCard
+                subscriptionPlan="trial"
+                remainingDays={12}
+                subscriptionEndDate="Sat Jan 31 2026"
+            />
+        );
+
+        expect(
+            screen.getByRole("button", { name: /upgrade to premium/i })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("progressbar", { name: "Trial used" })
+        ).toHaveAttribute("aria-valuenow", "18");
+    });
+
+    it("says when the trial has ended", () => {
+        renderWithProviders(
+            <SubscriptionCard
+                subscriptionPlan="trial"
+                remainingDays={-3}
+                subscriptionEndDate="Sat Jan 01 2026"
+            />
+        );
+
+        expect(screen.getByRole("heading", { name: "Trial ended" })).toBeInTheDocument();
+    });
+
     it("handles an expired subscription", () => {
         const { container } = renderWithProviders(
             <SubscriptionCard
@@ -116,8 +145,7 @@ describe("DashboardPreferences", () => {
         renderWithProviders(<DashboardPreferences />);
         await waitFor(() => expect(getDashboardLayout).toHaveBeenCalled());
 
-        const select = screen.getAllByRole("combobox")[0];
-        await user.selectOptions(select, "fitness");
+        await user.click(screen.getByRole("radio", { name: /fitness/i }));
         await user.click(screen.getByRole("button", { name: /save|update/i }));
 
         await waitFor(() =>
@@ -149,6 +177,15 @@ describe("DashboardPreferences", () => {
 
         expect(submitBody).toContain("axios.post");
         expect(submitBody).not.toContain("catch");
+    });
+
+    it("offers Diabetes and Fitness as picture cards, checking the stored one", async () => {
+        renderWithProviders(<DashboardPreferences />);
+
+        await waitFor(() =>
+            expect(screen.getByRole("radio", { name: /diabetes/i })).toBeChecked()
+        );
+        expect(screen.getByRole("radio", { name: /fitness/i })).not.toBeChecked();
     });
 
     it("does not save when nothing changed", async () => {
@@ -230,6 +267,37 @@ describe("UserInsulins", () => {
         );
     });
 
+    it("removes a chip by its labelled button", async () => {
+        const user = userEvent.setup();
+        const setUserInsulins = vi.fn();
+        renderWithProviders(
+            <UserInsulins
+                allAvailableInsulins={insulins}
+                userInsulins={insulins}
+                setUserInsulins={setUserInsulins}
+            />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Remove Lantus" }));
+
+        expect(setUserInsulins).toHaveBeenCalledWith([insulins[1]]);
+    });
+
+    it("only offers insulins that are not already chosen", () => {
+        renderWithProviders(
+            <UserInsulins
+                allAvailableInsulins={insulins}
+                userInsulins={[insulins[0]]}
+                setUserInsulins={vi.fn()}
+            />
+        );
+
+        const options = Array.from(
+            (screen.getByLabelText("Add from the list") as HTMLSelectElement).options
+        ).map((o) => o.value);
+        expect(options).toEqual(["", "NovoRapid"]);
+    });
+
     it("adds an insulin from the available list", async () => {
         const user = userEvent.setup();
         const setUserInsulins = vi.fn();
@@ -244,7 +312,7 @@ describe("UserInsulins", () => {
         const select = screen.getAllByRole("combobox")[0];
         await user.selectOptions(select, "Lantus");
 
-        expect(select).toBeInTheDocument();
+        expect(setUserInsulins).toHaveBeenCalledWith([insulins[0]]);
     });
 });
 
@@ -289,7 +357,8 @@ describe("dashboards", () => {
         const urls = get.mock.calls.map((c) => c[0] as string).join(" ");
 
         expect(urls).toContain("/api/glucose/get/7");
-        expect(urls).toContain("/api/weight/get/7");
+        // The weight hero charts 30 days, the same window /weight opens on.
+        expect(urls).toContain("/api/weight/get/30");
     });
 
     it("FitnessDashboard loads measurements and weight", async () => {
@@ -452,6 +521,54 @@ describe("LoadCalc", () => {
         await user.type(inputs[0], "100");
 
         await waitFor(() => expect(container.textContent!.length).toBeGreaterThan(0));
+    });
+
+    it("shows the per-side plates and the total for a target", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<LoadCalc />);
+
+        const target = screen.getByLabelText("Target load");
+        await user.clear(target);
+        await user.type(target, "100");
+
+        // Robust mode: two 20s a side, 20 + 2 x 40 = 100.
+        expect(screen.getByText("20 + 20")).toBeInTheDocument();
+        expect(screen.getByText("100 kg total")).toBeInTheDocument();
+        expect(
+            screen.getByRole("img", { name: /barbell loaded with 20, 20 kg/i })
+        ).toBeInTheDocument();
+    });
+
+    it("switches to greedy mode", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<LoadCalc />);
+
+        const target = screen.getByLabelText("Target load");
+        await user.clear(target);
+        await user.type(target, "100");
+        await user.click(screen.getByRole("button", { name: "Greedy" }));
+
+        expect(screen.getByRole("button", { name: "Greedy" })).toHaveAttribute(
+            "aria-pressed",
+            "true"
+        );
+        expect(screen.getByText(/heaviest plates first/i)).toBeInTheDocument();
+    });
+
+    it("toggles plates as chips and remembers the choice", async () => {
+        const user = userEvent.setup();
+        localStorage.removeItem("availablePlates");
+        renderWithProviders(<LoadCalc />);
+
+        const plates = screen.getByRole("group", { name: /available plates/i });
+        const twentyFive = within(plates).getByRole("button", { name: "25" });
+        expect(twentyFive).toHaveAttribute("aria-pressed", "false");
+
+        await user.click(twentyFive);
+
+        expect(twentyFive).toHaveAttribute("aria-pressed", "true");
+        expect(JSON.parse(localStorage.getItem("availablePlates")!)).toContain(25);
+        localStorage.removeItem("availablePlates");
     });
 
     it("handles a load at or below the bar weight", async () => {

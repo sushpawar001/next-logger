@@ -1,35 +1,36 @@
-import React, { ChangeEvent } from 'react'
+import React, { ChangeEvent } from "react";
+import { Field, TextInput } from "@/components/app-ui/controls";
 
-
+/** One circumference field, in cm. The label doubles as the placeholder. */
 export default function MeasurementInput({
     label,
     id,
     onChange,
     value,
+    required = true,
 }: {
     label: string;
     id: string;
     onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-    value: string;
+    value: string | number;
+    required?: boolean;
 }) {
     const LabelText = label.charAt(0).toUpperCase() + label.slice(1);
     return (
-        <div className="space-y-1">
-            <label htmlFor={id} className="block text-sm leading-6 font-medium text-gray-700">
-                {LabelText}
-            </label>
-            <input
+        <Field label={LabelText} htmlFor={id}>
+            <TextInput
                 type="number"
+                inputMode="decimal"
                 step={0.1}
                 min={0}
                 id={id}
                 name={id}
-                className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring outline-hidden h-9"
                 placeholder={LabelText}
-                value={value}
+                value={value ?? ""}
                 onChange={onChange}
-                required
+                required={required}
+                suffix="cm"
             />
-        </div>
+        </Field>
     );
 }

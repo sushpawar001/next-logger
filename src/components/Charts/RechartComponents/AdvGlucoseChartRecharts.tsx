@@ -7,40 +7,38 @@ import {
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    Legend,
+    ReferenceArea,
 } from "recharts";
 import axios from "axios";
 import dayjs from "dayjs";
 import { simpleMovingAverage } from "@/helpers/statsHelpers";
 import getMovingAvgInterval from "@/helpers/getMovingAvgInterval";
+import { GLUCOSE_TARGET } from "@/constants/constants";
+import { CHART, axisProps, gridProps, statusColor } from "./chartTheme";
+import { ChartTooltip, SeriesToggle, dailyTicks } from "./chartParts";
 
 interface GlucoseData {
     createdAt: string | number;
     value: number;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-        return (
-            <div
-                style={{
-                    background: "white",
-                    border: "1px solid #eee",
-                    padding: 10,
-                }}
-            >
-                <div style={{ fontWeight: 600 }}>
-                    {dayjs(label).format("MMM D, YYYY h:mm A")}
-                </div>
-                {payload.map((item: any, idx: number) => (
-                    <div key={idx} style={{ color: item.stroke }}>
-                        {item.name}: {item.value}
-                    </div>
-                ))}
-            </div>
-        );
-    }
-    return null;
+/** In-range readings are hollow Aubergine dots; highs and lows take their status colour. */
+const ReadingDot = (props: any) => {
+    const { cx, cy, value } = props;
+    if (cx == null || cy == null || value == null) return null;
+    const color = statusColor(value);
+    const inRange = color === CHART.aubergine;
+    return (
+        <circle
+            key={`${cx}-${cy}`}
+            cx={cx}
+            cy={cy}
+            r={inRange ? 2.5 : 3.5}
+            fill={inRange ? "#FFFFFF" : color}
+            stroke={inRange ? CHART.aubergine : "#FFFFFF"}
+            strokeWidth={1.5}
+        />
+    );
 };
 
 export default function AdvGlucoseChartRecharts(props: {
@@ -94,7 +92,6 @@ export default function AdvGlucoseChartRecharts(props: {
         }
     }, [getGlucose, props.data, props.fetch]);
 
-    // Prepare chart data with moving average
     const glucoseValues = glucose.map((d) => d.value);
     const maValues = simpleMovingAverage(glucoseValues, maInterval);
     const chartData = glucose.map((d, i) => ({
@@ -102,7 +99,6 @@ export default function AdvGlucoseChartRecharts(props: {
         ma: maValues[i],
     }));
 
-    // Find min/max for domain
     const minTime = glucose.length
         ? Math.min(...glucose.map((d) => d.createdAt as number))
         : undefined;
@@ -110,100 +106,26 @@ export default function AdvGlucoseChartRecharts(props: {
         ? Math.max(...glucose.map((d) => d.createdAt as number))
         : undefined;
 
-    // Generate ticks at 24-hour intervals (midnight)
-    const getDailyTicks = () => {
-        if (!minTime || !maxTime) return [];
-        const ticks = [];
-        let current = dayjs(minTime).valueOf();
-        while (current <= maxTime) {
-            ticks.push(current);
-            current = dayjs(current).add(1, "day").valueOf();
-        }
-        return ticks;
-    };
-
-    // Custom legend for toggling
-    const renderLegend = () => (
-        <div className="flex gap-4 flex-wrap mb-2 justify-center">
-            <span className="flex items-center gap-2">
-                <span
-                    onClick={() =>
-                        setVisibleLines((prev) => ({
-                            ...prev,
-                            value: !prev.value,
-                        }))
-                    }
-                    style={{
-                        color: visibleLines.value ? "#d62828" : "#ccc",
-                        cursor: "pointer",
-                        fontWeight: visibleLines.value ? 600 : 400,
-                        textDecoration: visibleLines.value
-                            ? "none"
-                            : "line-through",
-                        userSelect: "none",
-                    }}
-                >
-                    <span
-                        style={{
-                            display: "inline-block",
-                            width: 12,
-                            height: 12,
-                            background: "#d62828",
-                            borderRadius: 2,
-                            marginRight: 6,
-                            opacity: visibleLines.value ? 1 : 0.3,
-                        }}
-                    ></span>
-                    Glucose
-                </span>
-                <span
-                    onClick={() =>
-                        setVisibleLines((prev) => ({ ...prev, ma: !prev.ma }))
-                    }
-                    style={{
-                        color: visibleLines.ma ? "#1f2937" : "#ccc",
-                        cursor: "pointer",
-                        fontWeight: visibleLines.ma ? 600 : 400,
-                        textDecoration: visibleLines.ma
-                            ? "none"
-                            : "line-through",
-                        userSelect: "none",
-                    }}
-                >
-                    <span
-                        style={{
-                            display: "inline-block",
-                            width: 12,
-                            height: 12,
-                            background: "#1f2937",
-                            borderRadius: 2,
-                            marginRight: 6,
-                            opacity: visibleLines.ma ? 1 : 0.3,
-                        }}
-                    ></span>
-                    {`Moving Avg (${maInterval})`}
-                </span>
-            </span>
-        </div>
-    );
+    const maLabel = `Moving avg (${maInterval})`;
 
     return (
-        <div
-            style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-            }}
-        >
-            <div style={{ flex: 1, minHeight: 0 }}>
+        <div className="flex h-full w-full flex-col">
+            <div className="min-h-0 flex-1">
                 <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                         data={chartData}
-                        margin={{ top: 0, right: 0, left: 20, bottom: 0 }}
+                        margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <CartesianGrid {...gridProps} />
+                        <ReferenceArea
+                            y1={GLUCOSE_TARGET.low}
+                            y2={GLUCOSE_TARGET.high}
+                            fill={CHART.oat}
+                            fillOpacity={0.6}
+                            ifOverflow="extendDomain"
+                        />
                         <XAxis
+                            {...axisProps}
                             dataKey="createdAt"
                             type="number"
                             domain={
@@ -211,45 +133,57 @@ export default function AdvGlucoseChartRecharts(props: {
                                     ? [minTime, maxTime]
                                     : ["auto", "auto"]
                             }
-                            ticks={getDailyTicks()}
-                            tick={{ fontSize: 12 }}
-                            tickMargin={8}
+                            ticks={dailyTicks(minTime, maxTime)}
                             tickFormatter={(value) =>
-                                dayjs(value).format("MMM D")
+                                dayjs(value).format("D MMM")
                             }
                         />
-                        <YAxis
-                            tick={{ fontSize: 12 }}
-                            tickMargin={8}
-                            width={20}
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        {/* Remove <Legend /> and use custom legend below */}
+                        <YAxis {...axisProps} width={36} />
+                        <Tooltip content={<ChartTooltip unit="mg/dL" />} />
                         <Line
                             type="monotone"
                             dataKey="value"
                             name="Glucose"
-                            stroke="#d62828"
-                            dot={false}
-                            strokeWidth={2.2}
+                            stroke={CHART.aubergine}
+                            dot={<ReadingDot />}
+                            activeDot={{ r: 4 }}
+                            strokeWidth={2}
                             connectNulls={true}
                             hide={!visibleLines.value}
+                            isAnimationActive={false}
                         />
                         <Line
                             type="monotone"
                             dataKey="ma"
-                            name={`Moving Avg (${maInterval})`}
-                            stroke="#1f2937"
+                            name={maLabel}
+                            stroke={CHART.lavender}
                             dot={false}
-                            strokeWidth={2.2}
+                            strokeWidth={3}
                             connectNulls={true}
                             hide={!visibleLines.ma}
+                            isAnimationActive={false}
                         />
                     </LineChart>
                 </ResponsiveContainer>
             </div>
-            <div style={{ height: 48, marginTop: 8, overflow: "hidden" }}>
-                {renderLegend()}
+            <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1">
+                <SeriesToggle
+                    label="Glucose"
+                    color={CHART.aubergine}
+                    visible={visibleLines.value}
+                    onToggle={() =>
+                        setVisibleLines((prev) => ({ ...prev, value: !prev.value }))
+                    }
+                />
+                <SeriesToggle
+                    label={maLabel}
+                    color={CHART.lavender}
+                    thick
+                    visible={visibleLines.ma}
+                    onToggle={() =>
+                        setVisibleLines((prev) => ({ ...prev, ma: !prev.ma }))
+                    }
+                />
             </div>
         </div>
     );

@@ -1,115 +1,76 @@
-import React, { useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
+"use client";
+import { useState, type ReactNode } from "react";
+import { Trash2 } from "lucide-react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { AppButton, iconButton } from "@/components/app-ui/controls";
+import { cn } from "@/lib/utils";
 
-const MotionDiv = dynamic(
-    () => import("framer-motion").then((mod) => mod.motion.div),
-    {
-        ssr: false,
-    }
-);
+/**
+ * Delete confirmation. The trigger is a red icon button by default; pass
+ * `trigger` for a labelled button instead (the edit pages do).
+ */
+export default function PopUpModal(props: {
+    delete: () => void;
+    /** Content of the default icon trigger. */
+    buttonContent?: ReactNode;
+    /** Replaces the default trigger entirely. Must be a single button element. */
+    trigger?: ReactNode;
+    title?: ReactNode;
+    /** Say exactly what will be removed, e.g. "126 mg/dL · After meal · 26 Sep 14:40". */
+    description?: ReactNode;
+    className?: string;
+}) {
+    const [open, setOpen] = useState(false);
 
-const TdStyle = {
-    ThStyle: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4`,
-    ThStyleNew: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4`,
-    // ThStyleNew: `md:w-[1/9] border-l border-transparent py-1 px-2 md:py-3 md:px-3 text-base font-medium text-white lg:px-4`,
-    TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-sm xl:text-base`,
-    TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-sm xl:text-base`,
-    TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-sm xl:text-base`,
-    TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-sm xl:text-base transition-colors duration-300`,
-};
-
-export default function PopUpModal(props: { delete: () => void, buttonContent?: any }) {
-    const [modalOpen, setModalOpen] = useState(false);
-    const trigger = useRef(null);
-    const modal = useRef(null);
-
-    const variants = {
-        open: { opacity: 1, scale: 1 },
-        closed: { opacity: 0, scale: 0.6 },
-    };
-
-    // close on click outside
-    useEffect(() => {
-        const clickHandler = ({ target }) => {
-            if (!modal.current) return;
-            if (
-                !modalOpen ||
-                modal.current.contains(target) ||
-                trigger.current.contains(target)
-            )
-                return;
-            setModalOpen(false);
-        };
-        document.addEventListener("click", clickHandler);
-        return () => document.removeEventListener("click", clickHandler);
-    });
-
-    // close if the esc key is pressed
-    useEffect(() => {
-        const keyHandler = ({ keyCode }) => {
-            if (!modalOpen || keyCode !== 27) return;
-            setModalOpen(false);
-        };
-        document.addEventListener("keydown", keyHandler);
-        return () => document.removeEventListener("keydown", keyHandler);
-    });
     return (
-        <>
-            <button
-                ref={trigger}
-                onClick={() => setModalOpen(true)}
-                className={TdStyle.TdButton2}
-            >
-                {props.buttonContent ?? "Delete"}
-            </button>
-            {/* modal  */}
-            <div
-                className={`fixed left-0 top-0 flex h-full min-h-screen w-full items-center justify-center bg-dark/90 px-4 py-5 z-50 ${
-                    modalOpen ? "block" : "hidden"
-                }`}
-            >
-                <MotionDiv
-                    animate={modalOpen ? "open" : "closed"}
-                    variants={variants}
-                    transition={{
-                        type: "spring",
-                        duration: 0.3,
-                        stiffness: 100,
-                    }}
-                    ref={modal}
-                    onFocus={() => setModalOpen(true)}
-                    onBlur={() => setModalOpen(false)}
-                    className="w-full max-w-[500px] rounded-[20px] bg-white px-8 py-12 text-center md:px-[70px] md:py-[60px]"
-                >
-                    <h3 className="pb-[18px] text-xl font-semibold text-secondary dark:text-white sm:text-2xl">
-                        Do you really want to delete this?
-                    </h3>
-                    <span
-                        className={`mx-auto mb-6 inline-block h-1 w-[90px] rounded bg-primary`}
-                    ></span>
-                    <div className="-mx-3 flex flex-wrap">
-                        <div className="w-1/2 px-3">
-                            <button
-                                className="block w-full rounded-lg border-primary bg-primary p-3 text-center text-base font-medium text-white transition hover:bg-primary-dark"
-                                onClick={() => setModalOpen(false)}
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                        <div className="w-1/2 px-3">
-                            <button
-                                className="block w-full rounded-lg bg-red-600 border border-stroke p-3 text-center text-base font-medium transition hover:border-red-800 hover:bg-red-800 text-white"
-                                onClick={() => {
-                                    props.delete();
-                                    setModalOpen(false);
-                                }}
-                            >
-                                Delete
-                            </button>
-                        </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                {props.trigger ?? (
+                    <button
+                        type="button"
+                        aria-label="Delete"
+                        className={cn(
+                            iconButton({ tone: "danger", size: "sm" }),
+                            props.className
+                        )}
+                    >
+                        {props.buttonContent ?? <Trash2 aria-hidden="true" />}
+                    </button>
+                )}
+            </DialogTrigger>
+            <DialogContent hideClose>
+                <div className="px-6 pt-7 pb-6 text-center">
+                    <span className="mb-4 inline-grid h-[52px] w-[52px] place-items-center rounded-full bg-status-low-bg text-status-low">
+                        <Trash2 className="h-6 w-6" aria-hidden="true" />
+                    </span>
+                    <DialogTitle className="mb-2">
+                        {props.title ?? "Delete this entry?"}
+                    </DialogTitle>
+                    <DialogDescription>
+                        {props.description ?? "This can't be undone."}
+                    </DialogDescription>
+                    <div className="mt-6 grid grid-cols-2 gap-3">
+                        <AppButton variant="outline" onClick={() => setOpen(false)}>
+                            Cancel
+                        </AppButton>
+                        <AppButton
+                            variant="danger"
+                            onClick={() => {
+                                props.delete();
+                                setOpen(false);
+                            }}
+                        >
+                            Delete
+                        </AppButton>
                     </div>
-                </MotionDiv>
-            </div>
-        </>
+                </div>
+            </DialogContent>
+        </Dialog>
     );
 }

@@ -1,56 +1,58 @@
 "use client";
 import MeasurementAdd from "@/components/DashboardInputs/MeasurementAdd";
 import { useQuickLog } from "@/hooks/use-quick-log";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import notify from "@/helpers/notify";
 import { useEntries } from "@/hooks/queries/useEntries";
 import { EMPTY_ROWS } from "@/lib/query/keys";
 import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
 import formatDate from "@/helpers/formatDate";
 import Link from "next/link";
-import MeasurementPageSkeleton from "@/components/MeasurementPageSkeleton";
-
+import { Pencil } from "lucide-react";
 import PopUpModal from "@/components/PopUpModal";
-import MeasurementChartRecharts from "@/components/Charts/RechartComponents/MeasurementChartRecharts";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
+import MeasurementChartRecharts, {
+    MEASUREMENT_FIELDS,
+    type MeasurementField,
+} from "@/components/Charts/RechartComponents/MeasurementChartRecharts";
 import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
 import TagFilterCard from "@/components/TagFilterCard";
 import { filterByTags } from "@/helpers/tagFilterHelpers";
-import { History, Edit, Trash2 } from "lucide-react";
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import MeasurementPageSkeleton2 from "@/components/MeasurementPageSkeleton2";
-const dataInputs = [
-    "Arms",
-    "Chest",
-    "Abdomen",
-    "Waist",
-    "Hip",
-    "Thighs",
-    "Calves",
-];
+import {
+    PageHeader,
+    Panel,
+    PanelHead,
+    PanelSub,
+    PanelTitle,
+} from "@/components/app-ui/layout";
+import { Delta, Reading, TagPill } from "@/components/app-ui/data";
+import { AppButton, Chip, iconButton } from "@/components/app-ui/controls";
+import {
+    LogEntryButton,
+    LogEntryCta,
+    LogEntryDialog,
+    useLogEntryDialog,
+} from "@/components/app-ui/LogEntryDialog";
+import {
+    cm,
+    dayLabel,
+    fieldLabel,
+    filledCount,
+    formatChange,
+    previewFields,
+    summariseFields,
+} from "@/components/measurement/measurementSummary";
+import { cn } from "@/lib/utils";
 
-const TdStyle = {
-    ThStyle: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4`,
-    ThStyleNew: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4`,
-    // ThStyleNew: `md:w-[1/9] border-l border-transparent py-1 px-2 md:py-3 md:px-3 text-base font-medium text-white lg:px-4`,
-    TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-sm xl:text-base`,
-    TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-sm xl:text-base`,
-    TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-sm xl:text-base`,
-    TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-sm xl:text-base`,
-};
+const HISTORY_PAGE = 8;
 
 export default function MeasurementsPage() {
     const quickLog = useQuickLog();
+    const log = useLogEntryDialog(quickLog);
     const [daysOfData, setDaysOfData] = useState(30);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [parent] = useAutoAnimate({ duration: 500 });
+    const [field, setField] = useState<MeasurementField>("waist");
+    const [historyLimit, setHistoryLimit] = useState(HISTORY_PAGE);
 
     const {
         data: measurementData = EMPTY_ROWS,
@@ -60,8 +62,7 @@ export default function MeasurementsPage() {
     const deleteEntry = useDeleteEntry("measurements");
 
     const changeDaysOfData = (event: { target: { value: string } }) => {
-        const daysInput = event.target.value;
-        setDaysOfData(parseInt(daysInput));
+        setDaysOfData(parseInt(event.target.value));
     };
 
     const deleteData = async (id) => {
@@ -73,8 +74,7 @@ export default function MeasurementsPage() {
         }
     };
 
-    // Filter data based on selected tags
-    const filteredMeasurementData = filterByTags(measurementData, selectedTags);
+    const filtered = filterByTags(measurementData, selectedTags);
 
     if (isPending) {
         return <MeasurementPageSkeleton2 />;
@@ -82,173 +82,233 @@ export default function MeasurementsPage() {
 
     if (isError) {
         return (
-            <div className="text-red-500 text-center p-4">
+            <Panel className="text-center text-status-low">
                 Failed to load measurement data. Please try again later.
-            </div>
+            </Panel>
         );
     }
 
+    const summaries = summariseFields(filtered);
+    const lastMeasured = filtered[0]?.createdAt;
+    const charted = filtered.filter((r) => cm(r[field]) !== null).length;
+    const history = filtered.slice(0, historyLimit);
+
     return (
-        <section className="h-full flex justify-center items-center bg-background p-5">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
-                <div className="md:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                    <DataPeriodSelectCard
-                        daysOfData={daysOfData}
-                        changeDaysOfData={changeDaysOfData}
-                        className=""
+        <>
+            <PageHeader
+                title="Measurements"
+                subtitle={
+                    lastMeasured
+                        ? `Body circumferences in cm. Last measured ${dayLabel(lastMeasured)}.`
+                        : "Body circumferences in cm."
+                }
+                actions={
+                    <LogEntryButton
+                        label="Log measurements"
+                        onClick={() => log.setOpen(true)}
                     />
-                    <TagFilterCard
-                        selectedTags={selectedTags}
-                        onTagsChange={setSelectedTags}
-                        className=""
-                    />
+                }
+            />
+
+            <div className="mb-4 flex flex-col gap-3 lg:mb-5 lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-6 lg:gap-y-4">
+                <DataPeriodSelectCard
+                    daysOfData={daysOfData}
+                    changeDaysOfData={changeDaysOfData}
+                />
+                <TagFilterCard
+                    selectedTags={selectedTags}
+                    onTagsChange={setSelectedTags}
+                />
+            </div>
+
+            {/* The seven fields from MeasurementAdd; choosing one switches the chart. */}
+            <Panel className="p-2 lg:p-2" aria-label="Latest measurements">
+                <div
+                    role="group"
+                    aria-label="Choose a measurement to chart"
+                    className="grid grid-cols-2 gap-1 lg:grid-cols-7 lg:gap-0"
+                >
+                    {summaries.map((s) => {
+                        const pressed = s.field === field;
+                        return (
+                            <button
+                                key={s.field}
+                                type="button"
+                                aria-pressed={pressed}
+                                onClick={() => setField(s.field)}
+                                className={cn(
+                                    "relative block rounded-xl p-4 text-left transition-colors last:col-span-2 lg:last:col-span-1",
+                                    // Hairline dividers between cells on desktop,
+                                    // dropped around the selected one.
+                                    "lg:[&+&]:before:absolute lg:[&+&]:before:top-4 lg:[&+&]:before:bottom-4 lg:[&+&]:before:left-0 lg:[&+&]:before:w-px lg:[&+&]:before:bg-border",
+                                    "aria-pressed:before:hidden [[aria-pressed=true]+&]:before:hidden",
+                                    pressed ? "bg-brand-oat" : "hover:bg-brand-cream"
+                                )}
+                            >
+                                <span
+                                    className={cn(
+                                        "block text-xs font-semibold uppercase tracking-[0.13em]",
+                                        pressed ? "text-brand-ink" : "text-brand-muted"
+                                    )}
+                                >
+                                    {fieldLabel(s.field)}
+                                </span>
+                                <Reading
+                                    size="sm"
+                                    className="my-2.5"
+                                    value={s.latest !== null ? s.latest.toFixed(1) : "—"}
+                                    unit={s.latest !== null ? "cm" : undefined}
+                                />
+                                {s.change !== null ? (
+                                    <Delta value={s.change} diagonal>
+                                        {formatChange(s.change)}
+                                    </Delta>
+                                ) : (
+                                    <span className="text-[13px] text-brand-muted">
+                                        No change yet
+                                    </span>
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
-                <div className="mx-auto p-3 md:px-6 rounded-lg border border-border transition-all duration-300 shadow-md h-full w-full md:col-span-2 flex flex-col bg-white">
-                    <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
-                        Measurement Trends
-                    </h3>
-                    <div className="h-72 grow">
+            </Panel>
+
+            <div className="mt-4 grid grid-cols-1 gap-4 lg:mt-5 lg:grid-cols-12 lg:gap-5">
+                <Panel className="lg:col-span-8" aria-labelledby="measure-chart-title">
+                    <PanelHead>
+                        <div>
+                            <PanelTitle id="measure-chart-title">
+                                {fieldLabel(field)} over time
+                            </PanelTitle>
+                            <PanelSub>
+                                {charted} {charted === 1 ? "measurement" : "measurements"}
+                            </PanelSub>
+                        </div>
+                    </PanelHead>
+                    <div
+                        role="radiogroup"
+                        aria-label="Measurement"
+                        className="-mx-5 mb-4 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] lg:mx-0 lg:flex-wrap lg:px-0"
+                    >
+                        {MEASUREMENT_FIELDS.map((f) => (
+                            <Chip
+                                key={f}
+                                radio
+                                pressed={f === field}
+                                onClick={() => setField(f)}
+                            >
+                                {fieldLabel(f)}
+                            </Chip>
+                        ))}
+                    </div>
+                    <div className="h-[280px] lg:h-[360px]">
                         <MeasurementChartRecharts
-                            data={filteredMeasurementData}
+                            data={filtered}
                             fetch={false}
+                            field={field}
                         />
                     </div>
-                </div>
-                <div className="w-full">
-                    <MeasurementAdd autoFocus={quickLog} />
-                </div>
-                <div className="border border-border transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
-                    <div className="max-w-full overflow-x-auto rounded-lg">
-                        <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
-                            <div
-                                className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
-                            >
-                                <History className="h-4 w-4 text-white" />
-                            </div>
-                            Measurement History
-                        </div>
-                        <div className="rounded-lg border border-border overflow-y-auto w-full md:max-h-96">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                                        <TableHead className="text-white font-medium">
-                                            Arms
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            Chest
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            Abdomen
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            Waist
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            Hip
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            Thighs
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            Calves
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            DateTime
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            Tag
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium text-center">
-                                            Action
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody ref={parent}>
-                                    {filteredMeasurementData.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={10}
-                                                className="text-center py-8 text-gray-500"
-                                            >
-                                                {measurementData.length === 0
-                                                    ? "No measurement entries found for the selected period."
-                                                    : "No measurement entries match the selected tags."}
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        filteredMeasurementData.map(
-                                            (entry, index) => (
-                                                <TableRow
-                                                    key={entry._id}
-                                                    className={`hover:bg-accent/50 transition-colors ${
-                                                        index % 2 === 0
-                                                            ? "bg-white"
-                                                            : "bg-gray-50/50"
-                                                    }`}
+                </Panel>
+
+                <Panel className="lg:col-span-4" aria-labelledby="measure-history-title">
+                    <PanelHead>
+                        <PanelTitle id="measure-history-title">History</PanelTitle>
+                        {filtered.length > 0 && (
+                            <span className="text-[13px] text-brand-muted">
+                                {filtered.length}{" "}
+                                {filtered.length === 1 ? "session" : "sessions"}
+                            </span>
+                        )}
+                    </PanelHead>
+                    {filtered.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-brand-muted">
+                            {measurementData.length === 0
+                                ? "No measurement entries found for the selected period."
+                                : "No measurement entries match the selected tags."}
+                        </p>
+                    ) : (
+                        <ul className="m-0 list-none p-0">
+                            {history.map((entry) => {
+                                const day = dayLabel(entry.createdAt);
+                                const filled = filledCount(entry);
+                                return (
+                                    <li
+                                        key={entry._id}
+                                        className="border-t border-border py-3 first:border-t-0 first:pt-0 last:pb-0"
+                                    >
+                                        <div className="flex items-center justify-between gap-2">
+                                            <div className="flex min-w-0 items-center gap-2">
+                                                <strong className="text-[15px]">{day}</strong>
+                                                {entry.tag && <TagPill>{entry.tag}</TagPill>}
+                                            </div>
+                                            <span className="inline-flex items-center gap-1">
+                                                <span className="text-xs text-brand-muted">
+                                                    {filled} of 7
+                                                </span>
+                                                <Link
+                                                    href={`/measurement/${entry._id}`}
+                                                    aria-label={`Edit ${day}`}
+                                                    className={iconButton({ size: "sm" })}
                                                 >
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {entry.arms}
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {entry.chest}
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {entry.abdomen}
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {entry.waist}
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {entry.hip}
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {entry.thighs}
-                                                    </TableCell>
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {entry.calves}
-                                                    </TableCell>
-                                                    <TableCell className="text-gray-600">
-                                                        {formatDate(
-                                                            entry.createdAt
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
-                                                            {entry.tag ?? "--"}
-                                                        </span>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex items-center justify-center gap-2">
-                                                            <Link
-                                                                href={`/measurement/${entry._id}`}
-                                                                className={
-                                                                    TdStyle.TdButton
-                                                                }
-                                                            >
-                                                                <Edit className="h-5 w-5" />
-                                                            </Link>
-                                                            <PopUpModal
-                                                                delete={() => {
-                                                                    deleteData(
-                                                                        entry._id
-                                                                    );
-                                                                }}
-                                                                buttonContent={
-                                                                    <Trash2 className="h-5 w-5" />
-                                                                }
-                                                            />
+                                                    <Pencil aria-hidden="true" />
+                                                </Link>
+                                                <PopUpModal
+                                                    delete={() => deleteData(entry._id)}
+                                                    title="Delete these measurements?"
+                                                    description={`All ${filled} measurements from ${formatDate(entry.createdAt)}.`}
+                                                />
+                                            </span>
+                                        </div>
+                                        <div className="mt-2 grid grid-cols-3 gap-3">
+                                            {previewFields(field).map((f) => {
+                                                const v = cm(entry[f]);
+                                                return (
+                                                    <div key={f} className="min-w-0">
+                                                        <div className="text-xs text-brand-muted">
+                                                            {fieldLabel(f)}
                                                         </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            )
-                                        )
-                                    )}
-                                </TableBody>
-                            </Table>
+                                                        <strong
+                                                            className={cn(
+                                                                "text-sm tabular-nums",
+                                                                v === null && "text-brand-muted"
+                                                            )}
+                                                        >
+                                                            {v !== null ? `${v.toFixed(1)} cm` : "—"}
+                                                        </strong>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                    {filtered.length > historyLimit && (
+                        <div className="mt-4 text-center">
+                            <AppButton
+                                variant="outline"
+                                onClick={() => setHistoryLimit((n) => n + HISTORY_PAGE)}
+                            >
+                                Show more
+                            </AppButton>
                         </div>
-                    </div>
-                </div>
+                    )}
+                </Panel>
             </div>
-        </section>
+
+            <LogEntryCta label="Log measurements" onClick={() => log.setOpen(true)} />
+            <LogEntryDialog
+                open={log.open}
+                onOpenChange={log.setOpen}
+                title="Log measurements"
+            >
+                <MeasurementAdd
+                    autoFocus={quickLog}
+                    onSaved={() => log.setOpen(false)}
+                />
+            </LogEntryDialog>
+        </>
     );
 }

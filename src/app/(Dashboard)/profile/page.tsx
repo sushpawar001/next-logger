@@ -1,12 +1,19 @@
 "use client";
 import AddNewInsulin from "@/components/ProfileComponents/AddNewInsulin";
-import DashboardPreferences from "@/components/ProfileComponents/DashboardPref";
 import UserInsulins from "@/components/ProfileComponents/UserInsulins";
+import AccountCard from "@/components/ProfileComponents/AccountCard";
 import { useEffect, useState } from "react";
 import type { InsulinNameType } from "@/types/models";
 import { SubscriptionCard } from "@/components/ProfileComponents/SubscriptionCard";
 import ExportDataCard from "@/components/ProfileComponents/ExportDataCard";
 import ProfilePageSkeleton from "@/components/PageSkeletons/ProfilePageSkeleton";
+import {
+    PageHeader,
+    Panel,
+    PanelHead,
+    PanelSub,
+    PanelTitle,
+} from "@/components/app-ui/layout";
 import {
     useInsulinTypes,
     useSubscription,
@@ -40,37 +47,55 @@ export default function ProfilePage() {
 
     if (insulinTypes.isError || subscription.isError || savedInsulins.isError)
         return (
-            <div className="text-red-500 text-center p-4">
+            <Panel className="text-center text-status-low">
                 Failed to load profile data. Please try again later.
-            </div>
+            </Panel>
         );
 
     return (
-        <div className="h-full py-5 px-5">
-            <div className="flex flex-col max-w-screen-lg mx-auto justify-center h-full">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {/* <DashboardPreferences className="col-span-1 md:col-span-2" /> */}
+        <>
+            <PageHeader
+                title="Profile"
+                subtitle="Your account, plan and preferences."
+            />
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+                <div className="flex min-w-0 flex-col gap-4 lg:col-span-8 lg:gap-5">
+                    <AccountCard />
+
+                    <Panel aria-labelledby="insulins-title">
+                        <PanelHead>
+                            <div>
+                                <PanelTitle id="insulins-title">My insulins</PanelTitle>
+                                <PanelSub>
+                                    These appear in the insulin form and on charts.
+                                </PanelSub>
+                            </div>
+                        </PanelHead>
+                        <UserInsulins
+                            allAvailableInsulins={allAvailableInsulins}
+                            userInsulins={userInsulins}
+                            setUserInsulins={setUserInsulins}
+                        />
+                        <AddNewInsulin
+                            className="mt-5 border-t border-border pt-5"
+                            allAvailableInsulins={allAvailableInsulins}
+                        />
+                    </Panel>
+
+                    {/* DashboardPreferences stays unmounted until /dashboard
+                        reads the layout setting; only the diabetes dashboard
+                        is wired up. */}
+                </div>
+
+                <div className="flex min-w-0 flex-col gap-4 lg:col-span-4 lg:gap-5">
                     <SubscriptionCard
                         subscriptionPlan={subscriptionInfo?.subscriptionPlan}
-                        subscriptionEndDate={
-                            subscriptionInfo?.subscriptionEndDate
-                        }
+                        subscriptionEndDate={subscriptionInfo?.subscriptionEndDate}
                         remainingDays={subscriptionInfo?.remainingDays}
-                        className="col-span-1 md:col-span-2"
                     />
-                    <UserInsulins
-                        className="col-span-1"
-                        allAvailableInsulins={allAvailableInsulins}
-                        userInsulins={userInsulins}
-                        setUserInsulins={setUserInsulins}
-                    />
-                    <AddNewInsulin
-                        className="col-span-1"
-                        allAvailableInsulins={allAvailableInsulins}
-                    />
-                    <ExportDataCard className="col-span-1 md:col-span-2" />
+                    <ExportDataCard />
                 </div>
             </div>
-        </div>
+        </>
     );
 }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import { useEntries } from "@/hooks/queries/useEntries";
@@ -11,33 +11,47 @@ import { useQuickLog } from "@/hooks/use-quick-log";
 import WeightChartRecharts from "@/components/Charts/RechartComponents/WeightChartRecharts";
 import PopUpModal from "@/components/PopUpModal";
 import { LoadingSkeleton } from "@/components/LoadingSkeleton";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
+import DataPeriodSelectCard, { ALL_DAYS } from "@/components/DataPeriodSelectCard";
 import TagFilterCard from "@/components/TagFilterCard";
 import { filterByTags } from "@/helpers/tagFilterHelpers";
-import { History, Edit, Trash2 } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import {
+    Eyebrow,
+    PageHeader,
+    Panel,
+    PanelHead,
+    PanelSub,
+    PanelTitle,
+} from "@/components/app-ui/layout";
+import { Delta, LegendItem, Reading, Stat } from "@/components/app-ui/data";
+import { AppButton, IconButton } from "@/components/app-ui/controls";
+import {
+    LogEntryButton,
+    LogEntryCta,
+    LogEntryDialog,
+    useLogEntryDialog,
+} from "@/components/app-ui/LogEntryDialog";
 
-const TdStyle = {
-    ThStyle: `border-l border-transparent py-3 px-3 text-sm xl:text-base font-medium text-white lg:px-4`,
-    // ThStyle: `w-1/6 xl:min-w-[180px] border-l border-transparent py-3 px-3 text-base font-medium text-white lg:px-4`,
-    TdStyle: `text-dark border-b border-l border-[#E8E8E8] bg-[#F3F6FF] py-2 px-3 text-center font-normal text-sm xl:text-base`,
-    TdStyle2: `text-dark border-b border-[#E8E8E8] bg-white py-2 px-3 text-center font-normal text-sm xl:text-base`,
-    TdButton: `inline-block px-4 py-1.5 border rounded-md border-primary text-primary hover:bg-primary hover:text-white font-normal text-sm xl:text-base`,
-    TdButton2: `inline-block px-3 py-1.5 border rounded-md border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-normal text-sm xl:text-base`,
+/** 7 days of weight is mostly noise, so the page opens on a month. */
+const DEFAULT_DAYS = 30;
+const PAGE_SIZE = 10;
+
+const kg = (n: number) => (Math.round(n * 10) / 10).toString();
+
+/** "+0.3", "−0.2" (true minus sign) or "0". */
+const signed = (n: number) => {
+    const r = Math.round(n * 10) / 10;
+    if (r === 0) return "0";
+    return r > 0 ? `+${r}` : `−${Math.abs(r)}`;
 };
 
 export default function WeightPage() {
     const quickLog = useQuickLog();
-    const [daysOfData, setDaysOfData] = useState(7);
+    const dialog = useLogEntryDialog(quickLog);
+    const [daysOfData, setDaysOfData] = useState(DEFAULT_DAYS);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [visible, setVisible] = useState(PAGE_SIZE);
     const [parent] = useAutoAnimate({ duration: 400 });
 
     const {
@@ -63,7 +77,7 @@ export default function WeightPage() {
         }
     };
 
-    // Filter data based on selected tags
+    // Filter data based on selected tags (newest first, as the API returns it)
     const filteredWeightData = filterByTags(weightData, selectedTags);
 
     if (isPending) {
@@ -72,136 +86,236 @@ export default function WeightPage() {
 
     if (isError) {
         return (
-            <div className="text-red-500 text-center p-4">
+            <div className="p-4 text-center text-status-low">
                 Failed to load weight data. Please try again later.
             </div>
         );
     }
+
+    const values = filteredWeightData.map((w) => Number(w.value));
+    const latest = filteredWeightData[0];
+    const oldest = filteredWeightData[filteredWeightData.length - 1];
+    const change = latest && oldest ? Number(latest.value) - Number(oldest.value) : 0;
+    const average = values.length
+        ? values.reduce((a, b) => a + b, 0) / values.length
+        : 0;
+    const periodLabel =
+        daysOfData === ALL_DAYS ? "in view" : `in ${daysOfData} days`;
+    const averageLabel =
+        daysOfData === ALL_DAYS ? "Average" : `${daysOfData}-day average`;
+
+    const emptyMessage =
+        weightData.length === 0
+            ? "No weight entries found for the selected period."
+            : "No weight entries match the selected tags.";
+
     return (
-        <section className="h-full flex justify-center items-center bg-background p-5">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
-                <div className="md:col-span-3 grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                    <DataPeriodSelectCard
-                        daysOfData={daysOfData}
-                        changeDaysOfData={changeDaysOfData}
-                        className=""
+        <>
+            <PageHeader
+                title="Weight"
+                subtitle="Your weigh-ins and the 7-day trend."
+                actions={
+                    <LogEntryButton
+                        label="Log weight"
+                        onClick={() => dialog.setOpen(true)}
                     />
-                    <TagFilterCard
-                        selectedTags={selectedTags}
-                        onTagsChange={setSelectedTags}
-                        className=""
-                    />
-                </div>
-                <div className="mx-auto p-4 md:px-6 md:py-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md h-full w-full md:col-span-2 flex flex-col">
-                    <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
-                        Weight Trends
-                    </h3>
-                    <div className="h-72 grow">
-                        <WeightChartRecharts
-                            data={filteredWeightData}
-                            fetch={false}
+                }
+            />
+
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-5">
+                <div className="flex min-w-0 flex-col gap-4 lg:col-span-8 lg:gap-5">
+                    <Panel aria-labelledby="current-label">
+                        <div className="grid grid-cols-1 lg:h-full lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)]">
+                            <div className="flex min-w-0 flex-col pb-5 lg:pr-7 lg:pb-0">
+                                <Eyebrow id="current-label">Current weight</Eyebrow>
+                                {latest ? (
+                                    <>
+                                        <Reading
+                                            value={kg(Number(latest.value))}
+                                            unit="kg"
+                                            size="lg"
+                                            className="mt-4"
+                                        />
+                                        {filteredWeightData.length > 1 && (
+                                            // Neutral: a muted arrow, never red or green.
+                                            <Delta
+                                                value={change}
+                                                diagonal
+                                                className="mt-3.5 text-sm"
+                                            >
+                                                {kg(Math.abs(change))} kg {periodLabel}
+                                            </Delta>
+                                        )}
+                                        <p className="mt-auto pt-4 text-[13px] text-brand-muted">
+                                            Logged {formatDate(latest.createdAt)}
+                                            {latest.tag ? ` · ${latest.tag}` : ""}
+                                        </p>
+                                    </>
+                                ) : (
+                                    <p className="mt-4 text-sm text-brand-muted">
+                                        {emptyMessage}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="grid min-w-0 grid-cols-2 gap-x-6 gap-y-5 border-t border-border pt-5 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-7">
+                                <Stat label={averageLabel}>
+                                    <Reading
+                                        value={values.length ? kg(average) : "–"}
+                                        unit={values.length ? "kg" : undefined}
+                                        size="sm"
+                                    />
+                                </Stat>
+                                <Stat label="Weigh-ins">
+                                    <Reading value={values.length} size="sm" />
+                                </Stat>
+                                <Stat label="Highest">
+                                    <Reading
+                                        value={values.length ? kg(Math.max(...values)) : "–"}
+                                        unit={values.length ? "kg" : undefined}
+                                        size="sm"
+                                    />
+                                </Stat>
+                                <Stat label="Lowest">
+                                    <Reading
+                                        value={values.length ? kg(Math.min(...values)) : "–"}
+                                        unit={values.length ? "kg" : undefined}
+                                        size="sm"
+                                    />
+                                </Stat>
+                            </div>
+                        </div>
+                    </Panel>
+
+                    <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center lg:gap-x-6 lg:gap-y-4">
+                        <DataPeriodSelectCard
+                            daysOfData={daysOfData}
+                            changeDaysOfData={changeDaysOfData}
+                            className="self-start"
+                        />
+                        <TagFilterCard
+                            selectedTags={selectedTags}
+                            onTagsChange={setSelectedTags}
                         />
                     </div>
-                </div>
-                <div className="w-full">
-                    <WeightAdd autoFocus={quickLog} />
-                </div>
-                <div className="border border-border transition-all duration-300 shadow-md p-4 md:px-6 rounded-lg md:col-span-3 bg-white">
-                    <div className="max-w-full overflow-x-auto rounded-lg">
-                        <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
-                            <div
-                                className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
-                            >
-                                <History className="h-4 w-4 text-white" />
+
+                    <Panel aria-labelledby="trend-title">
+                        <PanelHead>
+                            <div>
+                                <PanelTitle id="trend-title">Trend</PanelTitle>
+                                <PanelSub>Daily weigh-ins with a 7-day average</PanelSub>
                             </div>
-                            Weight History
+                            <div className="flex flex-wrap gap-x-4 gap-y-2">
+                                <LegendItem
+                                    swatch={
+                                        <span className="h-[3px] w-[18px] rounded-sm bg-brand-lavender" />
+                                    }
+                                >
+                                    7-day average
+                                </LegendItem>
+                                <LegendItem
+                                    swatch={
+                                        <span className="h-2 w-2 rounded-full border-[1.5px] border-brand-aubergine" />
+                                    }
+                                >
+                                    Weigh-in
+                                </LegendItem>
+                            </div>
+                        </PanelHead>
+                        <div className="h-[280px] lg:h-[360px]">
+                            <WeightChartRecharts
+                                data={filteredWeightData}
+                                fetch={false}
+                            />
                         </div>
-                        <div className="rounded-lg border border-border overflow-hidden w-full">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                                        <TableHead className="text-white font-medium">
-                                            Body Weight
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            DateTime
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium">
-                                            Tag
-                                        </TableHead>
-                                        <TableHead className="text-white font-medium text-center">
-                                            Action
-                                        </TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody ref={parent}>
-                                    {filteredWeightData.length === 0 ? (
-                                        <TableRow>
-                                            <TableCell
-                                                colSpan={4}
-                                                className="text-center py-8 text-gray-500"
-                                            >
-                                                {weightData.length === 0
-                                                    ? "No weight entries found for the selected period."
-                                                    : "No weight entries match the selected tags."}
-                                            </TableCell>
-                                        </TableRow>
-                                    ) : (
-                                        filteredWeightData.map(
-                                            (entry, index) => (
-                                                <TableRow
-                                                    key={entry.id}
-                                                    className={`hover:bg-accent/50 transition-colors ${
-                                                        index % 2 === 0
-                                                            ? "bg-white"
-                                                            : "bg-gray-50/50"
-                                                    }`}
-                                                >
-                                                    <TableCell className="font-medium text-gray-900">
-                                                        {entry.value} kg
-                                                    </TableCell>
-                                                    <TableCell className="text-gray-600">
-                                                        {formatDate(
-                                                            entry.createdAt
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 min-w-12 md:min-w-20 justify-center">
-                                                            {entry.tag ?? "--"}
-                                                        </span>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <div className="flex items-center justify-center gap-2">
-                                                            <Link
-                                                                href={`/weight/${entry._id}`}
-                                                                className={
-                                                                    TdStyle.TdButton
-                                                                }
-                                                            >
-                                                                <Edit className="h-5 w-5" />
-                                                            </Link>
-                                                            <PopUpModal
-                                                                delete={() => {
-                                                                    deleteData(
-                                                                        entry._id
-                                                                    );
-                                                                }}
-                                                                buttonContent={
-                                                                    <Trash2 className="h-5 w-5" />
-                                                                }
-                                                            />
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            )
-                                        )
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    </div>
+                    </Panel>
                 </div>
+
+                <Panel aria-labelledby="entries-title" className="lg:col-span-4">
+                    <PanelHead>
+                        <PanelTitle id="entries-title">Entries</PanelTitle>
+                        <span className="text-[13px] text-brand-muted">
+                            {filteredWeightData.length} in view
+                        </span>
+                    </PanelHead>
+                    {filteredWeightData.length === 0 ? (
+                        <p className="py-8 text-center text-sm text-brand-muted">
+                            {emptyMessage}
+                        </p>
+                    ) : (
+                        <ul ref={parent} className="m-0 list-none p-0">
+                            {filteredWeightData.slice(0, visible).map((entry, i) => {
+                                // Change from the weigh-in before this one.
+                                const previous = filteredWeightData[i + 1];
+                                const diff = previous
+                                    ? Number(entry.value) - Number(previous.value)
+                                    : null;
+                                const when = formatDate(entry.createdAt);
+                                return (
+                                    <li
+                                        key={entry._id}
+                                        className="flex items-center gap-2 border-t border-border py-2.5 first:border-t-0 first:pt-0 last:pb-0"
+                                    >
+                                        <div className="min-w-0 flex-1 leading-[1.35]">
+                                            <Reading
+                                                value={kg(Number(entry.value))}
+                                                unit="kg"
+                                                size="xs"
+                                            />
+                                            <div className="mt-1 truncate text-xs text-brand-muted">
+                                                {when}
+                                                {entry.tag ? ` · ${entry.tag}` : ""}
+                                            </div>
+                                        </div>
+                                        {diff !== null && (
+                                            <Delta value={Math.round(diff * 10) / 10} diagonal>
+                                                {signed(diff)}
+                                            </Delta>
+                                        )}
+                                        <IconButton
+                                            asChild
+                                            size="sm"
+                                            aria-label={`Edit ${when}`}
+                                        >
+                                            <Link href={`/weight/${entry._id}`}>
+                                                <Pencil aria-hidden="true" />
+                                            </Link>
+                                        </IconButton>
+                                        <PopUpModal
+                                            delete={() => deleteData(entry._id)}
+                                            title="Delete this weigh-in?"
+                                            description={`${kg(Number(entry.value))} kg${
+                                                entry.tag ? ` · ${entry.tag}` : ""
+                                            } · ${when}`}
+                                        />
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
+                    {filteredWeightData.length > visible && (
+                        <AppButton
+                            variant="outline"
+                            block
+                            className="mt-4"
+                            onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                        >
+                            Load more
+                        </AppButton>
+                    )}
+                </Panel>
             </div>
-        </section>
+
+            <LogEntryDialog
+                open={dialog.open}
+                onOpenChange={dialog.setOpen}
+                title="Log weight"
+            >
+                <WeightAdd
+                    autoFocus={quickLog}
+                    onSaved={() => dialog.setOpen(false)}
+                />
+            </LogEntryDialog>
+            <LogEntryCta label="Log weight" onClick={() => dialog.setOpen(true)} />
+        </>
     );
 }

@@ -1,11 +1,16 @@
 import notify from "@/helpers/notify";
 import React, { useState } from "react";
-import { FaPlus } from "react-icons/fa6";
 import type { InsulinNameType } from "@/types/models";
 import { Plus, Loader2 } from "lucide-react";
 import { useAddNewInsulin } from "@/hooks/queries/useInsulinMutations";
 import { mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
+import { AppButton, Field, TextInput } from "@/components/app-ui/controls";
+import { cn } from "@/lib/utils";
 
+/**
+ * Creates a new insulin type and attaches it to the user. Renders bare: the
+ * profile page puts it under the chip list in its "My insulins" card.
+ */
 export default function AddNewInsulin({
     className = "",
     allAvailableInsulins = [],
@@ -48,49 +53,36 @@ export default function AddNewInsulin({
     };
 
     return (
-        <div
-            className={`p-5 md:p-7 rounded-lg bg-white border border-border transition-all duration-300 shadow-md ${className}`}
+        <form
+            className={cn(
+                "grid grid-cols-[minmax(0,1fr)_auto] items-end gap-3",
+                className
+            )}
+            onSubmit={submitNewInsulin}
         >
-            <div className="flex items-center gap-3 text-lg text-gray-900 mb-4 md:mb-6">
-                <div
-                    className={`p-2 rounded-lg bg-gradient-to-br from-green-500 to-green-600`}
-                >
-                    <Plus className="h-5 w-5 text-white" />
-                </div>
-                <div>
-                    <h2 className="text-lg font-semibold text-gray-900">
-                        Add New Insulin
-                    </h2>
-                    <p className="text-gray-600 text-sm">
-                        Don&apos;t see your insulin? Add it here
-                    </p>
-                </div>
-            </div>
-            <form
-                className="flex flex-col md:flex-row gap-2"
-                onSubmit={submitNewInsulin}
-            >
-                <input
+            <Field label="Not listed? Add a new insulin" htmlFor="insulin">
+                <TextInput
                     type="text"
                     id="insulin"
-                    className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
-                    placeholder="Enter new insulin name"
+                    placeholder="e.g. Lantus"
                     value={newInsulinType}
                     onChange={changeNewInsulinType}
                     required
                 />
-                <button
-                    type="submit"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring focus:outline-hidden font-medium rounded-lg text-sm w-full lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
-                    ) : (
-                        "Add"
-                    )}
-                </button>
-            </form>
-        </div>
+            </Field>
+            <AppButton
+                type="submit"
+                variant="secondary"
+                size="field"
+                disabled={isSubmitting}
+            >
+                {isSubmitting ? (
+                    <Loader2 className="animate-spin" aria-hidden="true" />
+                ) : (
+                    <Plus aria-hidden="true" />
+                )}
+                Add
+            </AppButton>
+        </form>
     );
 }

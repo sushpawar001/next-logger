@@ -1,48 +1,30 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
-    LineChart,
+    ComposedChart,
+    Area,
     Line,
     XAxis,
     YAxis,
     CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    Legend,
 } from "recharts";
 import axios from "axios";
 import dayjs from "dayjs";
 import { simpleMovingAverage } from "@/helpers/statsHelpers";
 import getMovingAvgInterval from "@/helpers/getMovingAvgInterval";
+import { CHART, axisProps, gridProps } from "./chartTheme";
+import { ChartTooltip, SeriesToggle, dailyTicks } from "./chartParts";
 
 interface WeightData {
     createdAt: string | number;
     value: number;
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-        return (
-            <div
-                style={{
-                    background: "white",
-                    border: "1px solid #eee",
-                    padding: 10,
-                }}
-            >
-                <div style={{ fontWeight: 600 }}>
-                    {dayjs(label).format("MMM D, YYYY h:mm A")}
-                </div>
-                {payload.map((item: any, idx: number) => (
-                    <div key={idx} style={{ color: item.stroke }}>
-                        {item.name}: {item.value}
-                    </div>
-                ))}
-            </div>
-        );
-    }
-    return null;
-};
-
+/**
+ * Weight is a trend, not a verdict: the Lavender moving average is the main
+ * line, and single weigh-ins sit behind it as a thin line with small dots.
+ */
 export default function AdvWeightChartRecharts(props: {
     days?: number;
     fetch: boolean;
@@ -94,7 +76,6 @@ export default function AdvWeightChartRecharts(props: {
         }
     }, [getWeight, props.data, props.fetch]);
 
-    // Prepare chart data with moving average
     const weightValues = weight.map((d) => d.value);
     const maValues = simpleMovingAverage(weightValues, maInterval);
     const chartData = weight.map((d, i) => ({
@@ -102,7 +83,6 @@ export default function AdvWeightChartRecharts(props: {
         ma: maValues[i],
     }));
 
-    // Find min/max for domain
     const minTime = weight.length
         ? Math.min(...weight.map((d) => d.createdAt as number))
         : undefined;
@@ -110,110 +90,29 @@ export default function AdvWeightChartRecharts(props: {
         ? Math.max(...weight.map((d) => d.createdAt as number))
         : undefined;
 
-    // Calculate Y-axis domain with padding
-    const weightOnly = weight.map((d) => d.value).filter((v) => v !== null);
+    // Tight, padded domain: a kilo matters, so don't start the axis at zero.
+    const weightOnly = weightValues.filter((v) => v !== null);
     const minWeight = weightOnly.length ? Math.min(...weightOnly) : 0;
     const maxWeight = weightOnly.length ? Math.max(...weightOnly) : 100;
-    const weightRange = maxWeight - minWeight;
+    const pad = Math.max(0.5, (maxWeight - minWeight) * 0.15);
     const yDomain = [
-        Math.round(Math.max(0, minWeight - weightRange * 0.1)),
-        Math.round(maxWeight + weightRange * 0.1),
+        Math.floor(Math.max(0, minWeight - pad)),
+        Math.ceil(maxWeight + pad),
     ];
 
-    // Generate ticks at 24-hour intervals (midnight)
-    const getDailyTicks = () => {
-        if (!minTime || !maxTime) return [];
-        const ticks = [];
-        let current = dayjs(minTime).valueOf();
-        while (current <= maxTime) {
-            ticks.push(current);
-            current = dayjs(current).add(1, "day").valueOf();
-        }
-        return ticks;
-    };
-
-    // Custom legend for toggling
-    const renderLegend = () => (
-        <div className="flex gap-4 flex-wrap mb-2 justify-center">
-            <span className="flex items-center gap-2">
-                <span
-                    onClick={() =>
-                        setVisibleLines((prev) => ({
-                            ...prev,
-                            value: !prev.value,
-                        }))
-                    }
-                    style={{
-                        color: visibleLines.value ? "#F97316" : "#ccc",
-                        cursor: "pointer",
-                        fontWeight: visibleLines.value ? 600 : 400,
-                        textDecoration: visibleLines.value
-                            ? "none"
-                            : "line-through",
-                        userSelect: "none",
-                    }}
-                >
-                    <span
-                        style={{
-                            display: "inline-block",
-                            width: 12,
-                            height: 12,
-                            background: "#F97316",
-                            borderRadius: 2,
-                            marginRight: 6,
-                            opacity: visibleLines.value ? 1 : 0.3,
-                        }}
-                    ></span>
-                    Weight
-                </span>
-                <span
-                    onClick={() =>
-                        setVisibleLines((prev) => ({ ...prev, ma: !prev.ma }))
-                    }
-                    style={{
-                        color: visibleLines.ma ? "#1f2937" : "#ccc",
-                        cursor: "pointer",
-                        fontWeight: visibleLines.ma ? 600 : 400,
-                        textDecoration: visibleLines.ma
-                            ? "none"
-                            : "line-through",
-                        userSelect: "none",
-                    }}
-                >
-                    <span
-                        style={{
-                            display: "inline-block",
-                            width: 12,
-                            height: 12,
-                            background: "#1f2937",
-                            borderRadius: 2,
-                            marginRight: 6,
-                            opacity: visibleLines.ma ? 1 : 0.3,
-                        }}
-                    ></span>
-                    Moving Avg ({maInterval})
-                </span>
-            </span>
-        </div>
-    );
+    const maLabel = `Moving avg (${maInterval})`;
 
     return (
-        <div
-            style={{
-                width: "100%",
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-            }}
-        >
-            <div style={{ flex: 1, minHeight: 0 }}>
+        <div className="flex h-full w-full flex-col">
+            <div className="min-h-0 flex-1">
                 <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
+                    <ComposedChart
                         data={chartData}
-                        margin={{ top: 0, right: 0, left: 20, bottom: 0 }}
+                        margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" />
+                        <CartesianGrid {...gridProps} />
                         <XAxis
+                            {...axisProps}
                             dataKey="createdAt"
                             type="number"
                             domain={
@@ -221,46 +120,61 @@ export default function AdvWeightChartRecharts(props: {
                                     ? [minTime, maxTime]
                                     : ["auto", "auto"]
                             }
-                            ticks={getDailyTicks()}
-                            tick={{ fontSize: 12 }}
-                            tickMargin={8}
+                            ticks={dailyTicks(minTime, maxTime, 6)}
                             tickFormatter={(value) =>
-                                dayjs(value).format("MMM D")
+                                dayjs(value).format("D MMM")
                             }
                         />
-                        <YAxis
-                            domain={yDomain}
-                            tick={{ fontSize: 12 }}
-                            tickMargin={8}
-                            width={20}
-                        />
-                        <Tooltip content={<CustomTooltip />} />
-                        {/* <Legend /> removed, using custom legend below */}
-                        <Line
-                            type="monotone"
+                        <YAxis {...axisProps} domain={yDomain} width={36} />
+                        <Tooltip content={<ChartTooltip unit="kg" />} />
+                        <Area
+                            type="linear"
                             dataKey="value"
-                            name="Weight"
-                            stroke="#F97316"
-                            dot={false}
-                            strokeWidth={2.2}
+                            name="Weigh-in"
+                            stroke={CHART.aubergine}
+                            strokeOpacity={0.55}
+                            strokeWidth={1.5}
+                            fill={CHART.lavender}
+                            fillOpacity={0.1}
+                            dot={{ r: 2.5, fill: "#FFFFFF", stroke: CHART.aubergine, strokeWidth: 1.5 }}
+                            activeDot={{ r: 4 }}
                             connectNulls={true}
                             hide={!visibleLines.value}
+                            isAnimationActive={false}
                         />
                         <Line
                             type="monotone"
                             dataKey="ma"
-                            name={`Moving Avg (${maInterval})`}
-                            stroke="#1f2937"
+                            name={maLabel}
+                            stroke={CHART.lavender}
                             dot={false}
-                            strokeWidth={2.2}
+                            strokeWidth={3}
+                            strokeLinecap="round"
                             connectNulls={true}
                             hide={!visibleLines.ma}
+                            isAnimationActive={false}
                         />
-                    </LineChart>
+                    </ComposedChart>
                 </ResponsiveContainer>
             </div>
-            <div style={{ height: 48, marginTop: 8, overflow: "hidden" }}>
-                {renderLegend()}
+            <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1">
+                <SeriesToggle
+                    label={maLabel}
+                    color={CHART.lavender}
+                    thick
+                    visible={visibleLines.ma}
+                    onToggle={() =>
+                        setVisibleLines((prev) => ({ ...prev, ma: !prev.ma }))
+                    }
+                />
+                <SeriesToggle
+                    label="Weigh-in"
+                    color={CHART.aubergine}
+                    visible={visibleLines.value}
+                    onToggle={() =>
+                        setVisibleLines((prev) => ({ ...prev, value: !prev.value }))
+                    }
+                />
             </div>
         </div>
     );

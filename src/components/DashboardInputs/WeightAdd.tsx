@@ -4,10 +4,23 @@ import entryLogged from "@/helpers/entryLogged";
 import React, { useEffect, useRef, useState } from "react";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { entryTags } from "@/constants/constants";
-import { Droplets, Weight, Syringe, Loader2 } from "lucide-react";
+import { Check, Clock, Loader2 } from "lucide-react";
 import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
+import {
+    AppButton,
+    Field,
+    TagPicker,
+    TextInput,
+} from "@/components/app-ui/controls";
 
-export default function WeightAdd(props) {
+/**
+ * Log a weigh-in. Bare (no card) so it sits inside LogEntryDialog; `onSaved`
+ * lets the dialog close after a successful save.
+ */
+export default function WeightAdd(props: {
+    autoFocus?: boolean;
+    onSaved?: () => void;
+}) {
     const valueInputRef = useRef<HTMLInputElement>(null);
 
     // Focused when arriving from a PWA manifest shortcut (?quick=1). Driven by an
@@ -32,16 +45,9 @@ export default function WeightAdd(props) {
     const [sendTime, setSendTime] = useState(false);
     const [selectTag, setSelectTag] = useState<string>(null);
 
-    const handleTagChange = (event: { target: { value: string } }) => {
-        setSelectTag(event.target.value);
-    };
-
     const handleDateChange = (event: { target: { value: string } }) => {
         setSendTime(true);
         setSelectedDate(new Date(event.target.value));
-    };
-    const changeWeight = (event: { target: { value: string } }) => {
-        setWeight(event.target.value);
     };
 
     const submitForm = async (e) => {
@@ -58,91 +64,52 @@ export default function WeightAdd(props) {
             setSelectedDate(new Date());
             setSendTime(false);
             setSelectTag(null);
+            props.onSaved?.();
         } catch (error) {
             notify(mutationErrorMessage(error), "error");
         }
     };
+
     return (
-        <form
-            className="max-w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-border transition-all duration-300 h-full shadow-md"
-            onSubmit={submitForm}
-        >
-            <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
-                <div
-                    className={`p-2 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600`}
-                >
-                    <Weight className="h-4 w-4 text-white" />
-                </div>
-                Body Weight
-            </div>
-            <div className="flex flex-col space-y-3">
-                <div className="space-y-2">
-                    <label
-                        className="block text-sm leading-6 font-medium text-gray-700"
-                        htmlFor="weight"
-                    >
-                        Weight (kg)
-                    </label>
-                    <input
-                        type="number"
-                        id="weight"
-                        ref={valueInputRef}
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
-                        placeholder="72 kg"
-                        value={weight}
-                        onChange={changeWeight}
-                        step="any"
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label
-                        className="block text-sm leading-6 font-medium text-gray-700"
-                        htmlFor="weight_date"
-                    >
-                        Date & Time
-                    </label>
-                    <input
-                        type="datetime-local"
-                        id="weight_date"
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 bg-white outline-hidden"
-                        value={DatetimeLocalFormat(selectedDate)}
-                        onChange={handleDateChange}
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label
-                        className="block text-sm leading-6 font-medium text-gray-700"
-                        htmlFor="weight_tag"
-                    >
-                        Measurement Tag
-                    </label>
-                    <select
-                        id="weight_tag"
-                        value={selectTag ?? ""}
-                        onChange={handleTagChange}
-                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-hidden"
-                    >
-                        <option value="" disabled>
-                            Select Tag
-                        </option>
-                        {entryTags.map((data) => (
-                            <option key={data}>{data}</option>
-                        ))}
-                    </select>
-                </div>
-                <button
-                    type="submit"
-                    className="font-medium rounded-lg text-sm w-full py-2 text-center transition-all duration-300 bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring"
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? (
-                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
-                    ) : (
-                        "Submit"
-                    )}
-                </button>
-            </div>
+        <form className="space-y-5" onSubmit={submitForm} aria-label="Log weight">
+            <Field label="Weight" htmlFor="weight">
+                <TextInput
+                    type="number"
+                    id="weight"
+                    ref={valueInputRef}
+                    inputMode="decimal"
+                    placeholder="72.4"
+                    value={weight}
+                    onChange={(e) => setWeight(e.target.value)}
+                    step="any"
+                    min="0"
+                    required
+                    suffix="kg"
+                />
+            </Field>
+            <Field label="Date & time" htmlFor="weight_date">
+                <TextInput
+                    type="datetime-local"
+                    id="weight_date"
+                    value={DatetimeLocalFormat(selectedDate)}
+                    onChange={handleDateChange}
+                    leading={<Clock className="h-4 w-4 flex-none" aria-hidden="true" />}
+                />
+            </Field>
+            <TagPicker
+                id="weight_tag"
+                tags={entryTags}
+                value={selectTag}
+                onChange={setSelectTag}
+            />
+            <AppButton type="submit" size="lg" block disabled={isSubmitting}>
+                {isSubmitting ? (
+                    <Loader2 className="animate-spin" aria-hidden="true" />
+                ) : (
+                    <Check aria-hidden="true" />
+                )}
+                Save weight
+            </AppButton>
         </form>
     );
 }

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, userEvent, waitFor } from "@/test/render";
+import { renderWithProviders, screen, userEvent, waitFor, within } from "@/test/render";
 
 vi.mock("axios");
 vi.mock("@/helpers/notify", () => ({ default: vi.fn() }));
@@ -82,7 +82,9 @@ describe.each(EDIT_PAGES)("$name edit page controls", (p) => {
         );
         routeParams = { entryId: p.entryId };
         const view = renderWithProviders(<p.Page />);
-        await waitFor(() => expect(get).toHaveBeenCalled());
+        // EditEntryShell shows a spinner until the entry arrives; wait for
+        // the seeded form rather than for the request.
+        await screen.findAllByRole("spinbutton");
         return view;
     };
 
@@ -112,9 +114,22 @@ describe.each(EDIT_PAGES)("$name edit page controls", (p) => {
         expect(dates.length).toBeGreaterThan(0);
     });
 
-    it("accepts a change to every dropdown", async () => {
+    it("accepts a change to every dropdown and chip group", async () => {
         const user = userEvent.setup();
         await mount();
+
+        // Tags (and the insulin type) are radio chips now. Pick one that isn't
+        // chosen yet: clicking the chosen tag clears it.
+        for (const group of screen.queryAllByRole("radiogroup")) {
+            const next = within(group)
+                .getAllByRole("radio")
+                .filter((r) => r.getAttribute("aria-checked") !== "true")
+                .slice(-1)[0];
+            // A group with a single, already-chosen option has nothing to change.
+            if (!next) continue;
+            await user.click(next);
+            expect(next).toHaveAttribute("aria-checked", "true");
+        }
 
         for (const combo of screen.queryAllByRole("combobox")) {
             const options = Array.from(combo.querySelectorAll("option"))
@@ -155,11 +170,7 @@ describe("measurement list page controls", () => {
         renderWithProviders(<MeasurementPage />);
         // Wait for the rendered control, not for the request to be issued --
         // the page holds its skeleton until the query resolves.
-        await waitFor(() =>
-            expect(screen.getAllByRole("combobox").length).toBeGreaterThan(0)
-        );
-
-        await user.selectOptions(screen.getAllByRole("combobox")[0], "90");
+        await user.click(await screen.findByRole("button", { name: "90 days" }));
 
         await waitFor(() =>
             expect(
@@ -171,17 +182,17 @@ describe("measurement list page controls", () => {
     it("deletes a measurement through its confirmation modal", async () => {
         const user = userEvent.setup();
         renderWithProviders(<MeasurementPage />);
-        await waitFor(() =>
-            expect(screen.getAllByRole("table").length).toBeGreaterThan(0)
+        const history = (
+            await screen.findByRole("heading", { name: "History" })
+        ).closest("section")!;
+
+        await user.click(within(history).getAllByRole("button", { name: "Delete" })[0]);
+        await user.click(
+            within(screen.getByRole("dialog")).getByRole("button", { name: "Delete" })
         );
 
-        const table = screen.getAllByRole("table")[0];
-        const buttons = Array.from(table.querySelectorAll("button"));
-        await user.click(buttons[0]);
-        const confirm = buttons.filter((b) => /^delete$/i.test(b.textContent ?? ""));
-        if (confirm.length) {
-            await user.click(confirm[confirm.length - 1]);
-            await waitFor(() => expect(del).toHaveBeenCalled());
-        }
+        await waitFor(() =>
+            expect(del).toHaveBeenCalledWith("/api/measurements/delete/m1")
+        );
     });
 });

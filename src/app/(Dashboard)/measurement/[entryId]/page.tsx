@@ -1,11 +1,10 @@
 "use client";
 import React, { useEffect, useState, ChangeEvent } from "react";
 import notify from "@/helpers/notify";
-import { DatetimeLocalFormat } from "@/helpers/formatDate";
+import formatDate, { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { useParams, useRouter } from "next/navigation";
 import { entryTags } from "@/constants/constants";
-import { Droplets, ArrowLeft, Save, Trash2, Loader2 } from "lucide-react";
-import Link from "next/link";
+import { CalendarClock } from "lucide-react";
 import { useEntry } from "@/hooks/queries/useEntries";
 import {
     useUpdateEntry,
@@ -13,6 +12,9 @@ import {
     mutationErrorMessage,
 } from "@/hooks/queries/useEntryMutations";
 import MeasurementInput from "@/components/MeasurementInput";
+import { EditEntryShell } from "@/components/app-ui/EditEntryShell";
+import { Field, TagPicker, TextInput } from "@/components/app-ui/controls";
+import { filledCount } from "@/components/measurement/measurementSummary";
 
 const dataInputs = [
     "arms",
@@ -53,16 +55,11 @@ export default function EditEntry() {
             createdAt: DatetimeLocalFormat(entry.data.createdAt),
         });
     }, [entry.data]);
-    const changeValue = (event) => {
-        const name = event.target.name;
-        const value = event.target.value;
-        setData({ ...data, [name]: value });
-    };
     const changeDate = (event) => {
         setData({ ...data, createdAt: event.target.value });
     };
-    const changeTag = (event) => {
-        setData({ ...data, tag: event.target.value });
+    const changeTag = (tag: string | null) => {
+        setData({ ...data, tag });
     };
 
     const submitForm = async (e) => {
@@ -96,123 +93,55 @@ export default function EditEntry() {
         }
     };
 
+    const loggedAt = entry.data?.createdAt
+        ? formatDate(entry.data.createdAt)
+        : undefined;
+
     return (
-        <section className="h-full w-full flex flex-col justify-center items-center bg-background p-5 space-y-6">
-            <div className="max-w-2xl mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md w-full">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600">
-                            <Droplets className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                            <p className="text-xl font-semibold text-gray-900">
-                                Edit Measurement Entry
-                            </p>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Update your measurement details
-                            </p>
-                        </div>
-                    </div>
-                    <Link
-                        href={"/measurement"}
-                        className="border-border hover:bg-accent/50 hover:border-primary flex items-center gap-2 border rounded-lg px-3 py-2 transition-all duration-300"
-                    >
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Back
-                    </Link>
-                </div>
+        <EditEntryShell
+            backHref="/measurement"
+            backLabel="Measurements"
+            title="Edit measurements"
+            subtitle={loggedAt ? `Logged on ${loggedAt}` : undefined}
+            formId="edit-measurement"
+            onSubmit={submitForm}
+            isSubmitting={isSubmitting}
+            isLoading={entry.isPending}
+            noun="measurement"
+            deleteDescription={
+                entry.data
+                    ? `${filledCount(entry.data)} of 7 measurements · ${loggedAt}`
+                    : undefined
+            }
+            onDelete={() => deleteData(params.entryId)}
+            loggedAt={loggedAt}
+        >
+            <div className="grid grid-cols-2 gap-x-3 gap-y-4 lg:grid-cols-4 lg:gap-x-4">
+                {dataInputs.map((input) => (
+                    <MeasurementInput
+                        key={input}
+                        label={input}
+                        id={input}
+                        onChange={changeMeasurements}
+                        value={data[input]}
+                    />
+                ))}
             </div>
-            <form
-                className="max-w-2xl w-full mx-auto p-4 md:px-6 py-5 rounded-lg bg-white border border-border transition-all duration-300 shadow-md"
-                onSubmit={submitForm}
-            >
-                <div className="flex items-center gap-3 text-lg font-semibold text-gray-900 mb-3">
-                    <div
-                        className={`p-2 rounded-lg bg-primary`}
-                    >
-                        <Save className="h-4 w-4 text-white" />
-                    </div>
-                    Body Measurements
-                </div>
-                <div className="flex flex-col space-y-3">
-                    <div className="space-y-2">
-                        {dataInputs.map((input) => (
-                            <MeasurementInput
-                                key={input}
-                                label={input}
-                                id={input}
-                                onChange={changeMeasurements}
-                                value={data[input]}
-                            />
-                        ))}
-                    </div>
-                    <div className="space-y-2">
-                        <label
-                            className="block text-sm leading-6 font-medium text-gray-700"
-                            htmlFor="glucoseDate"
-                        >
-                            Date & Time
-                        </label>
-                        <input
-                            type="datetime-local"
-                            id="glucoseDate"
-                            className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
-                            value={DatetimeLocalFormat(data.createdAt)}
-                            onChange={changeDate}
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <label
-                            className="block text-sm leading-6 font-medium text-gray-700"
-                            htmlFor="glucose_tag"
-                        >
-                            Measurement Tag
-                        </label>
-                        <select
-                            id="glucose_tag"
-                            value={data.tag ?? ""}
-                            onChange={changeTag}
-                            className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 outline-hidden"
-                        >
-                            <option value="">Select Tag</option>
-                            {entryTags.map((data) => (
-                                <option key={data}>{data}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="flex flex-row gap-2 w-full">
-                        <button
-                            type="submit"
-                            className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-primary-ring font-medium rounded-lg text-sm w-full  md:w-2/3 py-2 text-center transition-all duration-300"
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
-                            ) : (
-                                <div className="flex items-center justify-center gap-2">
-                                    <Save className="h-4 w-4" />
-                                    Update Entry
-                                </div>
-                            )}
-                        </button>
-                        <button
-                            type="button"
-                            className="text-white bg-destructive hover:bg-destructive/90 font-medium rounded-lg text-sm md:w-1/3  w-full py-2 text-center transition-all duration-300"
-                            disabled={isSubmitting}
-                            onClick={() => deleteData(params.entryId)}
-                        >
-                            {isSubmitting ? (
-                                <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
-                            ) : (
-                                <div className="flex items-center justify-center gap-2">
-                                    <Trash2 className="h-4 w-4" />
-                                    Delete
-                                </div>
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </section>
+            <TagPicker
+                id="measurement_tag"
+                value={data.tag}
+                onChange={changeTag}
+                tags={entryTags}
+            />
+            <Field label="Date & time" htmlFor="measurementDate" className="max-w-xs">
+                <TextInput
+                    type="datetime-local"
+                    id="measurementDate"
+                    value={DatetimeLocalFormat(data.createdAt)}
+                    onChange={changeDate}
+                    leading={<CalendarClock className="h-4 w-4 flex-none" aria-hidden="true" />}
+                />
+            </Field>
+        </EditEntryShell>
     );
 }

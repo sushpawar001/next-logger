@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
     getDailyInsulinValues,
+    countDistinctDays,
+    dailyRanges,
+    getHba1cPrecise,
     getHba1cValue,
+    summarize,
     simpleMovingAverage,
 } from "./statsHelpers";
 import type { insulin } from "@/types/models";
@@ -89,5 +93,58 @@ describe("getHba1cValue", () => {
 
     it("rounds to a whole number", () => {
         expect(Number.isInteger(getHba1cValue(137))).toBe(true);
+    });
+});
+
+describe("getHba1cPrecise", () => {
+    it("keeps one decimal", () => {
+        expect(getHba1cPrecise(132)).toBe(6.2);
+        expect(getHba1cPrecise(100)).toBe(5.1);
+    });
+});
+
+describe("summarize", () => {
+    it("is empty for no values", () => {
+        expect(summarize([])).toEqual({ count: 0, avg: null, min: null, max: null });
+    });
+
+    it("computes count, average and extremes", () => {
+        expect(summarize([100, 200, 150])).toEqual({
+            count: 3,
+            avg: 150,
+            min: 100,
+            max: 200,
+        });
+    });
+
+    it("ignores non-finite values", () => {
+        expect(summarize([100, NaN]).count).toBe(1);
+    });
+});
+
+describe("countDistinctDays", () => {
+    it("counts each local day once", () => {
+        expect(
+            countDistinctDays([
+                { createdAt: new Date(2026, 8, 1, 8).toISOString() },
+                { createdAt: new Date(2026, 8, 1, 20).toISOString() },
+                { createdAt: new Date(2026, 8, 3, 8).toISOString() },
+            ])
+        ).toBe(2);
+    });
+});
+
+describe("dailyRanges", () => {
+    it("groups readings by local day, oldest first", () => {
+        const ranges = dailyRanges([
+            { createdAt: new Date(2026, 8, 2, 9).toISOString(), value: 120 },
+            { createdAt: new Date(2026, 8, 1, 8).toISOString(), value: 60 },
+            { createdAt: new Date(2026, 8, 1, 20).toISOString(), value: 200 },
+        ]);
+
+        expect(ranges).toEqual([
+            { day: new Date(2026, 8, 1).getTime(), min: 60, max: 200, avg: 130, count: 2 },
+            { day: new Date(2026, 8, 2).getTime(), min: 120, max: 120, avg: 120, count: 1 },
+        ]);
     });
 });

@@ -1,6 +1,7 @@
 import * as React from "react"
 
-const MOBILE_BREAKPOINT = 768
+// Matches the `lg` screen (960px): below it the sidebar becomes a drawer.
+const MOBILE_BREAKPOINT = 960
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined)

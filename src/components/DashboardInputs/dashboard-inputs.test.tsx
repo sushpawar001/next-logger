@@ -46,32 +46,10 @@ beforeEach(() => {
 });
 
 const FORMS = [
-    {
-        name: "GlucoseAdd",
-        Component: GlucoseAdd,
-        endpoint: "/api/glucose/add",
-        resource: "glucose" as const,
-        heading: /blood glucose/i,
-        valueLabel: /glucose level/i,
-        tagSelectId: "glucose_tag",
-        fill: async (user: any) => {
-            await user.type(screen.getByLabelText(/glucose level/i), "120");
-        },
-        expectedBody: { value: "120" },
-    },
-    {
-        name: "WeightAdd",
-        Component: WeightAdd,
-        endpoint: "/api/weight/add",
-        resource: "weight" as const,
-        heading: /weight/i,
-        valueLabel: /weight/i,
-        tagSelectId: "weight_tag",
-        fill: async (user: any) => {
-            await user.type(screen.getAllByRole("spinbutton")[0], "72.4");
-        },
-        expectedBody: { value: "72.4" },
-    },
+    // GlucoseAdd moved to its own describe block below: it is a bare A1 form
+    // ("Save reading", live status badge) rendered inside the Log glucose dialog.
+    // WeightAdd moved to its own describe block below: it is an A1 form
+    // (tag chips, "Save weight") rather than the select + Submit shape.
 ];
 
 describe.each(FORMS)("$name", (f) => {
@@ -209,17 +187,79 @@ describe.each(FORMS)("$name", (f) => {
     });
 });
 
-describe("GlucoseAdd specifics", () => {
+describe("GlucoseAdd", () => {
+    const valueInput = () => screen.getByLabelText(/glucose reading/i);
+    const save = () => screen.getByRole("button", { name: /save reading/i });
+    const fill = async (user: any, value = "120") => {
+        await user.type(valueInput(), value);
+    };
+
+    it("renders a required reading field in mg/dL and a save button", () => {
+        renderWithProviders(<GlucoseAdd />);
+
+        expect(valueInput()).toBeRequired();
+        expect(screen.getByText("mg/dL")).toBeInTheDocument();
+        expect(save()).toBeInTheDocument();
+    });
+
+    it("offers every entry tag", () => {
+        renderWithProviders(<GlucoseAdd />);
+
+        const select = document.getElementById("glucose_tag") as HTMLSelectElement;
+        const options = Array.from(select.querySelectorAll("option")).map(
+            (o) => o.textContent
+        );
+
+        expect(options).toEqual(["Select Tag", ...entryTags]);
+    });
+
+    it.each([
+        ["120", "In range"],
+        ["200", "High"],
+        ["60", "Low"],
+    ])("shows the status of %s mg/dL live", async (value, label) => {
+        const user = userEvent.setup();
+        renderWithProviders(<GlucoseAdd />);
+
+        await fill(user, value);
+
+        expect(screen.getByText(label)).toBeInTheDocument();
+    });
+
+    it("posts the entered value to its endpoint", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<GlucoseAdd />);
+
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
+        expect(post.mock.calls[0][0]).toBe("/api/glucose/add");
+        expect(post.mock.calls[0][1]).toMatchObject({ value: "120" });
+    });
+
+    it("sends a null date and tag until the user picks them", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<GlucoseAdd />);
+
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() => expect(post).toHaveBeenCalled());
+        expect((post.mock.calls[0][1] as any).date).toBeNull();
+        expect((post.mock.calls[0][1] as any).tag).toBeNull();
+    });
+
     it("sends the chosen tag", async () => {
         const user = userEvent.setup();
         renderWithProviders(<GlucoseAdd />);
 
-        await user.type(screen.getByLabelText(/glucose level/i), "120");
+        await fill(user);
         await user.selectOptions(
             document.getElementById("glucose_tag") as HTMLSelectElement,
             "Fasting"
         );
-        await user.click(screen.getByRole("button", { name: /submit/i }));
+        await user.click(save());
 
         await waitFor(() => expect(post).toHaveBeenCalled());
         expect((post.mock.calls[0][1] as any).tag).toBe("Fasting");
@@ -229,22 +269,98 @@ describe("GlucoseAdd specifics", () => {
         const user = userEvent.setup();
         renderWithProviders(<GlucoseAdd />);
 
-        await user.type(screen.getByLabelText(/glucose level/i), "120");
+        await fill(user);
         const dateInput = document.getElementById(
             "glucoseDate"
         ) as HTMLInputElement;
         await user.clear(dateInput);
         await user.type(dateInput, "2026-01-20T06:30");
-        await user.click(screen.getByRole("button", { name: /submit/i }));
+        await user.click(save());
 
         await waitFor(() => expect(post).toHaveBeenCalled());
         expect((post.mock.calls[0][1] as any).date).not.toBeNull();
     });
 
-    it("requires a value before submitting", () => {
+    it("announces a successful entry, clears the form and calls onSaved", async () => {
+        const user = userEvent.setup();
+        const onSaved = vi.fn();
+        renderWithProviders(<GlucoseAdd onSaved={onSaved} />);
+
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("Entry added!", "success")
+        );
+        expect(entryLogged).toHaveBeenCalledTimes(1);
+        expect(onSaved).toHaveBeenCalledTimes(1);
+        expect((valueInput() as HTMLInputElement).value).toBe("");
+    });
+
+    it("invalidates every cached window of glucose after a successful add", async () => {
+        const user = userEvent.setup();
+        const queryClient = makeTestQueryClient();
+        queryClient.setQueryData(qk.list("glucose", 7), [{ _id: "old" }]);
+        queryClient.setQueryData(qk.list("glucose", 30), [{ _id: "old" }]);
+        queryClient.setQueryData(qk.insulinTypes(), [{ _id: "type" }]);
+        renderWithProviders(<GlucoseAdd />, { queryClient });
+
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() => {
+            expect(
+                queryClient.getQueryState(qk.list("glucose", 7))?.isInvalidated
+            ).toBe(true);
+            expect(
+                queryClient.getQueryState(qk.list("glucose", 30))?.isInvalidated
+            ).toBe(true);
+        });
+        expect(queryClient.getQueryState(qk.insulinTypes())?.isInvalidated).toBe(
+            false
+        );
+    });
+
+    it("reports a server error and keeps the form open", async () => {
+        const user = userEvent.setup();
+        const onSaved = vi.fn();
+        post.mockImplementation(
+            rejectsWith({ response: { data: { message: "Something broke" } } })
+        );
+        renderWithProviders(<GlucoseAdd onSaved={onSaved} />);
+
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("Something broke", "error")
+        );
+        expect(onSaved).not.toHaveBeenCalled();
+    });
+
+    it("falls back to a generic error message", async () => {
+        const user = userEvent.setup();
+        post.mockImplementation(rejectsWith(new Error("network down")));
         renderWithProviders(<GlucoseAdd />);
 
-        expect(screen.getByLabelText(/glucose level/i)).toBeRequired();
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("An error occurred", "error")
+        );
+    });
+
+    it("focuses the value field when arriving from a PWA shortcut", () => {
+        renderWithProviders(<GlucoseAdd autoFocus />);
+
+        expect(document.activeElement).toBe(valueInput());
+    });
+
+    it("does not steal focus without the shortcut flag", () => {
+        renderWithProviders(<GlucoseAdd />);
+
+        expect(document.activeElement?.tagName).not.toBe("INPUT");
     });
 });
 
@@ -254,48 +370,142 @@ describe("InsulinAdd", () => {
         { _id: "i1", name: "Lantus" },
         { _id: "i2", name: "NovoRapid" },
     ];
+    const save = () => screen.getByRole("button", { name: /save dose/i });
 
     beforeEach(() => {
         vi.mocked(axios.get).mockResolvedValue({ data: { data: insulins } });
     });
 
-    it("loads and renders the user's insulin options", async () => {
+    it("loads the user's insulins as radio chips", async () => {
         renderWithProviders(<InsulinAdd />);
 
         await waitFor(() =>
             expect(axios.get).toHaveBeenCalledWith("/api/users/get-insulin")
         );
-        await waitFor(() =>
-            expect(screen.getAllByText(/lantus/i).length).toBeGreaterThan(0)
+        expect(await screen.findByRole("radio", { name: "Lantus" })).toHaveAttribute(
+            "aria-checked",
+            "false"
+        );
+        expect(screen.getByRole("radio", { name: "NovoRapid" })).toBeInTheDocument();
+    });
+
+    it("links to the profile to add an insulin", () => {
+        renderWithProviders(<InsulinAdd />);
+
+        expect(screen.getByRole("link", { name: /add insulin/i })).toHaveAttribute(
+            "href",
+            "/profile"
         );
     });
 
-    it("posts units to the insulin endpoint", async () => {
+    it("posts units and the chosen insulin to the insulin endpoint", async () => {
         const user = userEvent.setup();
         renderWithProviders(<InsulinAdd />);
-        await waitFor(() => expect(axios.get).toHaveBeenCalled());
 
-        await user.type(screen.getAllByRole("spinbutton")[0], "12");
-        // The insulin type is required, so the form will not submit without it.
+        await user.type(screen.getByRole("spinbutton"), "12");
+        await user.click(await screen.findByRole("radio", { name: "Lantus" }));
         await user.selectOptions(
-            document.getElementById("insulinType") as HTMLSelectElement,
-            "Lantus"
+            document.getElementById("insulin_tag") as HTMLSelectElement,
+            "Before meal"
         );
-        await user.click(screen.getByRole("button", { name: /submit/i }));
+        await user.click(save());
 
         await waitFor(() => expect(post).toHaveBeenCalled());
         expect(post.mock.calls[0][0]).toBe("/api/insulin/add");
-        expect((post.mock.calls[0][1] as any).units).toBe("12");
-        expect((post.mock.calls[0][1] as any).name).toBe("Lantus");
+        expect(post.mock.calls[0][1]).toMatchObject({
+            units: "12",
+            name: "Lantus",
+            tag: "Before meal",
+            date: null,
+        });
+        expect(notify).toHaveBeenCalledWith("Entry added!", "success");
+        expect(entryLogged).toHaveBeenCalledTimes(1);
     });
 
-    it("renders when the user has no insulin types configured", async () => {
+    it("refuses to save without an insulin chosen", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<InsulinAdd />);
+        await screen.findByRole("radio", { name: "Lantus" });
+
+        await user.type(screen.getByRole("spinbutton"), "12");
+        await user.click(save());
+
+        expect(notify).toHaveBeenCalledWith("Choose which insulin you took.", "error");
+        expect(post).not.toHaveBeenCalled();
+    });
+
+    it("preselects the only insulin when there is just one", async () => {
+        const user = userEvent.setup();
+        vi.mocked(axios.get).mockResolvedValue({
+            data: { data: [{ _id: "i1", name: "Tresiba" }] },
+        });
+        renderWithProviders(<InsulinAdd />);
+
+        expect(await screen.findByRole("radio", { name: "Tresiba" })).toHaveAttribute(
+            "aria-checked",
+            "true"
+        );
+        await user.type(screen.getByRole("spinbutton"), "10");
+        await user.click(save());
+
+        await waitFor(() => expect(post).toHaveBeenCalled());
+        expect((post.mock.calls[0][1] as any).name).toBe("Tresiba");
+    });
+
+    it("calls onSaved after a successful save", async () => {
+        const user = userEvent.setup();
+        const onSaved = vi.fn();
+        renderWithProviders(<InsulinAdd onSaved={onSaved} />);
+
+        await user.type(screen.getByRole("spinbutton"), "6");
+        await user.click(await screen.findByRole("radio", { name: "NovoRapid" }));
+        await user.click(save());
+
+        await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));
+    });
+
+    it("does not call onSaved when the save fails", async () => {
+        const user = userEvent.setup();
+        const onSaved = vi.fn();
+        post.mockImplementation(rejectsWith({
+            response: { data: { message: "Something broke" } },
+        }));
+        renderWithProviders(<InsulinAdd onSaved={onSaved} />);
+
+        await user.type(screen.getByRole("spinbutton"), "6");
+        await user.click(await screen.findByRole("radio", { name: "NovoRapid" }));
+        await user.click(save());
+
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("Something broke", "error")
+        );
+        expect(onSaved).not.toHaveBeenCalled();
+    });
+
+    it("offers every entry tag", () => {
+        renderWithProviders(<InsulinAdd />);
+
+        const select = document.getElementById("insulin_tag") as HTMLSelectElement;
+        expect(Array.from(select.options).map((o) => o.textContent)).toEqual([
+            "Select Tag",
+            ...entryTags,
+        ]);
+    });
+
+    it("focuses the dose field when arriving from a PWA shortcut", () => {
+        renderWithProviders(<InsulinAdd autoFocus />);
+
+        expect(document.activeElement).toBe(screen.getByRole("spinbutton"));
+    });
+
+    it("explains what to do when the user has no insulin types configured", async () => {
         vi.mocked(axios.get).mockResolvedValue({ data: { data: [] } });
 
         renderWithProviders(<InsulinAdd />);
 
         await waitFor(() => expect(axios.get).toHaveBeenCalled());
-        expect(screen.getByRole("button", { name: /submit/i })).toBeInTheDocument();
+        expect(screen.getByText(/no insulins yet/i)).toBeInTheDocument();
+        expect(save()).toBeInTheDocument();
     });
 
     /**
@@ -305,18 +515,16 @@ describe("InsulinAdd", () => {
      *
      * The query hook contains the rejection, so it can be tested for real now.
      */
-    it("survives a failed insulin lookup with an empty dropdown", async () => {
+    it("survives a failed insulin lookup with no insulin choices", async () => {
         vi.mocked(axios.get).mockRejectedValue(new Error("network down"));
 
         renderWithProviders(<InsulinAdd />);
 
         await waitFor(() => expect(axios.get).toHaveBeenCalled());
 
-        // The form is still usable and the dropdown holds only its placeholder.
-        expect(screen.getByRole("button", { name: /submit/i })).toBeInTheDocument();
-        const select = document.getElementById("insulinType") as HTMLSelectElement;
-        expect(select.options).toHaveLength(1);
-        expect(select.options[0]).toBeDisabled();
+        // The form is still usable and offers no insulin to pick.
+        expect(save()).toBeInTheDocument();
+        expect(screen.queryAllByRole("radio")).toHaveLength(0);
     });
 
     it("fetches the insulin types once even when two forms are on the page", async () => {
@@ -368,7 +576,7 @@ describe("MeasurementAdd", () => {
             const label = field.charAt(0).toUpperCase() + field.slice(1);
             await user.type(screen.getAllByLabelText(label)[0], "50");
         }
-        await user.click(screen.getByRole("button", { name: /submit/i }));
+        await user.click(screen.getByRole("button", { name: /save measurements/i }));
 
         await waitFor(() => expect(post).toHaveBeenCalled());
         expect(post.mock.calls[0][0]).toBe("/api/measurements/add");
@@ -377,5 +585,172 @@ describe("MeasurementAdd", () => {
         for (const field of CIRCUMFERENCES) {
             expect(body.measurements[field]).toBe("50");
         }
+    });
+
+    const fillAll = async (user: any) => {
+        for (const field of CIRCUMFERENCES) {
+            const label = field.charAt(0).toUpperCase() + field.slice(1);
+            await user.type(screen.getByLabelText(label), "40");
+        }
+    };
+
+    it("sends the picked tag and clears the form after saving", async () => {
+        const user = userEvent.setup();
+        const onSaved = vi.fn();
+        renderWithProviders(<MeasurementAdd onSaved={onSaved} />);
+
+        await fillAll(user);
+        await user.click(screen.getByRole("radio", { name: "Fasting" }));
+        await user.click(screen.getByRole("button", { name: /save measurements/i }));
+
+        await waitFor(() => expect(onSaved).toHaveBeenCalledTimes(1));
+        expect((post.mock.calls[0][1] as any).tag).toBe("Fasting");
+        expect(entryLogged).toHaveBeenCalled();
+        expect((screen.getByLabelText("Waist") as HTMLInputElement).value).toBe("");
+        expect(screen.getByRole("radio", { name: "Fasting" })).toHaveAttribute(
+            "aria-checked",
+            "false"
+        );
+    });
+
+    it("keeps the dialog open when the save fails", async () => {
+        const user = userEvent.setup();
+        const onSaved = vi.fn();
+        post.mockImplementation(rejectsWith(new Error("boom")));
+        renderWithProviders(<MeasurementAdd onSaved={onSaved} />);
+
+        await fillAll(user);
+        await user.click(screen.getByRole("button", { name: /save measurements/i }));
+
+        await waitFor(() => expect(notify).toHaveBeenCalledWith(expect.anything(), "error"));
+        expect(onSaved).not.toHaveBeenCalled();
+    });
+
+    it("clears every field on Clear", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<MeasurementAdd />);
+
+        await user.type(screen.getByLabelText("Arms"), "33");
+        await user.click(screen.getByRole("button", { name: "Clear" }));
+
+        expect((screen.getByLabelText("Arms") as HTMLInputElement).value).toBe("");
+    });
+
+    it("focuses the first field when opened from a shortcut", () => {
+        renderWithProviders(<MeasurementAdd autoFocus />);
+
+        expect(screen.getByLabelText("Arms")).toHaveFocus();
+    });
+});
+
+describe("WeightAdd", () => {
+    const save = () => screen.getByRole("button", { name: /save weight/i });
+    const fill = async (user: any) => {
+        await user.type(screen.getByLabelText("Weight"), "72.4");
+    };
+
+    it("renders a labelled kg field and a save button", () => {
+        renderWithProviders(<WeightAdd />);
+
+        expect(screen.getByLabelText("Weight")).toHaveAttribute("type", "number");
+        expect(screen.getByText("kg")).toBeInTheDocument();
+        expect(save()).toBeInTheDocument();
+    });
+
+    it("offers every entry tag as a single-choice chip", () => {
+        renderWithProviders(<WeightAdd />);
+
+        const group = screen.getByRole("radiogroup", { name: "Tag" });
+        expect(
+            Array.from(group.querySelectorAll('[role="radio"]')).map((r) => r.textContent)
+        ).toEqual(entryTags);
+    });
+
+    it("posts the entered value, tag and a null date", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<WeightAdd />);
+
+        await fill(user);
+        await user.click(screen.getByRole("radio", { name: "Fasting" }));
+        await user.click(save());
+
+        await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
+        expect(post.mock.calls[0][0]).toBe("/api/weight/add");
+        expect(post.mock.calls[0][1]).toMatchObject({
+            value: "72.4",
+            tag: "Fasting",
+            date: null,
+        });
+    });
+
+    it("clears a tag when its chip is clicked again", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<WeightAdd />);
+
+        const chip = screen.getByRole("radio", { name: "Fasting" });
+        await user.click(chip);
+        expect(chip).toHaveAttribute("aria-checked", "true");
+        await user.click(chip);
+        expect(chip).toHaveAttribute("aria-checked", "false");
+    });
+
+    it("announces a successful entry, clears the form and calls onSaved", async () => {
+        const user = userEvent.setup();
+        const onSaved = vi.fn();
+        renderWithProviders(<WeightAdd onSaved={onSaved} />);
+
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("Entry added!", "success")
+        );
+        expect(entryLogged).toHaveBeenCalledTimes(1);
+        expect(onSaved).toHaveBeenCalledTimes(1);
+        expect(screen.getByLabelText("Weight")).toHaveValue(null);
+    });
+
+    it("invalidates every cached weight window after a successful add", async () => {
+        const user = userEvent.setup();
+        const queryClient = makeTestQueryClient();
+        queryClient.setQueryData(qk.list("weight", 7), [{ _id: "old" }]);
+        queryClient.setQueryData(qk.list("weight", 30), [{ _id: "old" }]);
+        queryClient.setQueryData(qk.insulinTypes(), [{ _id: "type" }]);
+        renderWithProviders(<WeightAdd />, { queryClient });
+
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() => {
+            expect(queryClient.getQueryState(qk.list("weight", 7))?.isInvalidated).toBe(true);
+            expect(queryClient.getQueryState(qk.list("weight", 30))?.isInvalidated).toBe(true);
+        });
+        expect(queryClient.getQueryState(qk.insulinTypes())?.isInvalidated).toBe(false);
+    });
+
+    it("reports a server error and does not call onSaved", async () => {
+        const user = userEvent.setup();
+        const onSaved = vi.fn();
+        post.mockImplementation(rejectsWith({
+            response: { data: { message: "Something broke" } },
+        }));
+        renderWithProviders(<WeightAdd onSaved={onSaved} />);
+
+        await fill(user);
+        await user.click(save());
+
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("Something broke", "error")
+        );
+        expect(onSaved).not.toHaveBeenCalled();
+    });
+
+    it("focuses the value field only when arriving from a PWA shortcut", () => {
+        const { unmount } = renderWithProviders(<WeightAdd autoFocus />);
+        expect(document.activeElement).toBe(screen.getByLabelText("Weight"));
+        unmount();
+
+        renderWithProviders(<WeightAdd />);
+        expect(document.activeElement?.tagName).not.toBe("INPUT");
     });
 });

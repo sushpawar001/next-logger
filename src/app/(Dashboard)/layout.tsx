@@ -1,11 +1,7 @@
 import getToken from "@/helpers/getToken";
 import { ClerkProvider } from "@clerk/nextjs";
 import LeftSidebar from "@/components/LeftSidebar";
-import {
-    SidebarProvider,
-    SidebarTrigger,
-    SidebarInset,
-} from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import InstallAppCard from "@/components/pwa/InstallAppCard";
 import QueryProvider from "@/components/providers/QueryProvider";
@@ -32,18 +28,11 @@ export default async function RootLayout({ children }) {
                     <LeftSidebar />
                     <SidebarInset>
                         <DashboardHeader />
-                        {/* <SidebarInset>
-                        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 ">
-                            <SidebarTrigger className="-ml-1" />
-                            <div className="h-4 w-px bg-sidebar-border" />
-                            <div className="flex items-center gap-2">
-                                <h2 className="font-semibold text-sidebar-foreground">
-                                    Dashboard
-                                </h2>
-                            </div>
-                        </header>
-                    </SidebarInset> */}
-                        <main className="w-full h-full">{children}</main>
+                        {/* SidebarInset is the <main>; pages lay out inside this column,
+                            filling the space beside the sidebar (capped for ultra-wide screens). */}
+                        <div className="mx-auto w-full max-w-[1920px] px-4 pt-5 pb-10 lg:px-10 lg:pt-10 lg:pb-14">
+                            {children}
+                        </div>
                         {/* Dashboard only — never on the public /tools calculators. */}
                         <InstallAppCard />
                     </SidebarInset>

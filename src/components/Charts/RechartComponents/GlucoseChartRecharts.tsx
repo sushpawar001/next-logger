@@ -8,31 +8,50 @@ import {
     Tooltip,
     ResponsiveContainer,
     ReferenceArea,
+    ReferenceLine,
 } from "recharts";
 import axios from "axios";
 import dayjs from "dayjs";
+import { GLUCOSE_TARGET } from "@/constants/constants";
+import { glucoseStatus } from "@/helpers/glucoseStatus";
+import {
+    CHART,
+    axisProps,
+    gridProps,
+    statusColor,
+    tooltipBoxStyle,
+} from "./chartTheme";
 
 interface GlucoseData {
-    createdAt: string | number; // Accept both for input, but will convert to number
+    createdAt?: string | number | Date; // Normalised to a timestamp (ms) by prepareData
     value: number;
 }
 
+const STATUS_LABEL = { in: "In range", high: "High", low: "Low" } as const;
+
 // Custom tooltip for human-readable date
 const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
+    if (active && payload && payload.length && payload[0].value != null) {
+        const value = Number(payload[0].value);
+        const status = glucoseStatus(value);
         return (
-            <div
-                style={{
-                    background: "white",
-                    border: "1px solid #eee",
-                    padding: 10,
-                }}
-            >
-                <div style={{ fontWeight: 600 }}>
-                    {dayjs(label).format("MMM D, YYYY h:mm A")}
+            <div style={tooltipBoxStyle}>
+                <div style={{ color: CHART.muted, marginBottom: 2 }}>
+                    {dayjs(label).format("D MMM, HH:mm")}
                 </div>
-                <div style={{ color: "#d62828" }}>
-                    glucose : {payload[0].value}
+                <div style={{ fontWeight: 600 }}>
+                    {value} mg/dL{" "}
+                    <span
+                        style={{
+                            color:
+                                status === "in"
+                                    ? CHART.in
+                                    : statusColor(value),
+                            fontWeight: 600,
+                        }}
+                    >
+                        · {STATUS_LABEL[status]}
+                    </span>
                 </div>
             </div>
         );
@@ -40,10 +59,70 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return null;
 };
 
+/**
+ * In-range readings are hollow Aubergine dots; only readings outside the
+ * target band take a (filled, larger) status colour.
+ */
+const makeDot =
+    (radius: number, highlight?: number) =>
+    // eslint-disable-next-line react/display-name
+    (props: any) => {
+        const { cx, cy, payload, index } = props;
+        if (cx == null || cy == null || payload?.value == null) {
+            return <g key={`dot-${index}`} />;
+        }
+        const value = Number(payload.value);
+        const inRange = glucoseStatus(value) === "in";
+        const isHighlight =
+            highlight != null && payload.createdAt === highlight;
+        return (
+            <g key={`dot-${index}`}>
+                {isHighlight && (
+                    <circle
+                        cx={cx}
+                        cy={cy}
+                        r={12}
+                        fill="none"
+                        stroke={CHART.lavender}
+                        strokeWidth={3}
+                    />
+                )}
+                {inRange ? (
+                    <circle
+                        cx={cx}
+                        cy={cy}
+                        r={radius}
+                        fill="#FFFFFF"
+                        stroke={CHART.aubergine}
+                        strokeWidth={2}
+                    />
+                ) : (
+                    <circle
+                        cx={cx}
+                        cy={cy}
+                        r={radius + 1.5}
+                        fill={statusColor(value)}
+                        stroke="#FFFFFF"
+                        strokeWidth={2}
+                    />
+                )}
+            </g>
+        );
+    };
+
 export default function GlucoseChartRecharts(props: {
     days?: number;
     fetch: boolean;
     data?: GlucoseData[];
+    /** "day" ticks at each midnight (default); "hour" ticks every few hours for a single day. */
+    xTicks?: "day" | "hour";
+    /** Draw a dashed "now" marker at this timestamp (ms). */
+    now?: number;
+    /** Circle the reading logged at this time (ms or ISO string). */
+    highlight?: number | string;
+    /** Fix the x-axis span, e.g. a whole day. Defaults to the data's range. */
+    xDomain?: [number, number];
+    dotRadius?: number;
 }) {
     const [glucose, setGlucose] = useState<GlucoseData[]>([]);
     const daysOfData = props.days || 7;
@@ -84,76 +163,130 @@ export default function GlucoseChartRecharts(props: {
         }
     }, [getGlucose, props.data, props.fetch]);
 
-    // Find min/max for domain
-    const minTime = glucose.length
-        ? Math.min(...glucose.map((d) => d.createdAt as number))
-        : undefined;
-    const maxTime = glucose.length
-        ? Math.max(...glucose.map((d) => d.createdAt as number))
-        : undefined;
+    const minTime = props.xDomain
+        ? props.xDomain[0]
+        : glucose.length
+          ? Math.min(...glucose.map((d) => d.createdAt as number))
+          : undefined;
+    const maxTime = props.xDomain
+        ? props.xDomain[1]
+        : glucose.length
+          ? Math.max(...glucose.map((d) => d.createdAt as number))
+          : undefined;
 
-    // Pad data with null-value points at min and max if needed
-    let paddedData = glucose;
-    if (glucose.length && minTime !== undefined && maxTime !== undefined) {
-        const first = glucose[0];
-        const last = glucose[glucose.length - 1];
-        if ((first.createdAt as number) > minTime) {
-            paddedData = [{ createdAt: minTime, value: null }, ...paddedData];
-        }
-        if ((last.createdAt as number) < maxTime) {
-            paddedData = [...paddedData, { createdAt: maxTime, value: null }];
-        }
-    }
-
-    // Generate ticks at 24-hour intervals (midnight)
-    const getDailyTicks = () => {
-        if (!minTime || !maxTime) return [];
+    const getTicks = () => {
+        if (minTime === undefined || maxTime === undefined) return [];
         const ticks = [];
-        let current = dayjs(minTime).valueOf();
-        while (current <= maxTime) {
-            ticks.push(current);
-            current = dayjs(current).add(1, "day").valueOf();
+        if (props.xTicks === "hour") {
+            let current = dayjs(minTime).startOf("hour");
+            const step = 6;
+            while (current.valueOf() <= maxTime) {
+                if (current.valueOf() >= minTime && current.hour() % step === 0)
+                    ticks.push(current.valueOf());
+                current = current.add(1, "hour");
+            }
+            return ticks;
         }
-        return ticks;
+        let current = dayjs(minTime).startOf("day").add(1, "day");
+        while (current.valueOf() <= maxTime) {
+            ticks.push(current.valueOf());
+            current = current.add(1, "day");
+        }
+        // Too many midnights to label on a long window: thin them out.
+        const every = Math.ceil(ticks.length / 8);
+        return ticks.filter((_, i) => i % every === 0);
     };
+
+    const highlight =
+        props.highlight == null
+            ? undefined
+            : typeof props.highlight === "number"
+              ? props.highlight
+              : new Date(props.highlight).getTime();
+
+    const maxValue = glucose.length
+        ? Math.max(...glucose.map((d) => Number(d.value) || 0))
+        : 0;
+    const yMax = Math.max(260, Math.ceil((maxValue + 20) / 20) * 20);
 
     return (
         <ResponsiveContainer width="100%" height="100%">
             <LineChart
-                data={paddedData}
-                margin={{ top: 0, right: 0, left: 20, bottom: 0 }}
+                data={glucose}
+                margin={{ top: 16, right: 8, left: 0, bottom: 0 }}
             >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid {...gridProps} />
+                <ReferenceArea
+                    y1={GLUCOSE_TARGET.low}
+                    y2={GLUCOSE_TARGET.high}
+                    fill={CHART.oat}
+                    fillOpacity={0.6}
+                    stroke="none"
+                    ifOverflow="extendDomain"
+                />
+                {[GLUCOSE_TARGET.low, GLUCOSE_TARGET.high].map((y) => (
+                    <ReferenceLine
+                        key={y}
+                        y={y}
+                        stroke={CHART.border}
+                        strokeDasharray="4 4"
+                    />
+                ))}
                 <XAxis
+                    {...axisProps}
                     dataKey="createdAt"
                     type="number"
+                    scale="time"
                     domain={
                         minTime !== undefined && maxTime !== undefined
                             ? [minTime, maxTime]
                             : ["auto", "auto"]
                     }
-                    ticks={getDailyTicks()}
-                    tick={{ fontSize: 12 }}
-                    tickMargin={8}
-                    tickFormatter={(value) => dayjs(value).format("MMM D")}
+                    ticks={getTicks()}
+                    tickFormatter={(value) =>
+                        props.xTicks === "hour"
+                            ? dayjs(value).format("HH:mm")
+                            : dayjs(value).format("D MMM")
+                    }
                 />
-                <YAxis tick={{ fontSize: 12 }} tickMargin={8} width={20} />
-                <Tooltip content={<CustomTooltip />} />
-                {/* Healthy range: 70-140 mg/dL */}
-                <ReferenceArea
-                    y1={70}
-                    y2={140}
-                    fill="#90ee90"
-                    fillOpacity={0.18}
-                    ifOverflow="extendDomain"
+                <YAxis
+                    {...axisProps}
+                    width={36}
+                    domain={[30, yMax]}
+                    ticks={[GLUCOSE_TARGET.low, GLUCOSE_TARGET.high]}
+                />
+                {props.now != null && (
+                    <ReferenceLine
+                        x={props.now}
+                        stroke={CHART.muted}
+                        strokeDasharray="3 4"
+                        label={{
+                            value: "now",
+                            position: "top",
+                            fill: CHART.muted,
+                            fontSize: 11,
+                        }}
+                    />
+                )}
+                <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{ stroke: CHART.border }}
                 />
                 <Line
                     type="monotone"
                     dataKey="value"
-                    stroke="#d62828"
-                    dot={false}
-                    strokeWidth={2.2}
+                    stroke={CHART.aubergine}
+                    strokeWidth={2.5}
+                    strokeLinecap="round"
+                    dot={makeDot(props.dotRadius ?? 3.5, highlight)}
+                    activeDot={{
+                        r: 6,
+                        fill: CHART.aubergine,
+                        stroke: "#FFFFFF",
+                        strokeWidth: 2,
+                    }}
                     connectNulls={true}
+                    isAnimationActive={false}
                 />
             </LineChart>
         </ResponsiveContainer>

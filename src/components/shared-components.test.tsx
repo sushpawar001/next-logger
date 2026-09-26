@@ -1,6 +1,5 @@
-import { Activity } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
-import { renderWithProviders, screen, userEvent } from "@/test/render";
+import { renderWithProviders, screen, userEvent, within } from "@/test/render";
 
 import DataPeriodSelectCard from "./DataPeriodSelectCard";
 import MeasurementInput from "./MeasurementInput";
@@ -16,31 +15,36 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 
 describe("DataPeriodSelectCard", () => {
     const noop = () => {};
+    const group = () => screen.getByRole("group", { name: "Period" });
 
-    it("renders the day-range options", () => {
+    it("renders the six periods as toggle buttons", () => {
         renderWithProviders(
             <DataPeriodSelectCard daysOfData={7} changeDaysOfData={noop} />
         );
 
-        const select = screen.getByRole("combobox");
-        const options = Array.from(select.querySelectorAll("option")).map(
-            (o) => o.textContent
+        const labels = Array.from(group().querySelectorAll("button")).map(
+            (b) => b.textContent
         );
 
-        expect(options).toEqual(["7", "14", "30", "90", "365", "All"]);
+        expect(labels).toEqual(["7 days", "14 days", "30 days", "90 days", "1 year", "All"]);
     });
 
-    it("reflects the selected period", () => {
+    it("marks the selected period as pressed", () => {
         renderWithProviders(
             <DataPeriodSelectCard daysOfData={30} changeDaysOfData={noop} />
         );
 
-        expect((screen.getByRole("combobox") as HTMLSelectElement).value).toBe(
-            "30"
+        expect(screen.getByRole("button", { name: "30 days" })).toHaveAttribute(
+            "aria-pressed",
+            "true"
+        );
+        expect(screen.getByRole("button", { name: "7 days" })).toHaveAttribute(
+            "aria-pressed",
+            "false"
         );
     });
 
-    it("reports a new selection to its parent", async () => {
+    it("reports a new selection as an event-shaped value", async () => {
         const user = userEvent.setup();
         const changeDaysOfData = vi.fn();
         renderWithProviders(
@@ -50,25 +54,40 @@ describe("DataPeriodSelectCard", () => {
             />
         );
 
-        await user.selectOptions(screen.getByRole("combobox"), "90");
+        await user.click(screen.getByRole("button", { name: "90 days" }));
 
-        expect(changeDaysOfData).toHaveBeenCalled();
+        expect(changeDaysOfData).toHaveBeenCalledWith({ target: { value: "90" } });
     });
 
-    it('maps "All" to a very large day count', () => {
+    it('maps "All" to a very large day count', async () => {
+        const user = userEvent.setup();
+        const changeDaysOfData = vi.fn();
         renderWithProviders(
-            <DataPeriodSelectCard daysOfData={7} changeDaysOfData={noop} />
+            <DataPeriodSelectCard daysOfData={7} changeDaysOfData={changeDaysOfData} />
         );
 
-        const all = screen
-            .getByRole("combobox")
-            .querySelector('option[value="36500"]');
+        await user.click(screen.getByRole("button", { name: "All" }));
 
-        expect(all).toBeTruthy();
+        expect(changeDaysOfData).toHaveBeenCalledWith({ target: { value: "36500" } });
+    });
+
+    it("can limit the periods and use short labels", () => {
+        renderWithProviders(
+            <DataPeriodSelectCard
+                daysOfData={7}
+                changeDaysOfData={noop}
+                periods={[7, 14]}
+                short
+            />
+        );
+
+        expect(
+            Array.from(group().querySelectorAll("button")).map((b) => b.textContent)
+        ).toEqual(["7d", "14d"]);
     });
 
     it("accepts an extra className", () => {
-        const { container } = renderWithProviders(
+        renderWithProviders(
             <DataPeriodSelectCard
                 daysOfData={7}
                 changeDaysOfData={noop}
@@ -76,7 +95,7 @@ describe("DataPeriodSelectCard", () => {
             />
         );
 
-        expect(container.firstChild).toHaveClass("mt-4");
+        expect(group()).toHaveClass("mt-4");
     });
 });
 
@@ -124,81 +143,26 @@ describe("PrivacyNotice", () => {
 });
 
 describe("TagFilterCard", () => {
-    /** The dropdown toggle is icon-only, so it is found positionally. */
-    const toggle = () => screen.getAllByRole("button").slice(-1)[0];
+    const chip = (name: string) => screen.getByRole("button", { name });
 
-    it("invites the user to filter when nothing is selected", () => {
+    it("renders a chip for every entry tag", () => {
         renderWithProviders(
             <TagFilterCard selectedTags={[]} onTagsChange={() => {}} />
         );
 
-        expect(screen.getByText("Select tags to filter data")).toBeInTheDocument();
-    });
-
-    it("summarises a single selected tag", () => {
-        renderWithProviders(
-            <TagFilterCard selectedTags={["Fasting"]} onTagsChange={() => {}} />
-        );
-
-        expect(screen.getByText("1 tag selected")).toBeInTheDocument();
-    });
-
-    it("pluralises the summary for several tags", () => {
-        renderWithProviders(
-            <TagFilterCard
-                selectedTags={["Fasting", "Random"]}
-                onTagsChange={() => {}}
-            />
-        );
-
-        expect(screen.getByText("2 tags selected")).toBeInTheDocument();
-    });
-
-    it("stays closed until the toggle is used", () => {
-        renderWithProviders(
-            <TagFilterCard selectedTags={[]} onTagsChange={() => {}} />
-        );
-
-        expect(screen.queryByText("Select Tags")).not.toBeInTheDocument();
-    });
-
-    it("lists every entry tag once opened", async () => {
-        const user = userEvent.setup();
-        renderWithProviders(
-            <TagFilterCard selectedTags={[]} onTagsChange={() => {}} />
-        );
-
-        await user.click(toggle());
-
-        expect(screen.getByText("Select Tags")).toBeInTheDocument();
+        const group = screen.getByRole("group", { name: "Filter by tag" });
         for (const tag of entryTags) {
-            expect(screen.getAllByText(tag).length).toBeGreaterThan(0);
+            expect(group).toContainElement(chip(tag));
         }
     });
 
-    it('shows "All Data" in the dropdown footer when nothing is selected', async () => {
-        const user = userEvent.setup();
-        renderWithProviders(
-            <TagFilterCard selectedTags={[]} onTagsChange={() => {}} />
-        );
-
-        await user.click(toggle());
-
-        expect(screen.getByText(/Showing:\s*All Data/)).toBeInTheDocument();
-    });
-
-    it("checks the boxes for selected tags", async () => {
-        const user = userEvent.setup();
+    it("marks selected tags as pressed", () => {
         renderWithProviders(
             <TagFilterCard selectedTags={["Fasting"]} onTagsChange={() => {}} />
         );
 
-        await user.click(toggle());
-        const checked = screen
-            .getAllByRole("checkbox")
-            .filter((c) => (c as HTMLInputElement).checked);
-
-        expect(checked).toHaveLength(1);
+        expect(chip("Fasting")).toHaveAttribute("aria-pressed", "true");
+        expect(chip("Random")).toHaveAttribute("aria-pressed", "false");
     });
 
     it("adds a tag that was not selected", async () => {
@@ -208,8 +172,7 @@ describe("TagFilterCard", () => {
             <TagFilterCard selectedTags={[]} onTagsChange={onTagsChange} />
         );
 
-        await user.click(toggle());
-        await user.click(screen.getAllByRole("checkbox")[0]);
+        await user.click(chip(entryTags[0]));
 
         expect(onTagsChange).toHaveBeenCalledWith([entryTags[0]]);
     });
@@ -224,10 +187,19 @@ describe("TagFilterCard", () => {
             />
         );
 
-        await user.click(toggle());
-        await user.click(screen.getAllByRole("checkbox")[0]);
+        await user.click(chip(entryTags[0]));
 
         expect(onTagsChange).toHaveBeenCalledWith([entryTags[1]]);
+    });
+
+    it("only offers Clear once something is selected", () => {
+        const { rerender } = renderWithProviders(
+            <TagFilterCard selectedTags={[]} onTagsChange={() => {}} />
+        );
+        expect(screen.queryByRole("button", { name: "Clear" })).not.toBeInTheDocument();
+
+        rerender(<TagFilterCard selectedTags={["Fasting"]} onTagsChange={() => {}} />);
+        expect(chip("Clear")).toBeInTheDocument();
     });
 
     it("clears every filter at once", async () => {
@@ -240,53 +212,48 @@ describe("TagFilterCard", () => {
             />
         );
 
-        await user.click(toggle());
-        await user.click(screen.getByRole("button", { name: /clear all/i }));
+        await user.click(chip("Clear"));
 
         expect(onTagsChange).toHaveBeenCalledWith([]);
     });
 
-    it("closes when the outside overlay is clicked", async () => {
-        const user = userEvent.setup();
-        const { container } = renderWithProviders(
-            <TagFilterCard selectedTags={[]} onTagsChange={() => {}} />
+    it("accepts a custom tag list and label", () => {
+        renderWithProviders(
+            <TagFilterCard
+                selectedTags={[]}
+                onTagsChange={() => {}}
+                tags={["Lantus", "NovoRapid"]}
+                label="Filter by insulin"
+            />
         );
 
-        await user.click(toggle());
-        await user.click(container.querySelector(".fixed.inset-0")!);
-
-        expect(screen.queryByText("Select Tags")).not.toBeInTheDocument();
+        const group = screen.getByRole("group", { name: "Filter by insulin" });
+        expect(group.querySelectorAll("button")).toHaveLength(2);
     });
 });
 
 describe("PopUpModal", () => {
-    /**
-     * The modal markup is always mounted and toggled with block/hidden, so
-     * presence queries always match -- assert on visibility instead.
-     */
-    const dialog = () =>
-        screen.getByText(/do really want to delete|do you really want to delete/i)
-            .closest("div[class]")!;
+    const trigger = () => screen.getByRole("button", { name: "Delete" });
 
-    it("renders its trigger", () => {
+    it("renders an icon trigger labelled Delete", () => {
         renderWithProviders(<PopUpModal delete={() => {}} />);
 
-        expect(screen.getAllByRole("button").length).toBeGreaterThan(0);
+        expect(trigger()).toBeInTheDocument();
     });
 
-    it("keeps the confirmation hidden until the trigger is clicked", () => {
-        const { container } = renderWithProviders(<PopUpModal delete={() => {}} />);
+    it("keeps the confirmation closed until the trigger is clicked", () => {
+        renderWithProviders(<PopUpModal delete={() => {}} />);
 
-        expect(container.querySelector(".hidden")).toBeTruthy();
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
     it("opens the confirmation on click", async () => {
         const user = userEvent.setup();
-        const { container } = renderWithProviders(<PopUpModal delete={() => {}} />);
+        renderWithProviders(<PopUpModal delete={() => {}} />);
 
-        await user.click(screen.getAllByRole("button")[0]);
+        await user.click(trigger());
 
-        expect(container.querySelector(".block")).toBeTruthy();
+        expect(screen.getByRole("dialog")).toHaveTextContent("Delete this entry?");
     });
 
     it("runs the delete callback on confirm", async () => {
@@ -294,10 +261,13 @@ describe("PopUpModal", () => {
         const onDelete = vi.fn();
         renderWithProviders(<PopUpModal delete={onDelete} />);
 
-        await user.click(screen.getAllByRole("button")[0]);
-        await user.click(screen.getAllByRole("button", { name: /^delete$/i })[1]);
+        await user.click(trigger());
+        await user.click(
+            within(screen.getByRole("dialog")).getByRole("button", { name: "Delete" })
+        );
 
         expect(onDelete).toHaveBeenCalledTimes(1);
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
     it("closes without deleting on cancel", async () => {
@@ -305,10 +275,27 @@ describe("PopUpModal", () => {
         const onDelete = vi.fn();
         renderWithProviders(<PopUpModal delete={onDelete} />);
 
-        await user.click(screen.getAllByRole("button")[0]);
+        await user.click(trigger());
         await user.click(screen.getByRole("button", { name: /cancel/i }));
 
-        expect(onDelete) .not.toHaveBeenCalled();
+        expect(onDelete).not.toHaveBeenCalled();
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    });
+
+    it("says what will be removed", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <PopUpModal
+                delete={() => {}}
+                title="Delete this reading?"
+                description="126 mg/dL · After meal"
+            />
+        );
+
+        await user.click(trigger());
+
+        expect(screen.getByRole("dialog")).toHaveTextContent("Delete this reading?");
+        expect(screen.getByRole("dialog")).toHaveTextContent("126 mg/dL · After meal");
     });
 
     it("accepts custom trigger content", () => {
@@ -317,6 +304,17 @@ describe("PopUpModal", () => {
         );
 
         expect(screen.getByText("Remove entry")).toBeInTheDocument();
+    });
+
+    it("accepts a replacement trigger", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <PopUpModal delete={() => {}} trigger={<button>Delete entry</button>} />
+        );
+
+        await user.click(screen.getByRole("button", { name: "Delete entry" }));
+
+        expect(screen.getByRole("dialog")).toBeInTheDocument();
     });
 });
 
@@ -350,58 +348,71 @@ describe("CopyUrlButton", () => {
 });
 
 describe("StatsTableCard", () => {
-    const stats = {
-        mean: 120,
-        median: 118,
-        mode: [110],
-        min: 80,
-        max: 190,
-        sum: 2400,
-        dailyAvg: 120,
-    };
+    const rows = [
+        { label: "Average", previous: 138, current: 132 },
+        { label: "Readings", previous: 26, current: 28 },
+        { label: "In range", previous: 72, current: 79, suffix: "%", changeSuffix: " pts" },
+    ];
 
-    it("renders its title and every statistic", () => {
+    it("renders its title and a Metric · Previous · Current · Change table", () => {
+        renderWithProviders(<StatsTableCard title="Glucose" rows={rows} />);
+
+        expect(screen.getByRole("heading", { name: "Glucose" })).toBeInTheDocument();
+        expect(
+            screen.getAllByRole("columnheader").map((th) => th.textContent)
+        ).toEqual(["Metric", "Previous", "Current", "Change"]);
+    });
+
+    it("shows previous, current and a signed change per row", () => {
+        renderWithProviders(<StatsTableCard title="Glucose" rows={rows} />);
+
+        const avg = screen.getByRole("row", { name: /average/i });
+        expect(avg).toHaveTextContent("138");
+        expect(avg).toHaveTextContent("132");
+        expect(avg).toHaveTextContent("−6");
+
+        expect(screen.getByRole("row", { name: /readings/i })).toHaveTextContent("+2");
+        expect(screen.getByRole("row", { name: /in range/i })).toHaveTextContent(
+            "+7 pts"
+        );
+    });
+
+    it("keeps changes neutral: no status or red/green colour", () => {
+        const { container } = renderWithProviders(
+            <StatsTableCard title="Glucose" rows={rows} />
+        );
+
+        expect(container.innerHTML).not.toMatch(/text-(red|green)-|status-/);
+    });
+
+    it("drops the comparison columns when no row has a previous value", () => {
         renderWithProviders(
             <StatsTableCard
-                title="Glucose"
-                icon={Activity}
-                gradient="from-purple-500 to-purple-700"
-                newData={stats}
+                title="Insulin"
+                rows={[{ label: "Lantus", current: 12.5, decimals: 1 }]}
+                currentLabel="Now"
             />
         );
 
-        expect(screen.getByText("Glucose")).toBeInTheDocument();
-        expect(screen.getAllByText(/120/).length).toBeGreaterThan(0);
-        expect(screen.getAllByText(/118/).length).toBeGreaterThan(0);
+        expect(
+            screen.getAllByRole("columnheader").map((th) => th.textContent)
+        ).toEqual(["Metric", "Now"]);
+        expect(screen.getByRole("row", { name: /lantus/i })).toHaveTextContent("12.5");
     });
 
-    it("compares against a previous period when asked", () => {
-        const older = { ...stats, mean: 100, median: 98 };
-        const { container } = renderWithProviders(
-            <StatsTableCard
-                title="Glucose"
-                icon={Activity}
-                gradient="from-purple-500 to-purple-700"
-                newData={stats}
-                oldData={older}
-                showTrend
-            />
-        );
-
-        expect(container.textContent).toMatch(/100/);
-    });
-
-    it("renders without a previous period", () => {
-        const { container } = renderWithProviders(
+    it("shows a dash for a missing value and no change", () => {
+        renderWithProviders(
             <StatsTableCard
                 title="Weight"
-                icon={Activity}
-                gradient="from-blue-500 to-blue-700"
-                newData={stats}
+                rows={[{ label: "Average", previous: null, current: 72.4, decimals: 1 }]}
+                note="All values in kg."
             />
         );
 
-        expect(container.textContent).toMatch(/Weight/);
+        const row = screen.getByRole("row", { name: /average/i });
+        expect(row).toHaveTextContent("—");
+        expect(row).toHaveTextContent("72.4");
+        expect(screen.getByText("All values in kg.")).toBeInTheDocument();
     });
 });
 
@@ -467,5 +478,31 @@ describe("PublicLeftSidebar", () => {
                 </SidebarProvider>
             )
         ).not.toThrow();
+    });
+});
+
+describe("DashboardHeader account slot", () => {
+    it("can drop the Clerk account button for the public /tools layout", async () => {
+        const clerk = await import("@clerk/nextjs");
+        const spy = vi.spyOn(clerk, "UserButton");
+        renderWithProviders(
+            <SidebarProvider>
+                <DashboardHeader showAccount={false} />
+            </SidebarProvider>
+        );
+
+        expect(spy).not.toHaveBeenCalled();
+    });
+
+    it("shows it by default", async () => {
+        const clerk = await import("@clerk/nextjs");
+        const spy = vi.spyOn(clerk, "UserButton");
+        renderWithProviders(
+            <SidebarProvider>
+                <DashboardHeader />
+            </SidebarProvider>
+        );
+
+        expect(spy).toHaveBeenCalled();
     });
 });

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import {
-    LineChart,
+    ComposedChart,
+    Area,
     Line,
     XAxis,
     YAxis,
@@ -10,60 +11,109 @@ import {
 } from "recharts";
 import axios from "axios";
 import dayjs from "dayjs";
+import { CHART, axisProps, gridProps, tooltipBoxStyle } from "./chartTheme";
 
 interface WeightData {
-    createdAt: string | number;
+    createdAt?: string | number | Date;
     value: number;
 }
 
-// Custom tooltip for human-readable date
+type WeightPoint = { createdAt: number; value: number; avg: number };
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Trailing 7-day average at each weigh-in: the mean of every weigh-in in the
+ * seven days up to and including it. Expects points sorted oldest first.
+ */
+export function withSevenDayAverage(
+    points: { createdAt: number; value: number }[]
+): WeightPoint[] {
+    return points.map((p, i) => {
+        let sum = 0;
+        let n = 0;
+        for (let j = i; j >= 0; j--) {
+            if (p.createdAt - points[j].createdAt >= 7 * DAY_MS) break;
+            sum += Number(points[j].value);
+            n++;
+        }
+        return { ...p, avg: +(sum / n).toFixed(2) };
+    });
+}
+
 const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-        return (
-            <div
-                style={{
-                    background: "white",
-                    border: "1px solid #eee",
-                    padding: 10,
-                }}
-            >
-                <div style={{ fontWeight: 600 }}>
-                    {dayjs(label).format("MMM D, YYYY h:mm A")}
-                </div>
-                <div style={{ color: "#f77f00" }}>
-                    weight : {payload[0].value}
-                </div>
+    if (!active || !payload?.length) return null;
+    const point = payload[0].payload as WeightPoint;
+    return (
+        <div style={tooltipBoxStyle}>
+            <div style={{ fontWeight: 600, marginBottom: 2 }}>
+                {dayjs(label).format("D MMM YYYY, HH:mm")}
             </div>
-        );
-    }
-    return null;
+            <div>Weigh-in: {point.value} kg</div>
+            <div style={{ color: CHART.muted }}>7-day average: {point.avg} kg</div>
+        </div>
+    );
 };
 
+/** Hollow Aubergine dots, with the latest weigh-in filled and larger. */
+function WeighInDot(props: any) {
+    const { cx, cy, index, points } = props;
+    if (cx == null || cy == null) return null;
+    const last = index === points - 1;
+    return (
+        <circle
+            key={`dot-${index}`}
+            cx={cx}
+            cy={cy}
+            r={last ? 5 : 2.5}
+            fill={last ? CHART.aubergine : "#FFFFFF"}
+            stroke={CHART.aubergine}
+            strokeWidth={1.5}
+        />
+    );
+}
+
+/** About five evenly spaced date ticks, whatever the period. */
+function dateTicks(min: number, max: number, count = 5) {
+    if (min === max) return [min];
+    const step = (max - min) / (count - 1);
+    return Array.from({ length: count }, (_, i) => Math.round(min + step * i));
+}
+
+/**
+ * Weight trend (A1): the Lavender 7-day average is the main line; daily
+ * weigh-ins sit behind it as a thin Aubergine line with small dots, so
+ * day-to-day noise reads as secondary.
+ */
 export default function WeightChartRecharts(props: {
     days?: number;
     fetch: boolean;
     data?: WeightData[];
+    /** Draw the 7-day average line. Defaults to true. */
+    showAverage?: boolean;
+    /** Draw a dot per weigh-in. Defaults to true. */
+    showDots?: boolean;
 }) {
-    const [weight, setWeight] = useState<WeightData[]>([]);
+    const [weight, setWeight] = useState<{ createdAt: number; value: number }[]>([]);
     const daysOfData = props.days || 7;
+    const showAverage = props.showAverage ?? true;
+    const showDots = props.showDots ?? true;
 
     // Helper to convert createdAt to timestamp (number)
-    const prepareData = (data: WeightData[]): WeightData[] => {
-        return data.map((item) => ({
-            ...item,
+    const prepareData = (data: WeightData[]) =>
+        data.map((item) => ({
             createdAt:
                 typeof item.createdAt === "number"
                     ? item.createdAt
                     : new Date(item.createdAt).getTime(),
+            value: item.value,
         }));
-    };
 
     const getWeight = useCallback(async () => {
         try {
             const response = await axios.get(`/api/weight/get/${daysOfData}`);
             if (response.status === 200) {
-                let weightData = prepareData(response.data.data.reverse());
-                setWeight(weightData);
+                setWeight(prepareData(response.data.data.reverse()));
             } else {
                 console.error(
                     "API request failed with status:",
@@ -83,76 +133,86 @@ export default function WeightChartRecharts(props: {
         }
     }, [getWeight, props.data, props.fetch]);
 
-    // Find min/max for domain
-    const minTime = weight.length
-        ? Math.min(...weight.map((d) => d.createdAt as number))
-        : undefined;
-    const maxTime = weight.length
-        ? Math.max(...weight.map((d) => d.createdAt as number))
-        : undefined;
+    const points = withSevenDayAverage(weight);
+    const minTime = points.length ? points[0].createdAt : undefined;
+    const maxTime = points.length ? points[points.length - 1].createdAt : undefined;
 
-    // Calculate Y-axis domain with padding
-    const weightValues = weight.map((d) => d.value).filter((v) => v !== null);
-    const minWeight = weightValues.length ? Math.min(...weightValues) : 0;
-    const maxWeight = weightValues.length ? Math.max(...weightValues) : 100;
-    const weightRange = maxWeight - minWeight;
-    const yMin = Math.ceil(Math.max(0, minWeight - weightRange * 0.5));
-    const yMax = Math.floor(maxWeight + weightRange * 0.5);
-    // const yDomain = yMin !== yMax ? [yMin, yMax] : ["auto", "auto"];
-    const yDomain = ["auto", "auto"];
-
-    // Generate ticks at 24-hour intervals (midnight)
-    const getDailyTicks = () => {
-        if (!minTime || !maxTime) return [];
-        const ticks = [];
-        let current = dayjs(minTime).valueOf();
-        while (current <= maxTime) {
-            ticks.push(current);
-            current = dayjs(current).add(1, "day").valueOf();
-        }
-        return ticks;
-    };
+    const values = points.map((d) => Number(d.value));
+    const yDomain: [number, number] | ["auto", "auto"] = values.length
+        ? [Math.floor(Math.min(...values) - 0.5), Math.ceil(Math.max(...values) + 0.5)]
+        : ["auto", "auto"];
 
     return (
         <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-                data={weight}
-                margin={{ top: 0, right: 0, left: 25, bottom: 0 }}
+            <ComposedChart
+                data={points}
+                margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
             >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid {...gridProps} />
                 <XAxis
                     dataKey="createdAt"
                     type="number"
-                    // domain={
-                    //         ["auto", "auto"]
-                    // }
+                    scale="time"
                     domain={
                         minTime !== undefined && maxTime !== undefined
                             ? [minTime, maxTime]
                             : ["auto", "auto"]
                     }
-                    ticks={getDailyTicks()}
-                    tick={{ fontSize: 12 }}
-                    tickMargin={8}
-                    tickFormatter={(value) => dayjs(value).format("MMM D")}
+                    ticks={
+                        minTime !== undefined ? dateTicks(minTime, maxTime) : []
+                    }
+                    tickFormatter={(value) => dayjs(value).format("D MMM")}
+                    {...axisProps}
                 />
                 <YAxis
                     domain={yDomain}
-                    tick={{ fontSize: 12 }}
-                    tickMargin={8}
-                    width={20}
+                    allowDecimals={false}
                     tickCount={5}
+                    width={36}
+                    {...axisProps}
                 />
-                <Tooltip content={<CustomTooltip />} />
-                <Line
-                    type="monotone"
+                <Tooltip
+                    content={<CustomTooltip />}
+                    cursor={{ stroke: CHART.border }}
+                />
+                <Area
+                    type="linear"
                     dataKey="value"
-                    stroke="#f77f00"
-                    dot={false}
-                    strokeWidth={2.2}
-                    connectNulls={true}
+                    stroke="none"
+                    fill={CHART.lavender}
+                    fillOpacity={0.1}
+                    isAnimationActive={false}
+                    activeDot={false}
                 />
-            </LineChart>
+                <Line
+                    type="linear"
+                    dataKey="value"
+                    name="Weigh-in"
+                    stroke={CHART.aubergine}
+                    strokeOpacity={0.55}
+                    strokeWidth={1.5}
+                    dot={
+                        showDots
+                            ? (p: any) => <WeighInDot {...p} points={points.length} />
+                            : false
+                    }
+                    activeDot={{ r: 4, fill: CHART.aubergine, stroke: "#FFFFFF" }}
+                    connectNulls
+                />
+                {showAverage && (
+                    <Line
+                        type="monotone"
+                        dataKey="avg"
+                        name="7-day average"
+                        stroke={CHART.lavender}
+                        strokeWidth={3}
+                        strokeLinecap="round"
+                        dot={false}
+                        activeDot={false}
+                        connectNulls
+                    />
+                )}
+            </ComposedChart>
         </ResponsiveContainer>
     );
 }
