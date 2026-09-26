@@ -179,8 +179,8 @@ vi.mock("@clerk/nextjs", () => ({
     SignIn: () => null,
     SignUp: () => null,
     SignInButton: ({ children }: any) => children ?? null,
-    SignedIn: ({ children }: any) => children,
-    SignedOut: () => null,
+    // Clerk Core 3: <Show when="signed-in|signed-out"> replaced SignedIn/SignedOut.
+    Show: ({ when, children }: any) => (when === "signed-in" ? children : null),
 }));
 
 beforeEach(() => {

@@ -14,7 +14,7 @@ import LeftSidebar from "./LeftSidebar";
 
 /**
  * The only component in the app that touches Clerk directly. `@clerk/nextjs` is
- * stubbed globally in setup.jsdom.tsx so SignedIn/SignedOut render
+ * stubbed globally in setup.jsdom.tsx so <Show when="signed-in"> renders
  * deterministically (signed in).
  */
 const renderSidebar = () =>
@@ -74,7 +74,7 @@ describe("LeftSidebar", () => {
     it("renders the signed-in account controls", () => {
         const { container } = renderSidebar();
 
-        // SignedIn renders its children; SignedOut renders nothing.
+        // <Show when="signed-in"> renders its children; "signed-out" renders nothing.
         expect(container.textContent!.length).toBeGreaterThan(0);
     });
 

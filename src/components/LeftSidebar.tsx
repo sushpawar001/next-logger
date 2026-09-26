@@ -1,7 +1,7 @@
 "use client";
 import { useRef } from "react";
 import { usePathname } from "next/navigation";
-import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import {
     Home,
     User,
@@ -160,10 +160,10 @@ export default function LeftSidebar() {
                                     </AvatarFallback>
                                 </Avatar> */}
                                 <div className="flex-1 text-left">
-                                    <SignedOut>
+                                    <Show when="signed-out">
                                         <SignInButton />
-                                    </SignedOut>
-                                    <SignedIn>
+                                    </Show>
+                                    <Show when="signed-in">
                                         <UserButton
                                             showName={true}
                                             appearance={{
@@ -175,7 +175,7 @@ export default function LeftSidebar() {
                                                 },
                                             }}
                                         />
-                                    </SignedIn>
+                                    </Show>
                                 </div>
 
                                 <Settings className="h-4 w-4 text-gray-400" />
