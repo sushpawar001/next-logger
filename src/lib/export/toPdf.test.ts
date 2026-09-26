@@ -13,7 +13,9 @@ const { jsPDFCtor, autoTableMock, textMock, outputMock } = vi.hoisted(() => {
         lastAutoTable: { finalY: 50 },
     };
     return {
-        jsPDFCtor: vi.fn(() => docInstance),
+        jsPDFCtor: vi.fn(function () {
+            return docInstance;
+        }),
         autoTableMock: vi.fn(),
         textMock,
         outputMock,

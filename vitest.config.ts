@@ -91,7 +91,6 @@ export default defineConfig({
         // Coverage is only honoured at the root level when using `projects`.
         coverage: {
             provider: "v8",
-            all: true,
             reporter: ["text-summary", "html", "lcov", "json"],
             reportsDirectory: "./coverage",
             include: ["src/**/*.{ts,tsx,js,jsx}"],
