@@ -5,7 +5,8 @@ import Insulin from "@/models/insulinModel";
 
 connectDB();
 
-export async function DELETE(request: NextRequest, { params }) {
+export async function DELETE(request: NextRequest, props) {
+    const params = await props.params;
     try {
         const user = await getUserObjectId();
         const data = await Insulin.findOneAndDelete({ _id: params.id, user: user });

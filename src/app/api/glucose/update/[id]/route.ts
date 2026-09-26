@@ -5,7 +5,8 @@ import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function PUT(request: NextRequest, { params }) {
+export async function PUT(request: NextRequest, props) {
+    const params = await props.params;
     try {
         const body = await request.json();
         const { value, createdAt, tag } = body;
@@ -20,7 +21,7 @@ export async function PUT(request: NextRequest, { params }) {
         const data = await Glucose.findOneAndUpdate(
             { _id: params.id, user: user },
             updatePayload,
-            { new: true }
+            { returnDocument: "after" }
         );
         return NextResponse.json({ message: "Data updated", data: data });
 

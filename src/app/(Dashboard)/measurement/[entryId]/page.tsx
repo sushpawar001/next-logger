@@ -2,7 +2,7 @@
 import React, { useEffect, useState, ChangeEvent } from "react";
 import notify from "@/helpers/notify";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { entryTags } from "@/constants/constants";
 import { Droplets, ArrowLeft, Save, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -24,7 +24,8 @@ const dataInputs = [
     "calves",
 ];
 
-export default function EditEntry({ params }) {
+export default function EditEntry() {
+    const params = useParams<{ entryId: string }>();
     const [data, setData] = useState({
         arms: "",
         chest: "",

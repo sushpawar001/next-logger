@@ -25,10 +25,10 @@ vi.mock("@clerk/nextjs/server", () => {
     };
 });
 
-import middleware, { config } from "./middleware";
+import middleware, { config } from "./proxy";
 
 const protect = vi.fn();
-const auth = () => ({ protect });
+const auth = Object.assign(() => ({ protect }), { protect });
 const request = (pathname: string) => ({ nextUrl: { pathname } }) as any;
 
 const run = (pathname: string) => {

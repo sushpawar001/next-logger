@@ -6,7 +6,8 @@ import { convertArrayStringToNumber } from "@/helpers/convertStringToNumber";
 
 connectDB();
 
-export async function GET(request: NextRequest, { params }) {
+export async function GET(request: NextRequest, props) {
+    const params = await props.params;
     try {
         const { days } = params;
         const user = await getUserObjectId();

@@ -5,13 +5,14 @@ import Weight from "@/models/weightModel";
 
 connectDB();
 
-export async function PUT(request: NextRequest, { params }) {
+export async function PUT(request: NextRequest, props) {
+    const params = await props.params;
     try {
         const body = await request.json();
         body.createdAt = new Date(body.createdAt);
         const user = await getUserObjectId();
         const data = await Weight.findOneAndUpdate({ _id: params.id, user: user }, body, {
-            new: true
+            returnDocument: "after"
         });
         return NextResponse.json({ message: "Data updated", data: data })
 

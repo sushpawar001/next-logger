@@ -40,8 +40,9 @@ const randomInsulinName = () => {
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { userId: string } }
+    props: { params: Promise<{ userId: string }> }
 ) {
+    const params = await props.params;
     try {
         const { userId } = params;
         const { days = 60, count = 180, seed_token } = await req.json();

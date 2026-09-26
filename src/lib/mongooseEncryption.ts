@@ -238,7 +238,7 @@ export function addEncryptionHooks<T extends Document>(
 
     // Pre-save middleware to encrypt fields
     if (encryptOnSave) {
-        schema.pre("save", function (next) {
+        schema.pre("save", function () {
             try {
                 const doc = this as any;
                 let hasChanges = false;
@@ -261,21 +261,20 @@ export function addEncryptionHooks<T extends Document>(
                 if (hasChanges) {
                     log(`Encrypted ${fields.length} fields before save`);
                 }
-
-                next();
             } catch (error) {
-                next(error as Error);
+                // Mongoose 9 dropped next(); a throw rejects the save.
+                throw error as Error;
             }
         });
 
         // Also handle update operations
         schema.pre(
             /^update|^findOneAndUpdate|^findByIdAndUpdate/,
-            function (this: any, next) {
+            function (this: any) {
                 try {
                     const update = this.getUpdate();
                     if (!update) {
-                        return next();
+                        return;
                     }
 
                     let hasChanges = false;
@@ -317,10 +316,8 @@ export function addEncryptionHooks<T extends Document>(
                     if (hasChanges) {
                         log(`Encrypted ${fields.length} fields before update`);
                     }
-
-                    next();
                 } catch (error) {
-                    next(error as Error);
+                    throw error as Error;
                 }
             }
         );

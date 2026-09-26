@@ -4,15 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-FitDose (repo name `next-logger`) — a Next.js 14 App Router health logger for blood glucose, insulin doses, bodyweight and body measurements, plus a set of public fitness calculators. MongoDB via Mongoose, Clerk for auth, pnpm as the package manager.
+FitDose (repo name `next-logger`) — a Next.js 16 (React 19) App Router health logger for blood glucose, insulin doses, bodyweight and body measurements, plus a set of public fitness calculators. MongoDB via Mongoose, Clerk for auth, pnpm as the package manager.
 
 ## Commands
 
 ```bash
 pnpm dev              # dev server on port 4000 (NOT 3000 — README is stale)
 pnpm build            # next build
-pnpm lint             # next lint (eslint-config-next)
-pnpm typecheck        # tsc --noEmit
+pnpm lint             # eslint . (flat config, eslint.config.mjs)
+pnpm typecheck        # tsc --noEmit (TypeScript 7, via @typescript/native)
 pnpm test             # vitest run (both projects)
 pnpm test:watch       # vitest in watch mode
 pnpm test:api         # node-env project only (lib, helpers, models, api routes)
@@ -27,7 +27,7 @@ pnpm migrate:verify   # decrypt-test existing data, report failures
 
 **Vitest + React Testing Library**, ~1150 tests across two projects defined in `vitest.config.ts`:
 
-- **`node`** — `src/{lib,helpers,models,dbConfig}`, `src/app/api/**`, `src/middleware.ts`
+- **`node`** — `src/{lib,helpers,models,dbConfig}`, `src/app/api/**`, `src/proxy.ts`
 - **`jsdom`** — `src/components/**`, `src/hooks/**`, `src/app/**/*.test.tsx`, plus `src/lib/**/*.dom.test.ts`
 
 Coverage gates at **90% lines/functions/statements, 85% branches**. Presentational
@@ -89,7 +89,7 @@ Practical implications:
 Note the root layout is `src/app/layout.js` (JS, not TS) and holds `NuqsAdapter`, `Toaster`, and GA.
 
 ### Auth and user identity
-`src/middleware.ts` runs `clerkMiddleware` and protects everything **except** the `isPublicRoute` matcher (`/`, `/login`, `/signup`, `/tools`, legal pages, `/api/webhooks/user`, `/api/seed`, `/sitemap.xml`). Adding a public page means adding it there.
+`src/proxy.ts` runs `clerkMiddleware` and protects everything **except** the `isPublicRoute` matcher (`/`, `/login`, `/signup`, `/tools`, legal pages, `/api/webhooks/user`, `/api/seed`, `/sitemap.xml`). Adding a public page means adding it there.
 
 Clerk users are mirrored into Mongo (`users` collection, `userModelClerk.ts`) keyed by `clerkUserId`. **Every data query must be scoped with `await getUserObjectId()`** (`src/helpers/getUserObjectId.ts`), which maps the Clerk session to the Mongo `_id` used as the `user` field on all records. `src/app/api/webhooks/user/route.ts` handles `user.created` (creates the Mongo user, sets a 30-day trial in Clerk publicMetadata) and `user.deleted` (cascade-deletes glucose/insulin/insulinType/measurements/weight, then the user).
 
@@ -136,5 +136,7 @@ From `.cursor/rules/main.mdc` (note: `.cursor/` and `docs/` are gitignored, so t
 - Never modify `next.config.js` without being asked (it defines the permissive API CORS headers).
 - Before writing frontend API calls or types, read the corresponding route handler and model — match the exact response shape rather than guessing, and extend existing types instead of duplicating them.
 - Larger features are planned as markdown in `docs/features/` with a `todo_{feature}.md` checklist.
+
+Framework-upgrade notes (Next 16 / Clerk 7 / Mongoose 9): route-handler `params` is a Promise — handlers take `props` and start with `const params = await props.params` (kept that way so the security test's `{ _id: params.id, user: user }` sweep still matches); client `[entryId]` pages read it with `useParams()`. Clerk `auth()` and `clerkClient()` are async. Mongoose pre-hooks must not take `next` (throw instead), and use `returnDocument: "after"` rather than the deprecated `new: true`. `typescript` in devDependencies is the TS 6 compatibility package on purpose: TS 7.0 ships no programmatic API, so typescript-eslint and Next's build type-check use TS 6 while the `tsc` binary (`@typescript/native`) is TS 7 — drop the alias once TS 7.1 ships the API. ESLint stays on 9 until eslint-config-next's plugins support 10; the React Compiler rules from react-hooks v7 are downgraded to warnings in `eslint.config.mjs`.
 
 Other things worth knowing: `tsconfig.json` has `strict: false` and handler params are frequently untyped `any` — match the surrounding style rather than adding strictness piecemeal. Tailwind loads tailgrids and tailwindcss-animate alongside the shadcn theme; the brand color is `primary` `#5E4AE3`. **tailgrids cannot be removed by grepping for imports** — it is consumed purely as class names. `tailgrids/plugin` is load-bearing for layout: it supplies `container: {center, padding}` (15 files use bare `container` with no `mx-auto`), a full `screens` override that replaces Tailwind's default breakpoints app-wide (sm 540 / md 720 / lg 960 / xl 1140 / 2xl 1320, plus `xs` 400), the `boxShadow` scale including `shadow-xs` (which stock Tailwind 3 lacks) and redefined `shadow-sm/md/xl` (~100 usages), and the `stroke` / `body-color` colors (`border-stroke` ×27, `text-body-color` ×5). Dropping it silently breaks styling with no build error. daisyUI was removed; submit-button spinners are Lucide `Loader2` with `animate-spin`. Commit messages follow `type: description` (`feat:`, `refactor:`, `fix:`, `chore:`, `style:`).

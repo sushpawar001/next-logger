@@ -40,9 +40,7 @@ const postHooks = (schema: any, name: string) =>
 /** Runs every pre-hook registered for `name` against `context`. */
 const runPre = async (schema: any, name: string, context: any) => {
     for (const fn of preHooks(schema, name)) {
-        await new Promise<void>((resolve, reject) =>
-            fn.call(context, (err?: Error) => (err ? reject(err) : resolve()))
-        );
+        await fn.call(context);
     }
 };
 
@@ -122,7 +120,7 @@ describe("pre-save encryption", () => {
         expect(doc.tag).toBeUndefined();
     });
 
-    it("reports an encryption failure through next()", async () => {
+    it("rejects the hook on an encryption failure", async () => {
         vi.resetModules();
         vi.stubEnv("ENCRYPTION_KEY", "too-short");
         const { addEncryptionHooks: addHooks } = await import(

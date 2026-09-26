@@ -380,7 +380,7 @@ describe.each(RESOURCES)("$name routes", (r) => {
 
             const [filter, , options] = r.model.findOneAndUpdate.mock.calls[0];
             expect(filter).toEqual({ _id: ENTRY_ID, user: USER_A });
-            expect(options).toEqual({ new: true });
+            expect(options).toEqual({ returnDocument: "after" });
 
             expect(res.status).toBe(200);
             expect((await res.json()).message).toBe("Data updated");

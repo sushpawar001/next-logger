@@ -2,7 +2,7 @@ import ClerkUser from "@/models/userModelClerk";
 import { auth } from "@clerk/nextjs/server";
 
 export async function getUserObjectId(): Promise<string | null> {
-    const { userId } = auth();
+    const { userId } = await auth();
 
     if (!userId) {
         throw new Error("User not logged in");

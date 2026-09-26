@@ -5,7 +5,8 @@ import Weight from "@/models/weightModel";
 
 connectDB();
 
-export async function DELETE(request: NextRequest, { params }) {
+export async function DELETE(request: NextRequest, props) {
+    const params = await props.params;
     try {
         const user = await getUserObjectId();
         const data = await Weight.findOneAndDelete({ _id: params.id, user: user });

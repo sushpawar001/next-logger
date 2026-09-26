@@ -14,19 +14,24 @@ vi.mock("@/dbConfig/connectDB", () => ({
 }));
 
 /** Clerk's server entrypoint throws outside a request context. */
-vi.mock("@clerk/nextjs/server", () => ({
-    auth: vi.fn(() => ({ userId: null, sessionId: null })),
-    currentUser: vi.fn(async () => null),
-    clerkClient: {
+vi.mock("@clerk/nextjs/server", () => {
+    // clerkClient() is an async factory since Clerk v6; it resolves to one
+    // shared client so tests can assert on its methods.
+    const client = {
         users: {
             updateUserMetadata: vi.fn(async () => ({})),
             getUser: vi.fn(async () => ({ id: "user_2clerkA" })),
             deleteUser: vi.fn(async () => ({})),
         },
-    },
-    clerkMiddleware: vi.fn(),
-    createRouteMatcher: vi.fn(() => () => false),
-}));
+    };
+    return {
+        auth: vi.fn(() => ({ userId: null, sessionId: null })),
+        currentUser: vi.fn(async () => null),
+        clerkClient: vi.fn(async () => client),
+        clerkMiddleware: vi.fn(),
+        createRouteMatcher: vi.fn(() => () => false),
+    };
+});
 
 /**
  * Installed per-test, not at module top level: `restoreMocks: true` restores

@@ -5,10 +5,10 @@ interface EmailTemplateProps {
     hashedToken: string;
 }
 
-export const ForgotPasswordTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
+export const ForgotPasswordTemplate = ({
     email,
     hashedToken,
-}) => (
+}: Readonly<EmailTemplateProps>) => (
     <div
         style={{
             fontFamily: "'Helvetica Neue', Arial, sans-serif",

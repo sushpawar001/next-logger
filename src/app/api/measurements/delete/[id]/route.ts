@@ -5,7 +5,8 @@ import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function DELETE(request: NextRequest, { params }: any) {
+export async function DELETE(request: NextRequest, props) {
+    const params = await props.params;
     try {
         const user = await getUserObjectId();
         const data = await Measurements.findOneAndDelete({ _id: params.id, user: user });

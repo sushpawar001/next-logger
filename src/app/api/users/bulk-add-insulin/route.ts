@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
             {
                 $set: { insulins: insulinData },
             },
-            { new: true }
+            { returnDocument: "after" }
         );
 
         return NextResponse.json({

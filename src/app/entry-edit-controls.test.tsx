@@ -5,11 +5,12 @@ vi.mock("axios");
 vi.mock("@/helpers/notify", () => ({ default: vi.fn() }));
 
 const push = vi.fn();
+let routeParams: Record<string, string> = {};
 vi.mock("next/navigation", () => ({
     useRouter: () => ({ push, replace: vi.fn(), refresh: vi.fn(), back: vi.fn() }),
     usePathname: () => "/glucose/g1",
     useSearchParams: () => new URLSearchParams(),
-    useParams: () => ({}),
+    useParams: () => routeParams,
 }));
 
 vi.mock("recharts", async (importOriginal) => {
@@ -79,7 +80,8 @@ describe.each(EDIT_PAGES)("$name edit page controls", (p) => {
                 ? Promise.resolve({ data: { data: [{ _id: "i1", name: "Lantus" }] } })
                 : Promise.resolve({ data: { data: { ...p.entry } } })
         );
-        const view = renderWithProviders(<p.Page params={{ entryId: p.entryId }} />);
+        routeParams = { entryId: p.entryId };
+        const view = renderWithProviders(<p.Page />);
         await waitFor(() => expect(get).toHaveBeenCalled());
         return view;
     };

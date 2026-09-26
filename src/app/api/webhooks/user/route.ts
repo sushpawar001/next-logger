@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
                     ),
                 });
 
-                await clerkClient.users.updateUserMetadata(id, {
+                await (await clerkClient()).users.updateUserMetadata(id, {
                     publicMetadata: {
                         subscriptionPlan: "trial",
                         subscriptionEndDate: new Date(

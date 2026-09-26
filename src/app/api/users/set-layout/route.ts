@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
             {
                 $set: { layoutSettings: layoutSettings },
             },
-            { new: true }
+            { returnDocument: "after" }
         );
 
         return NextResponse.json({

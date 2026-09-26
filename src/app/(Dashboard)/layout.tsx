@@ -14,8 +14,8 @@ export const metadata = {
     description: "Your daily logger!",
 };
 
-export default function RootLayout({ children }) {
-    const token = getToken();
+export default async function RootLayout({ children }) {
+    const token = await getToken();
     return (
         <ClerkProvider
             appearance={{

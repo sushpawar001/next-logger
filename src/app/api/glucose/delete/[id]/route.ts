@@ -5,7 +5,8 @@ import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function DELETE(request: NextRequest, { params }) {
+export async function DELETE(request: NextRequest, props) {
+    const params = await props.params;
     try {
         const user = await getUserObjectId();
         const data = await Glucose.findOneAndDelete({ _id: params.id, user: user });

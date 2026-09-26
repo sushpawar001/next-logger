@@ -5,13 +5,14 @@ import { getUserObjectId } from "@/helpers/getUserObjectId";
 
 connectDB();
 
-export async function PUT(request: NextRequest, { params }) {
+export async function PUT(request: NextRequest, props) {
+    const params = await props.params;
     try {
         const body = await request.json();
         body.createdAt = new Date(body.createdAt);
         const user = await getUserObjectId();
         const data = await Measurements.findOneAndUpdate({ _id: params.id, user: user }, body, {
-            new: true
+            returnDocument: "after"
         });
         return NextResponse.json({ message: "Measurements Data updated", data: data })
 

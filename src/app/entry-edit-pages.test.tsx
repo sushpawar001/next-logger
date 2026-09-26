@@ -5,11 +5,12 @@ vi.mock("axios");
 vi.mock("@/helpers/notify", () => ({ default: vi.fn() }));
 
 const push = vi.fn();
+let routeParams: Record<string, string> = {};
 vi.mock("next/navigation", () => ({
     useRouter: () => ({ push, replace: vi.fn(), refresh: vi.fn(), back: vi.fn() }),
     usePathname: () => "/glucose/g1",
     useSearchParams: () => new URLSearchParams(),
-    useParams: () => ({}),
+    useParams: () => routeParams,
 }));
 
 import axios from "axios";
@@ -103,8 +104,9 @@ describe.each(EDIT_PAGES)("$name edit page", (p) => {
                 ? Promise.resolve({ data: { data: [{ _id: "i1", name: "Lantus" }] } })
                 : Promise.resolve({ data: { data: { ...p.entry } } })
         );
+        routeParams = { entryId: p.entryId };
         const view = renderWithProviders(
-            <p.Page params={{ entryId: p.entryId }} />
+            <p.Page />
         );
         await waitFor(() => expect(get).toHaveBeenCalledWith(p.getUrl));
         return view;

@@ -103,7 +103,7 @@ describe("POST /api/users/set-layout", () => {
         expect(clerkUser.findByIdAndUpdate).toHaveBeenCalledWith(
             USER_A,
             { $set: { layoutSettings: layout } },
-            { new: true }
+            { returnDocument: "after" }
         );
         expect((await res.json()).message).toBe("Layout settings updated!");
     });
@@ -233,7 +233,7 @@ describe("POST /api/users/add-insulin", () => {
         expect(legacyUser.findByIdAndUpdate).toHaveBeenCalledWith(
             USER_A,
             { $addToSet: { insulins: insulin } },
-            { new: true }
+            { returnDocument: "after" }
         );
         expect((await res.json()).message).toBe("User updated successfully");
     });
@@ -264,7 +264,7 @@ describe("POST /api/users/bulk-add-insulin", () => {
         expect(legacyUser.findByIdAndUpdate).toHaveBeenCalledWith(
             USER_A,
             { $set: { insulins: insulinData } },
-            { new: true }
+            { returnDocument: "after" }
         );
         expect((await res.json()).insulin).toEqual(insulinData);
     });

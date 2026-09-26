@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * /api/seed/[userId] bulk-generates demo data. It is listed as a PUBLIC route
- * in src/middleware.ts, so its own token check is the only thing standing
+ * in src/proxy.ts, so its own token check is the only thing standing
  * between the internet and unlimited writes -- which makes the gap covered
  * below (docs/BUGS.md #1) worth pinning down precisely.
  */
@@ -45,7 +45,7 @@ const TOKEN = "test-seed-token"; // matches vitest.config.ts TEST_ENV
 const seed = async (userId: string, body: Record<string, any>) => {
     const { POST } = await import("@/app/api/seed/[userId]/route");
     return POST(makeJsonRequest(`/api/seed/${userId}`, body), {
-        params: { userId },
+        params: Promise.resolve({ userId }),
     });
 };
 
@@ -110,7 +110,7 @@ describe("input validation", () => {
             headers: { "content-type": "application/json" },
         });
 
-        const res = await POST(req as any, { params: { userId: VALID_USER_ID } });
+        const res = await POST(req as any, { params: Promise.resolve({ userId: VALID_USER_ID }) });
 
         expect(res.status).toBe(500);
     });

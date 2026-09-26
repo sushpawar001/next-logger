@@ -193,7 +193,7 @@ describe("userModelClerk (the active user model)", () => {
         const path = (ClerkUser.schema as any).path("insulins") as any;
 
         expect(path.instance).toBe("Array");
-        expect(path.caster.options.ref).toBe("insulintype");
+        expect(path.embeddedSchemaType.options.ref).toBe("insulintype");
     });
 
     /**

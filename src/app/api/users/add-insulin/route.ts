@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       {
         $addToSet: { insulins: insulin },
       },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     return NextResponse.json({

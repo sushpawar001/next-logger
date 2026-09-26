@@ -1,8 +1,8 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 /**
  * The Clerk webhook mirrors users into Mongo and cascades deletes. It is a
- * PUBLIC route in src/middleware.ts, and it performs no signature verification
+ * PUBLIC route in src/proxy.ts, and it performs no signature verification
  * (docs/BUGS.md #3), so anyone who can reach it can drive these branches.
  */
 
@@ -48,6 +48,11 @@ const Glucose = GlucoseModel as any;
 const Weight = WeightModel as any;
 const Insulin = InsulinModel as any;
 const Measurements = MeasurementsModel as any;
+// clerkClient() resolves to the one shared client mocked in setup.node.ts.
+let clerk: Awaited<ReturnType<typeof clerkClient>>;
+beforeAll(async () => {
+    clerk = await clerkClient();
+});
 const ClerkUser = ClerkUserModel as any;
 const InsulinType = InsulinTypeModel as any;
 
@@ -81,7 +86,7 @@ beforeEach(() => {
         model.deleteMany.mockReset();
         model.deleteMany.mockReturnValue(createQuery({ deletedCount: 1 }));
     }
-    vi.mocked(clerkClient.users.updateUserMetadata).mockClear();
+    vi.mocked(clerk.users.updateUserMetadata).mockClear();
 });
 
 describe("user.created", () => {
@@ -115,7 +120,7 @@ describe("user.created", () => {
 
         await post(createdEvent());
 
-        expect(clerkClient.users.updateUserMetadata).toHaveBeenCalledWith(
+        expect(clerk.users.updateUserMetadata).toHaveBeenCalledWith(
             CLERK_ID_A,
             {
                 publicMetadata: {
