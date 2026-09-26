@@ -1,6 +1,6 @@
 # FitDose logo — final assets
 
-Assets live in `public/brand/` (served at `/brand/...`). Generated 2026-09-26 by `scripts/brand/build.js`. Colours and rules: `docs/designs/brand-guidelines.md` (local-only).
+Assets live in `public/brand/` (served at `/brand/...`). Generated 2026-09-26 by `scripts/brand/build.js`. Colours and rules: `docs/designs/brand/brand-guidelines.md` (local-only).
 
 All SVGs are **pure outlined paths**: no live text, masks, clip paths or `<use>`. They look identical everywhere (browsers, Figma, Illustrator, print) and need no font installed. The wordmark lettering is Inter Bold (SIL Open Font License, which allows use in logos).
 
