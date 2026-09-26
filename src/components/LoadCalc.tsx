@@ -14,22 +14,36 @@ import { DataTable } from "@/components/app-ui/table";
 const STANDARD_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
 const DEFAULT_PLATES = [2.5, 5, 10, 15, 20];
 
+/** IWF (Olympic) plate colours. */
+const RED = "#D62828";
+const BLUE = "#1D4ED8";
+const YELLOW = "#F5C518";
+const GREEN = "#15803D";
+const WHITE = "#FFFFFF";
+const CHROME = "#C9CDD2";
+const LIGHT_FG = "#FAF7F2";
+const DARK_FG = "#241A33";
+
 /**
- * Plates are coloured by size with brand colours only; red, amber and green
- * stay reserved for glucose status. [fill, drawn height, label colour].
+ * Plates follow the IWF colour code by size, change plates included.
+ * [fill, drawn height, label colour].
  */
 const PLATE_STYLE: Record<string, [string, number, string]> = {
-    25: ["#4A3470", 170, "#FAF7F2"],
-    20: ["#241A33", 160, "#FAF7F2"],
-    15: ["#8E78C4", 146, "#241A33"],
-    10: ["#E8DFD0", 126, "#241A33"],
-    5: ["#FFFFFF", 100, "#241A33"],
-    2.5: ["#E8DFD0", 82, "#241A33"],
-    1.25: ["#FFFFFF", 66, "#241A33"],
+    25: [RED, 170, LIGHT_FG],
+    20: [BLUE, 160, LIGHT_FG],
+    15: [YELLOW, 146, DARK_FG],
+    10: [GREEN, 126, LIGHT_FG],
+    5: [WHITE, 100, DARK_FG],
+    2.5: [RED, 82, LIGHT_FG],
+    2: [BLUE, 78, LIGHT_FG],
+    1.5: [YELLOW, 72, DARK_FG],
+    1.25: [CHROME, 66, DARK_FG],
+    1: [GREEN, 62, LIGHT_FG],
+    0.5: [WHITE, 58, DARK_FG],
 };
 const plateStyle = (p: number): [string, number, string] =>
-    PLATE_STYLE[String(p)] ?? ["#B9A9DC", Math.max(60, Math.min(170, 60 + p * 4)), "#241A33"];
-const isLight = (fill: string) => fill === "#FFFFFF" || fill === "#E8DFD0";
+    PLATE_STYLE[String(p)] ?? [CHROME, Math.max(60, Math.min(170, 60 + p * 4)), DARK_FG];
+const isLight = (fill: string) => fill === WHITE || fill === CHROME || fill === YELLOW;
 
 const fmt = (n: number) => String(Math.round(n * 100) / 100);
 
