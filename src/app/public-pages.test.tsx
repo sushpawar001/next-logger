@@ -101,10 +101,11 @@ describe("home page", () => {
         expect(container.textContent!.length).toBeGreaterThan(200);
     });
 
-    it("shows the wordmark logo in the hero, linking home", () => {
+    it("shows the wordmark logo in the header, linking home", () => {
         renderWithProviders(<HomePage />);
 
-        const logo = screen.getByRole("img", { name: "FitDose" });
+        // The header's wordmark comes first; the footer repeats it unlinked.
+        const logo = screen.getAllByRole("img", { name: "FitDose" })[0];
         expect(logo).toHaveAttribute("src", "/brand/svg/fitdose-wordmark.svg");
         expect(logo.closest("a")).toHaveAttribute("href", "/");
     });

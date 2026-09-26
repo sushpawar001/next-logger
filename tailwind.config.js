@@ -20,6 +20,24 @@ module.exports = {
     				ring: 'hsl(var(--ring))',
     				foreground: 'hsl(var(--primary-foreground))'
     			},
+    			// Aubergine & Oat brand palette (docs/designs/brand-guidelines.md §2).
+    			// Named here because `secondary` above is a legacy gray, not Oat.
+    			brand: {
+    				ink: '#241A33',
+    				aubergine: '#4A3470',
+    				'aubergine-hover': '#3D2A5E',
+    				lavender: '#8E78C4',
+    				'lavender-light': '#B9A9DC',
+    				oat: '#E8DFD0',
+    				cream: '#FAF7F2',
+    				tint: '#F3EEE6',
+    				line: '#E8DFD0',
+    				'line-strong': '#DDD3C2',
+    				muted: '#6E5A99',
+    				body: '#4F4363',
+    				'on-dark': '#D9CFEA',
+    				'night-line': '#3A2E4D'
+    			},
     			secondary: {
     				DEFAULT: '#111827',
     				foreground: 'hsl(var(--secondary-foreground))'
