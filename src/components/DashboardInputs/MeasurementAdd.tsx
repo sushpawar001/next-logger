@@ -134,7 +134,7 @@ export default function MeasurementAdd({ className = "", autoFocus = false }) {
                 ))}
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="glucose"
                     >
                         Measurement Tag

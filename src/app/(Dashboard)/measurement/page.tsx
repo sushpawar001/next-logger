@@ -107,7 +107,7 @@ export default function MeasurementsPage() {
                     <h3 className="block p-0 text-lg font-semibold text-gray-900 mb-3">
                         Measurement Trends
                     </h3>
-                    <div className="h-72 flex-grow">
+                    <div className="h-72 grow">
                         <MeasurementChartRecharts
                             data={filteredMeasurementData}
                             fetch={false}

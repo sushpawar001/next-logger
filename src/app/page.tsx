@@ -27,7 +27,7 @@ export default function HomePage() {
                 Skip to content
             </a>
             <HomeNav />
-            <main id="main" tabIndex={-1} className="focus:outline-none">
+            <main id="main" tabIndex={-1} className="focus:outline-hidden">
                 <HomeHero />
                 <HomeFeatures />
                 <HomePrivacy />

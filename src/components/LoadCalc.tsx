@@ -224,13 +224,13 @@ const Switcher = ({
           onChange={handleCheckboxChange}
         />
         <span
-          className={`flex flex-grow items-center justify-center rounded-l-lg py-2 px-4 text-sm font-medium ${!isGreedy ? "text-white bg-primary" : "text-body-color"
+          className={`flex grow items-center justify-center rounded-l-lg py-2 px-4 text-sm font-medium ${!isGreedy ? "text-white bg-primary" : "text-body-color"
             }`}
         >
           Robust Mode
         </span>
         <span
-          className={`flex flex-grow items-center justify-center rounded-r-lg py-2 px-4 text-sm font-medium ${isGreedy ? "text-white bg-primary" : "text-body-color"
+          className={`flex grow items-center justify-center rounded-r-lg py-2 px-4 text-sm font-medium ${isGreedy ? "text-white bg-primary" : "text-body-color"
             }`}
         >
           Greedy Mode

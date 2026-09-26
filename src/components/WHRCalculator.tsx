@@ -108,7 +108,7 @@ const ImportantNotes: React.FC = () => (
             <ul className="space-y-2 text-sm text-blue-800">
                 {IMPORTANT_NOTES.map((note, index) => (
                     <li key={index} className="flex items-start gap-2">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                         <span>{note}</span>
                     </li>
                 ))}
@@ -203,7 +203,7 @@ const MeasurementInput: React.FC<{
     suffix = "",
 }) => (
     <div className="space-y-2">
-        <Label className="text-sm font-medium text-gray-700">{label}</Label>
+        <Label className="block text-sm leading-6 font-medium text-gray-700">{label}</Label>
         <div className="flex gap-2">
             <div className="flex-1">
                 <Input
@@ -254,7 +254,7 @@ const GenderSelection: React.FC<{
     suffix?: string;
 }> = ({ gender, onGenderChange, suffix = "" }) => (
     <div className="space-y-2">
-        <Label className="text-sm font-medium text-gray-700">Gender</Label>
+        <Label className="block text-sm leading-6 font-medium text-gray-700">Gender</Label>
         <RadioGroup
             value={gender}
             onValueChange={(value) =>

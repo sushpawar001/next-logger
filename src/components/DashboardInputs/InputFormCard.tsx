@@ -43,7 +43,7 @@ export function InputFormCard({
             <CardContent className="space-y-4">
                 {fields.map((field, index) => (
                     <div key={index} className="space-y-2">
-                        <Label className="text-sm font-medium text-gray-700">
+                        <Label className="block text-sm leading-6 font-medium text-gray-700">
                             {field.label}
                         </Label>
                         {field.type === "input" && (

@@ -21,7 +21,7 @@ export default function SignUpPage() {
                 repeat: Infinity,
             }}
         >
-            <div className="h-full flex justify-center items-center backdrop-blur-sm py-10 px-5 md:px-20">
+            <div className="h-full flex justify-center items-center backdrop-blur-xs py-10 px-5 md:px-20">
                 <SignUp />
             </div>
         </motion.div>

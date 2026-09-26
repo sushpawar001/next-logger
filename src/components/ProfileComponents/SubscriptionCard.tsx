@@ -94,7 +94,7 @@ export function SubscriptionCard({
                 {subscriptionPlan !== "free" && (
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 border border-border rounded-lg">
                         <div className="flex items-center gap-3">
-                            <Calendar className="h-5 w-5 text-primary flex-shrink-0" />
+                            <Calendar className="h-5 w-5 text-primary shrink-0" />
                             <div>
                                 <div
                                     className={`text-lg md:text-2xl font-bold ${getUrgencyColor()}`}

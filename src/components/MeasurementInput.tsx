@@ -15,7 +15,7 @@ export default function MeasurementInput({
     const LabelText = label.charAt(0).toUpperCase() + label.slice(1);
     return (
         <div className="space-y-1">
-            <label htmlFor={id} className="text-sm font-medium text-gray-700">
+            <label htmlFor={id} className="block text-sm leading-6 font-medium text-gray-700">
                 {LabelText}
             </label>
             <input
@@ -24,7 +24,7 @@ export default function MeasurementInput({
                 min={0}
                 id={id}
                 name={id}
-                className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring outline-none h-9"
+                className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring outline-hidden h-9"
                 placeholder={LabelText}
                 value={value}
                 onChange={onChange}

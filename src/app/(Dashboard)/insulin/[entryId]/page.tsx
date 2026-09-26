@@ -119,7 +119,7 @@ export default function EditEntry() {
                     <div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0">
                         <div className="w-full lg:w-1/2 space-y-2">
                             <label
-                                className="text-sm font-medium text-gray-700"
+                                className="block text-sm leading-6 font-medium text-gray-700"
                                 htmlFor="glucose"
                             >
                                 Dose (units)
@@ -136,7 +136,7 @@ export default function EditEntry() {
                         </div>
                         <div className="w-full lg:w-1/2 space-y-2">
                             <label
-                                className="text-sm font-medium text-gray-700"
+                                className="block text-sm leading-6 font-medium text-gray-700"
                                 htmlFor="glucose"
                             >
                                 Insulin Type
@@ -159,7 +159,7 @@ export default function EditEntry() {
                     </div>
                     <div className="space-y-2">
                         <label
-                            className="text-sm font-medium text-gray-700"
+                            className="block text-sm leading-6 font-medium text-gray-700"
                             htmlFor="glucoseDate"
                         >
                             Date & Time
@@ -167,14 +167,14 @@ export default function EditEntry() {
                         <input
                             type="datetime-local"
                             id="glucoseDate"
-                            className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 outline-none"
+                            className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
                             value={DatetimeLocalFormat(data.createdAt)}
                             onChange={changeDate}
                         />
                     </div>
                     <div className="space-y-2">
                         <label
-                            className="text-sm font-medium text-gray-700"
+                            className="block text-sm leading-6 font-medium text-gray-700"
                             htmlFor="glucose_tag"
                         >
                             Measurement Tag
@@ -183,7 +183,7 @@ export default function EditEntry() {
                             id="glucose_tag"
                             value={data.tag ?? ""}
                             onChange={changeTag}
-                            className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 outline-none"
+                            className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 outline-hidden"
                         >
                             <option value="">Select Tag</option>
                             {entryTags.map((data) => (

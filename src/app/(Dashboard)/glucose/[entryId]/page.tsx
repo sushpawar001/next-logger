@@ -105,7 +105,7 @@ export default function EditEntry() {
                 <div className="flex flex-col space-y-3">
                     <div className="space-y-2">
                         <label
-                            className="text-sm font-medium text-gray-700"
+                            className="block text-sm leading-6 font-medium text-gray-700"
                             htmlFor="glucose"
                         >
                             Glucose Level
@@ -122,7 +122,7 @@ export default function EditEntry() {
                     </div>
                     <div className="space-y-2">
                         <label
-                            className="text-sm font-medium text-gray-700"
+                            className="block text-sm leading-6 font-medium text-gray-700"
                             htmlFor="glucoseDate"
                         >
                             Date & Time
@@ -137,7 +137,7 @@ export default function EditEntry() {
                     </div>
                     <div className="space-y-2">
                         <label
-                            className="text-sm font-medium text-gray-700"
+                            className="block text-sm leading-6 font-medium text-gray-700"
                             htmlFor="glucose_tag"
                         >
                             Measurement Tag

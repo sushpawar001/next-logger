@@ -90,7 +90,7 @@ export default function UserInsulins({
                     id="insulinType"
                     value={selectedInsulin}
                     onChange={selectInsulinAndAdd}
-                    className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
+                    className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-hidden"
                 >
                     <option value="" disabled>
                         Select Insulin
@@ -103,7 +103,7 @@ export default function UserInsulins({
                 </select>
                 <button
                     type="submit"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring focus:outline-none font-medium rounded-lg text-sm min-w-fit w-full md:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring focus:outline-hidden font-medium rounded-lg text-sm min-w-fit w-full md:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
                     disabled={isSubmitting || !isChanged}
                 >
                     {isSubmitting ? (

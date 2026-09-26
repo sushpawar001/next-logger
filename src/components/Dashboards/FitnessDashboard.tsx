@@ -29,7 +29,7 @@ export default function FitnessDashboard() {
                                 <h3 className="block mb-1 p-0 text-sm font-medium text-secondary">
                                     Weight history
                                 </h3>
-                                <div className="flex-grow">
+                                <div className="grow">
                                     {weightQuery.isPending ? (
                                         <div className="h-full flex items-center justify-center">
                                             <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
@@ -46,7 +46,7 @@ export default function FitnessDashboard() {
                                 <h3 className="block p-0 mb-1 text-sm font-medium text-secondary">
                                     Measurement history
                                 </h3>
-                                <div className="flex-grow">
+                                <div className="grow">
                                     {measurementQuery.isPending ? (
                                         <div className="h-full flex items-center justify-center">
                                             <Loader2 className="h-8 w-8 animate-spin text-gray-300" />
@@ -64,7 +64,7 @@ export default function FitnessDashboard() {
                             <div className="">
                                 <WeightAdd />
                             </div>
-                            <MeasurementAdd className="flex-grow" />
+                            <MeasurementAdd className="grow" />
                         </div>
                     </div>
                 </div>

@@ -73,7 +73,7 @@ export default function AddNewInsulin({
                 <input
                     type="text"
                     id="insulin"
-                    className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-none"
+                    className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
                     placeholder="Enter new insulin name"
                     value={newInsulinType}
                     onChange={changeNewInsulinType}
@@ -81,7 +81,7 @@ export default function AddNewInsulin({
                 />
                 <button
                     type="submit"
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring focus:outline-none font-medium rounded-lg text-sm w-full lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground focus:ring-ring focus:outline-hidden font-medium rounded-lg text-sm w-full lg:w-1/5 py-2.5 text-center transition duration-300 disabled:bg-primary/50"
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (

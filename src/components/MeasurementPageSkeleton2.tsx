@@ -24,7 +24,7 @@ export default function MeasurementPageSkeleton2() {
                         <h3 className="block p-0 mb-3">
                             <Skeleton className="w-[104px] max-w-full" />
                         </h3>
-                        <div className="h-72 flex-grow">
+                        <div className="h-72 grow">
                             <canvas height="583" width="855"></canvas>
                         </div>
                     </div>

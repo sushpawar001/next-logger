@@ -78,7 +78,7 @@ export default function WeightAdd(props) {
             <div className="flex flex-col space-y-3">
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="weight"
                     >
                         Weight (kg)
@@ -87,7 +87,7 @@ export default function WeightAdd(props) {
                         type="number"
                         id="weight"
                         ref={valueInputRef}
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-none"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
                         placeholder="72 kg"
                         value={weight}
                         onChange={changeWeight}
@@ -97,7 +97,7 @@ export default function WeightAdd(props) {
                 </div>
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="weight_date"
                     >
                         Date & Time
@@ -105,14 +105,14 @@ export default function WeightAdd(props) {
                     <input
                         type="datetime-local"
                         id="weight_date"
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 bg-white outline-none"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 bg-white outline-hidden"
                         value={DatetimeLocalFormat(selectedDate)}
                         onChange={handleDateChange}
                     />
                 </div>
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="weight_tag"
                     >
                         Measurement Tag
@@ -121,7 +121,7 @@ export default function WeightAdd(props) {
                         id="weight_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
+                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-hidden"
                     >
                         <option value="" disabled>
                             Select Tag

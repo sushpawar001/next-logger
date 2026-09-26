@@ -1,6 +1,52 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@config "../../tailwind.config.js";
+
+@custom-variant dark (&:is(.dark *));
+
+/* tailgrids' container: centred, 16px gutters, max-width per breakpoint. */
+@utility container {
+    margin-inline: auto;
+    padding-inline: 16px;
+}
+
+/*
+ * Tailwind 3 defaults that Tailwind 4 changed. Kept so the UI renders as it
+ * did before the upgrade.
+ */
+@layer base {
+    *,
+    ::after,
+    ::before,
+    ::backdrop,
+    ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+        color: var(--color-gray-400);
+    }
+
+    /* v4's preflight makes form fields transparent; v3 left the UA white. */
+    input:where(:not([type="button"], [type="reset"], [type="submit"])),
+    select,
+    textarea {
+        background-color: Field;
+    }
+
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
+    }
+
+    /* v4's preflight zeroes padding everywhere; v3 kept the UA 1px on cells. */
+    td,
+    th {
+        padding: 1px;
+    }
+}
 
 .gradient {
     background: radial-gradient(

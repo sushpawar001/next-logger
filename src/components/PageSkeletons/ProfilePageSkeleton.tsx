@@ -23,7 +23,7 @@ const ProfilePageSkeleton = () => (
                                 </div>
                                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 p-4 border  rounded-lg">
                                     <div className="flex items-center gap-3">
-                                        <SVGSkeleton className="flex-shrink-0 w-[24px] h-[24px]" />
+                                        <SVGSkeleton className="shrink-0 w-[24px] h-[24px]" />
                                         <div>
                                             <div>
                                                 <Skeleton className="w-[64px] max-w-full" />

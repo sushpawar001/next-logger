@@ -76,7 +76,7 @@ function RadioGroupItem({
       <motion.button
         data-slot="radio-group-item"
         className={cn(
-          'aspect-square size-5 rounded-full flex items-center justify-center border border-input text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+          'aspect-square size-5 rounded-full flex items-center justify-center border border-input text-primary ring-offset-background focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
           className,
         )}
         whileHover={{ scale: 1.05 }}

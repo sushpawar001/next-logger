@@ -79,7 +79,7 @@ export default function GlucoseAdd(props) {
             <div className="flex flex-col space-y-3">
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="glucose"
                     >
                         Glucose Level
@@ -88,7 +88,7 @@ export default function GlucoseAdd(props) {
                         type="number"
                         id="glucose"
                         ref={valueInputRef}
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-none"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
                         placeholder="98 mg/dl"
                         value={glucose}
                         onChange={changeGlucose}
@@ -97,7 +97,7 @@ export default function GlucoseAdd(props) {
                 </div>
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="glucoseDate"
                     >
                         Date & Time
@@ -105,7 +105,7 @@ export default function GlucoseAdd(props) {
                     <input
                         type="datetime-local"
                         id="glucoseDate"
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 bg-white border-border focus:border-primary focus:ring-ring h-10 outline-none"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 bg-white border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
                         value={DatetimeLocalFormat(selectedDate)}
                         // value={selectedDate}
                         onChange={handleDateChange}
@@ -113,7 +113,7 @@ export default function GlucoseAdd(props) {
                 </div>
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="glucose_tag"
                     >
                         Measurement Tag
@@ -122,7 +122,7 @@ export default function GlucoseAdd(props) {
                         id="glucose_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
+                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-hidden"
                     >
                         <option value="">Select Tag</option>
                         {entryTags.map((data) => (

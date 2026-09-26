@@ -97,7 +97,7 @@ export default function ContactUsForm() {
                 <div className="col-span-1 md:col-span-2 flex">
                     <button
                         type="submit"
-                        className="text-primary-foreground bg-primary hover:bg-primary-dark focus:ring focus:outline-none focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2.5 text-center transition duration-300 mx-auto"
+                        className="text-primary-foreground bg-primary hover:bg-primary-dark focus:ring-3 focus:outline-hidden focus:ring-primary-ring font-medium rounded-lg text-sm w-full py-2.5 text-center transition duration-300 mx-auto"
                     >
                         Submit
                     </button>

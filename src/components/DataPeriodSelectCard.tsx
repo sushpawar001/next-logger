@@ -29,7 +29,7 @@ export default function DataPeriodSelectCard({
                 id="daysOfDataInput"
                 value={daysOfData}
                 onChange={changeDaysOfData}
-                className="border text-gray-900 text-sm rounded-lg  block p-2.5 w-32 border-border focus:border-primary focus:ring-ring outline-none bg-white"
+                className="border text-gray-900 text-sm rounded-lg  block p-2.5 w-32 border-border focus:border-primary focus:ring-ring outline-hidden bg-white"
             >
                 <option defaultValue="7">7</option>
                 <option>14</option>

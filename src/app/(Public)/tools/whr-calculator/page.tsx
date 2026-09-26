@@ -210,28 +210,28 @@ export default function WHRCalculatorPage() {
                                 </h4>
                                 <ul className="space-y-2 text-sm text-blue-800">
                                     <li className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                                         <span>
                                             Stand with your feet shoulder-width
                                             apart
                                         </span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                                         <span>
                                             Find the narrowest part of your
                                             waist (usually at the navel level)
                                         </span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                                         <span>
                                             Wrap the tape measure around your
                                             waist without compressing the skin
                                         </span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                                         <span>
                                             Record the measurement in
                                             centimeters or inches
@@ -245,27 +245,27 @@ export default function WHRCalculatorPage() {
                                 </h4>
                                 <ul className="space-y-2 text-sm text-blue-800">
                                     <li className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                                         <span>
                                             Stand with your feet together
                                         </span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                                         <span>
                                             Find the widest part of your
                                             hips/buttocks
                                         </span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                                         <span>
                                             Wrap the tape measure around your
                                             hips at this point
                                         </span>
                                     </li>
                                     <li className="flex items-start gap-2">
-                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 shrink-0"></span>
                                         <span>
                                             Record the measurement in
                                             centimeters or inches

@@ -100,7 +100,7 @@ export default function InsulinAdd(props) {
                 <div className="flex flex-col md:flex-row md:space-x-3 space-y-2 md:space-y-0">
                     <div className="w-full lg:w-1/2 space-y-2">
                         <label
-                            className="text-sm font-medium text-gray-700"
+                            className="block text-sm leading-6 font-medium text-gray-700"
                             htmlFor="glucose"
                         >
                             Dose (units)
@@ -109,7 +109,7 @@ export default function InsulinAdd(props) {
                             type="number"
                             id="insulin"
                             ref={valueInputRef}
-                            className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-none"
+                            className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 outline-hidden"
                             placeholder="10 IU"
                             value={insulin}
                             onChange={changeInsulin}
@@ -118,7 +118,7 @@ export default function InsulinAdd(props) {
                     </div>
                     <div className="w-full lg:w-1/2 space-y-2">
                         <label
-                            className="text-sm font-medium text-gray-700"
+                            className="block text-sm leading-6 font-medium text-gray-700"
                             htmlFor="glucose"
                         >
                             Insulin Type
@@ -127,7 +127,7 @@ export default function InsulinAdd(props) {
                             id="insulinType"
                             value={insulinType}
                             onChange={changeInsulinType}
-                            className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 bg-white outline-none"
+                            className="border text-sm rounded-lg block w-full px-2.5 py-2 border-border focus:border-primary focus:ring-ring h-10 bg-white outline-hidden"
                             required
                         >
                             <option value="" disabled>
@@ -141,7 +141,7 @@ export default function InsulinAdd(props) {
                 </div>
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="glucose"
                     >
                         Date & Time
@@ -149,7 +149,7 @@ export default function InsulinAdd(props) {
                     <input
                         type="datetime-local"
                         id="glucoseDate"
-                        className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 bg-white outline-none"
+                        className="border text-sm rounded-lg block w-full px-2.5 py-2 placeholder:text-red-500 border-border focus:border-primary focus:ring-ring h-10 bg-white outline-hidden"
                         value={DatetimeLocalFormat(selectedDate)}
                         // value={selectedDate}
                         onChange={handleDateChange}
@@ -158,7 +158,7 @@ export default function InsulinAdd(props) {
                 </div>
                 <div className="space-y-2">
                     <label
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                         htmlFor="glucose"
                     >
                         Measurement Tag
@@ -167,7 +167,7 @@ export default function InsulinAdd(props) {
                         id="insulin_tag"
                         value={selectTag ?? ""}
                         onChange={handleTagChange}
-                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-none"
+                        className="border border-border focus:border-primary focus:ring-ring text-gray-900 text-sm rounded-lg  block w-full px-2.5 py-2 invalid:text-gray-400 h-10 bg-white outline-hidden"
                     >
                         <option value="" disabled>
                             Select Tag

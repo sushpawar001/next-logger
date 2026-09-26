@@ -200,7 +200,7 @@ const WeightInput: React.FC<{
     <div className="space-y-2">
         <Label
             htmlFor={`weight${suffix}`}
-            className="text-sm font-medium text-gray-700"
+            className="block text-sm leading-6 font-medium text-gray-700"
         >
             Weight
         </Label>
@@ -263,7 +263,7 @@ const HeightInput: React.FC<{
     suffix = "",
 }) => (
     <div className="space-y-2">
-        <Label className="text-sm font-medium text-gray-700">Height</Label>
+        <Label className="block text-sm leading-6 font-medium text-gray-700">Height</Label>
         <div className="flex gap-2">
             {heightUnit === "cm" ? (
                 <Input
@@ -329,7 +329,7 @@ const GenderSelection: React.FC<{
     suffix?: string;
 }> = ({ gender, onGenderChange, suffix = "" }) => (
     <div className="space-y-2">
-        <Label className="text-sm font-medium text-gray-700">Gender</Label>
+        <Label className="block text-sm leading-6 font-medium text-gray-700">Gender</Label>
         <RadioGroup
             value={gender}
             onValueChange={(value: "male" | "female") => onGenderChange(value)}
@@ -377,7 +377,7 @@ const ActivityLevelSelect: React.FC<{
     <div className="space-y-2">
         <Label
             htmlFor={`activity${suffix}`}
-            className="text-sm font-medium text-gray-700"
+            className="block text-sm leading-6 font-medium text-gray-700"
         >
             Activity Level
         </Label>
@@ -446,7 +446,7 @@ const InputForm: React.FC<{
                 <div className="space-y-2">
                     <Label
                         htmlFor={`age${suffix}`}
-                        className="text-sm font-medium text-gray-700"
+                        className="block text-sm leading-6 font-medium text-gray-700"
                     >
                         Age (years)
                     </Label>
@@ -713,7 +713,7 @@ const WaterIntakeCalculator: React.FC = () => {
     };
 
     return (
-        <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col gap-4 md:gap-6">
             <PrivacyNotice />
 
             {/* Mobile Layout - Results first, then inputs */}
