@@ -39,7 +39,15 @@ export function Reading({
                 className
             )}
         >
-            {value}
+            {typeof value === "string" || typeof value === "number" ? (
+                // Keyed on the value so a new reading slides in; a re-render with
+                // the same number leaves it still.
+                <span key={value} className="animate-tick">
+                    {value}
+                </span>
+            ) : (
+                value
+            )}
             {unit && (
                 <span className="ml-[0.12em] text-[max(12px,0.38em)] font-medium tracking-normal text-brand-muted">
                     {unit}
@@ -93,7 +101,7 @@ export function StatusBadge({
     return (
         <span
             className={cn(
-                "inline-flex h-6 items-center gap-[5px] whitespace-nowrap rounded-xl px-2.5 text-[13px] font-semibold leading-none",
+                "inline-flex h-6 animate-pop items-center gap-[5px] whitespace-nowrap rounded-xl px-2.5 text-[13px] font-semibold leading-none",
                 badge,
                 className
             )}
@@ -182,7 +190,10 @@ export function TimeInRangeBar({
                     split[k] > 0 ? (
                         <span
                             key={k}
-                            className={cn("rounded-[5px]", STATUS_META[k].fill)}
+                            className={cn(
+                                "origin-left animate-bar-grow rounded-[5px] transition-[width] duration-500 ease-out",
+                                STATUS_META[k].fill
+                            )}
                             style={{ width: `${split[k]}%` }}
                         />
                     ) : null
@@ -224,7 +235,7 @@ export function HBar({
             <span className="truncate">{label}</span>
             <span className="h-3 overflow-hidden rounded-md bg-brand-oat">
                 <span
-                    className="block h-full rounded-md bg-brand-aubergine"
+                    className="block h-full origin-left animate-bar-grow rounded-md bg-brand-aubergine transition-[width] duration-500 ease-out"
                     style={{ width: `${pct}%` }}
                 />
             </span>

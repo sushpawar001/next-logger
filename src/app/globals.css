@@ -86,6 +86,101 @@
 }
 
 /*
+ * Micro-animations. Short, ease-out, never on loop (skeleton pulse aside), and
+ * all switched off under prefers-reduced-motion at the bottom of this block.
+ */
+@theme {
+    --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+    --animate-rise: rise 480ms var(--ease-out-soft) both;
+    --animate-bar-grow: bar-grow 700ms var(--ease-out-soft) both;
+    --animate-pop: pop 260ms var(--ease-out-soft) both;
+    --animate-tick: tick 360ms var(--ease-out-soft) both;
+    --animate-indicator: indicator 260ms var(--ease-out-soft) both;
+
+    @keyframes rise {
+        from {
+            opacity: 0;
+            translate: 0 8px;
+        }
+    }
+    /* Pair with origin-left: bars fill from their start, not their centre. */
+    @keyframes bar-grow {
+        from {
+            scale: 0 1;
+        }
+    }
+    @keyframes pop {
+        from {
+            opacity: 0;
+            scale: 0.6;
+        }
+    }
+    /* A reading that has just changed slides up into place. */
+    @keyframes tick {
+        from {
+            opacity: 0;
+            translate: 0 0.18em;
+        }
+    }
+    @keyframes indicator {
+        from {
+            scale: 1 0;
+        }
+    }
+}
+
+/*
+ * Page entrance: the (Dashboard) layout wraps each page in `.page-enter`, so
+ * the header and each section rise in turn. Pages remount on navigation and
+ * when data replaces the skeleton, so this plays on arrival, not on refetch.
+ */
+.page-enter > * {
+    animation: var(--animate-rise);
+}
+.page-enter > :nth-child(2) { animation-delay: 60ms; }
+.page-enter > :nth-child(3) { animation-delay: 120ms; }
+.page-enter > :nth-child(4) { animation-delay: 180ms; }
+.page-enter > :nth-child(5) { animation-delay: 240ms; }
+.page-enter > :nth-child(n + 6) { animation-delay: 300ms; }
+
+/* Panels sharing a grid follow each other in rather than landing as one. */
+.page-enter > .grid > * {
+    animation: var(--animate-rise);
+}
+.page-enter > .grid > :nth-child(2) { animation-delay: 70ms; }
+.page-enter > .grid > :nth-child(n + 3) { animation-delay: 140ms; }
+
+/*
+ * Opt-in icon nudges, played when the surrounding link or button is hovered or
+ * keyboard-focused. lucide v1 no longer emits per-icon class names, so these
+ * are added at the call site.
+ */
+.icon-nudge,
+.icon-spin {
+    transition:
+        translate 200ms var(--ease-out-soft),
+        rotate 260ms var(--ease-out-soft);
+}
+:is(a, button):is(:hover, :focus-visible) .icon-nudge {
+    translate: 3px 0;
+}
+:is(a, button):is(:hover, :focus-visible) .icon-spin {
+    rotate: 90deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/*
  * Safe-area helpers. The root layout sets viewportFit: "cover", so in an
  * installed PWA the viewport extends under the iOS status bar and home
  * indicator. These resolve to 0 everywhere else.

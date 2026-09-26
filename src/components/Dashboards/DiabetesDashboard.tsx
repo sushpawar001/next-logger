@@ -59,7 +59,7 @@ function CardLink({ href, children }: { href: string; children: React.ReactNode 
             className="inline-flex items-center gap-1 text-[13px] font-semibold text-brand-aubergine no-underline"
         >
             {children}
-            <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            <ArrowRight className="icon-nudge h-3.5 w-3.5" aria-hidden="true" />
         </Link>
     );
 }
@@ -327,7 +327,7 @@ function LogEntryChooser() {
         <>
             <MobileCta>
                 <AppButton size="lg" block onClick={() => setOpen(true)}>
-                    <Plus aria-hidden="true" />
+                    <Plus className="icon-spin" aria-hidden="true" />
                     Log entry
                 </AppButton>
             </MobileCta>
@@ -346,7 +346,7 @@ function LogEntryChooser() {
                                             <Icon aria-hidden="true" />
                                         </TypeIcon>
                                         {label}
-                                        <ArrowRight className="ml-auto h-4 w-4 text-brand-muted" aria-hidden="true" />
+                                        <ArrowRight className="icon-nudge ml-auto h-4 w-4 text-brand-muted" aria-hidden="true" />
                                     </Link>
                                 </li>
                             ))}

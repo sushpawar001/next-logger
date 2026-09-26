@@ -14,7 +14,7 @@ export default function HomeCta() {
                 <h2 className={h2}>Start logging today</h2>
                 <p className={lead}>Free to start, with 30 days of Premium on us. No card needed.</p>
                 <Link href="/signup" className={cn(btnPrimary, "focus-visible:outline-brand-aubergine")}>
-                    Create your account <ArrowRight className={iconSm} aria-hidden="true" />
+                    Create your account <ArrowRight className={`${iconSm} icon-nudge`} aria-hidden="true" />
                 </Link>
             </div>
         </div>

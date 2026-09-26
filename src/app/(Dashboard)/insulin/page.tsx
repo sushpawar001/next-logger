@@ -245,7 +245,7 @@ export default function InsulinPage() {
                         className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-brand-aubergine no-underline"
                     >
                         Manage in Profile
-                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                        <ArrowRight className="icon-nudge h-4 w-4" aria-hidden="true" />
                     </Link>
                 </Panel>
             </div>

@@ -37,15 +37,15 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Content
             ref={ref}
             className={cn(
-                "fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-32px)] w-[min(400px,calc(100%-32px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[20px] bg-white text-brand-ink shadow-[0_20px_60px_rgb(36_26_51/25%)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+                "fixed top-1/2 left-1/2 z-50 max-h-[calc(100dvh-32px)] w-[min(400px,calc(100%-32px))] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[20px] bg-white text-brand-ink shadow-[0_20px_60px_rgb(36_26_51/25%)] duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=open]:slide-in-from-bottom-2 ease-out",
                 className
             )}
             {...props}
         >
             {children}
             {!hideClose && (
-                <DialogPrimitive.Close className="absolute top-3 right-3 inline-grid h-9 w-9 place-items-center rounded-lg text-brand-muted hover:bg-brand-cream hover:text-brand-ink">
-                    <X className="h-4 w-4" />
+                <DialogPrimitive.Close className="group/close absolute top-3 right-3 inline-grid h-9 w-9 place-items-center rounded-lg text-brand-muted transition-colors hover:bg-brand-cream hover:text-brand-ink">
+                    <X className="h-4 w-4 transition-transform duration-200 ease-out group-hover/close:rotate-90" />
                     <span className="sr-only">Close</span>
                 </DialogPrimitive.Close>
             )}

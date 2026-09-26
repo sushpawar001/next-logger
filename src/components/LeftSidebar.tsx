@@ -71,7 +71,7 @@ const isActiveRoute = (pathname: string | null, url: string) =>
 
 // Oat pill with an Aubergine edge for the current page.
 const navButton =
-    "relative h-10 gap-3 rounded-lg px-4 text-[15px] font-medium text-brand-ink hover:bg-brand-cream hover:text-brand-ink data-[active=true]:bg-brand-oat data-[active=true]:font-semibold data-[active=true]:text-brand-aubergine data-[active=true]:before:absolute data-[active=true]:before:top-2.5 data-[active=true]:before:bottom-2.5 data-[active=true]:before:left-0 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-sm data-[active=true]:before:bg-brand-aubergine [&>svg]:size-5";
+    "relative h-10 gap-3 rounded-lg px-4 text-[15px] font-medium text-brand-ink hover:bg-brand-cream hover:text-brand-ink data-[active=true]:bg-brand-oat data-[active=true]:font-semibold data-[active=true]:text-brand-aubergine data-[active=true]:before:absolute data-[active=true]:before:top-2.5 data-[active=true]:before:bottom-2.5 data-[active=true]:before:left-0 data-[active=true]:before:w-[3px] data-[active=true]:before:rounded-sm data-[active=true]:before:bg-brand-aubergine data-[active=true]:before:animate-indicator [&>svg]:size-5 [&>svg]:transition-transform [&>svg]:duration-200 [&>svg]:ease-out hover:[&>svg]:scale-110 active:scale-[0.98]";
 
 function TrialCard() {
     const { data } = useSubscription();
@@ -102,7 +102,7 @@ function TrialCard() {
                 aria-valuenow={used}
             >
                 <span
-                    className="block h-full rounded-[3px] bg-brand-aubergine"
+                    className="block h-full origin-left animate-bar-grow rounded-[3px] bg-brand-aubergine"
                     style={{ width: `${(used / TRIAL_DAYS) * 100}%` }}
                 />
             </div>
@@ -110,7 +110,7 @@ function TrialCard() {
                 href="/profile"
                 className="mt-3.5 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-aubergine no-underline"
             >
-                See plans <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                See plans <ArrowRight className="icon-nudge h-4 w-4" aria-hidden="true" />
             </Link>
         </div>
     );
@@ -143,9 +143,9 @@ function UserRow() {
             <Link
                 href="/profile"
                 aria-label="Settings"
-                className="inline-grid h-10 w-10 flex-none place-items-center rounded-lg text-brand-muted hover:bg-brand-cream hover:text-brand-ink"
+                className="group/settings inline-grid h-10 w-10 flex-none place-items-center rounded-lg text-brand-muted transition-colors hover:bg-brand-cream hover:text-brand-ink"
             >
-                <Settings className="h-5 w-5" aria-hidden="true" />
+                <Settings className="h-5 w-5 transition-transform duration-500 ease-out group-hover/settings:rotate-90" aria-hidden="true" />
             </Link>
         </div>
     );

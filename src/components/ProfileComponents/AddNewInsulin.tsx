@@ -79,7 +79,7 @@ export default function AddNewInsulin({
                 {isSubmitting ? (
                     <Loader2 className="animate-spin" aria-hidden="true" />
                 ) : (
-                    <Plus aria-hidden="true" />
+                    <Plus className="icon-spin" aria-hidden="true" />
                 )}
                 Add
             </AppButton>

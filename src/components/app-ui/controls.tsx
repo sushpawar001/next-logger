@@ -7,15 +7,16 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, ChevronDown } from "lucide-react";
+import { MotionConfig, motion } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export const appButton = cva(
-    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-transparent text-sm font-semibold no-underline transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lavender disabled:pointer-events-none disabled:opacity-60 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-transparent text-sm font-semibold no-underline transition duration-150 ease-out active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lavender disabled:pointer-events-none disabled:opacity-60 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
     {
         variants: {
             variant: {
                 primary:
-                    "bg-brand-aubergine text-brand-cream hover:bg-brand-aubergine-hover",
+                    "bg-brand-aubergine text-brand-cream hover:bg-brand-aubergine-hover hover:shadow-[0_6px_16px_-6px_rgb(74_52_112/55%)]",
                 secondary: "bg-brand-oat text-brand-ink hover:bg-[#DED3C1]",
                 outline:
                     "border-border bg-white text-brand-ink hover:bg-brand-cream",
@@ -58,7 +59,7 @@ export const AppButton = React.forwardRef<HTMLButtonElement, AppButtonProps>(
 AppButton.displayName = "AppButton";
 
 export const iconButton = cva(
-    "inline-grid place-items-center rounded-lg border-0 bg-transparent transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lavender disabled:opacity-50 [&_svg]:h-4 [&_svg]:w-4",
+    "inline-grid place-items-center rounded-lg border-0 bg-transparent transition duration-150 ease-out active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-lavender disabled:opacity-50 [&_svg]:h-4 [&_svg]:w-4",
     {
         variants: {
             tone: {
@@ -116,6 +117,8 @@ export function Segmented<V extends string | number>({
     fill?: boolean;
     className?: string;
 }) {
+    // Scopes the sliding pill to this control, so two on a page don't swap pills.
+    const pillId = `segment-pill-${React.useId()}`;
     return (
         <div
             role="group"
@@ -126,27 +129,38 @@ export function Segmented<V extends string | number>({
                 className
             )}
         >
-            {options.map((o) => {
-                const active = o.value === value;
-                return (
-                    <button
-                        key={String(o.value)}
-                        type="button"
-                        aria-pressed={active}
-                        onClick={() => onChange(o.value)}
-                        className={cn(
-                            "flex-none whitespace-nowrap rounded-md border-0 text-[13px] font-semibold transition-colors",
-                            size === "lg" ? "h-8 px-[18px]" : "h-7 px-3.5",
-                            fill && "flex-1",
-                            active
-                                ? "bg-white text-brand-aubergine shadow-[0_1px_2px_rgb(36_26_51/8%)]"
-                                : "bg-transparent text-brand-ink hover:text-brand-aubergine"
-                        )}
-                    >
-                        {o.label}
-                    </button>
-                );
-            })}
+            <MotionConfig reducedMotion="user">
+                {options.map((o) => {
+                    const active = o.value === value;
+                    return (
+                        <button
+                            key={String(o.value)}
+                            type="button"
+                            aria-pressed={active}
+                            onClick={() => onChange(o.value)}
+                            className={cn(
+                                "relative flex-none whitespace-nowrap rounded-md border-0 bg-transparent text-[13px] font-semibold transition-colors duration-200 active:scale-95",
+                                size === "lg" ? "h-8 px-[18px]" : "h-7 px-3.5",
+                                fill && "flex-1",
+                                active
+                                    ? "text-brand-aubergine"
+                                    : "text-brand-ink hover:text-brand-aubergine"
+                            )}
+                        >
+                            {/* The white pill slides between options rather than jumping. */}
+                            {active && (
+                                <motion.span
+                                    layoutId={pillId}
+                                    aria-hidden="true"
+                                    className="absolute inset-0 rounded-md bg-white shadow-[0_1px_2px_rgb(36_26_51/8%)]"
+                                    transition={{ type: "spring", bounce: 0.18, duration: 0.4 }}
+                                />
+                            )}
+                            <span className="relative">{o.label}</span>
+                        </button>
+                    );
+                })}
+            </MotionConfig>
         </div>
     );
 }
@@ -169,7 +183,7 @@ export const Chip = React.forwardRef<
             ? { role: "radio", "aria-checked": pressed }
             : { "aria-pressed": pressed })}
         className={cn(
-            "inline-flex h-8 flex-none items-center gap-1.5 whitespace-nowrap rounded-2xl border px-3.5 text-[13px] font-semibold transition-colors",
+            "inline-flex h-8 flex-none items-center gap-1.5 whitespace-nowrap rounded-2xl border px-3.5 text-[13px] font-semibold transition duration-150 ease-out active:scale-95",
             pressed
                 ? "border-brand-oat bg-brand-oat text-brand-aubergine"
                 : "border-border bg-white text-brand-ink hover:bg-brand-cream",
@@ -178,7 +192,7 @@ export const Chip = React.forwardRef<
         {...props}
     >
         {pressed && (
-            <Check className="-ml-0.5 h-4 w-4" strokeWidth={2.4} aria-hidden="true" />
+            <Check className="-ml-0.5 h-4 w-4 animate-pop" strokeWidth={2.4} aria-hidden="true" />
         )}
         {leading}
         {children}
@@ -226,7 +240,7 @@ export function Field({
 
 /** The bordered box around an input: carries the focus ring, icons and suffix. */
 export const inputShell =
-    "flex h-11 items-center gap-2.5 rounded-lg border border-border bg-white px-3.5 text-brand-muted focus-within:border-brand-lavender focus-within:shadow-[0_0_0_1px_var(--color-brand-lavender,#8E78C4)]";
+    "flex h-11 items-center gap-2.5 rounded-lg border border-border bg-white px-3.5 text-brand-muted transition-[border-color,box-shadow] duration-150 hover:border-brand-lavender/50 focus-within:border-brand-lavender focus-within:shadow-[0_0_0_1px_var(--color-brand-lavender,#8E78C4)]";
 
 /** The bare control inside `inputShell`. */
 export const inputControl =

@@ -323,7 +323,7 @@ export default function Stats() {
                                         className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-brand-aubergine no-underline"
                                     >
                                         Export data
-                                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                                        <ArrowRight className="icon-nudge h-4 w-4" aria-hidden="true" />
                                     </Link>
                                 </div>
                             </Panel>

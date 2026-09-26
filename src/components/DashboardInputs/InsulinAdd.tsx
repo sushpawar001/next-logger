@@ -99,7 +99,7 @@ export default function InsulinAdd(props: {
                         href="/profile"
                         className="inline-flex items-center gap-1 text-[13px] font-semibold text-brand-aubergine no-underline"
                     >
-                        <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                        <Plus className="icon-spin h-3.5 w-3.5" aria-hidden="true" />
                         Add insulin
                     </Link>
                 </div>

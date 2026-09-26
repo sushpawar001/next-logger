@@ -22,7 +22,7 @@ export default function HomeTools() {
                         <p className="text-[17px] text-brand-body">Calculated in your browser. No account needed.</p>
                     </div>
                     <Link href="/tools" className={`${textLink} gap-2 font-semibold text-brand-aubergine hover:text-brand-ink`}>
-                        All tools <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                        All tools <ArrowRight className="icon-nudge h-4 w-4" aria-hidden="true" />
                     </Link>
                 </div>
                 <div className="grid grid-cols-2 gap-2.5 md:grid-cols-6 md:gap-4 xl:grid-cols-5">

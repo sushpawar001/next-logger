@@ -30,7 +30,7 @@ export default async function RootLayout({ children }) {
                         <DashboardHeader />
                         {/* SidebarInset is the <main>; pages lay out inside this column,
                             filling the space beside the sidebar (capped for ultra-wide screens). */}
-                        <div className="mx-auto w-full max-w-[1920px] px-4 pt-5 pb-10 lg:px-10 lg:pt-10 lg:pb-14">
+                        <div className="page-enter mx-auto w-full max-w-[1920px] px-4 pt-5 pb-10 lg:px-10 lg:pt-10 lg:pb-14">
                             {children}
                         </div>
                         {/* Dashboard only — never on the public /tools calculators. */}

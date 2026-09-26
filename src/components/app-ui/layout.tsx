@@ -145,7 +145,7 @@ export function MobileCta({ children }: { children: ReactNode }) {
         <>
             {/* Keeps the last card clear of the fixed bar. */}
             <div className="h-20 lg:hidden" aria-hidden="true" />
-            <div className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-white px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] lg:hidden">
+            <div className="fixed inset-x-0 bottom-0 z-20 animate-in slide-in-from-bottom fill-mode-both duration-300 ease-out border-t border-border bg-white px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] lg:hidden">
                 {children}
             </div>
         </>

@@ -27,7 +27,7 @@ export function LogEntryButton({
 }) {
     return (
         <AppButton onClick={onClick} className="hidden lg:inline-flex">
-            <Plus aria-hidden="true" />
+            <Plus className="icon-spin" aria-hidden="true" />
             {label}
         </AppButton>
     );
@@ -44,7 +44,7 @@ export function LogEntryCta({
     return (
         <MobileCta>
             <AppButton size="lg" block onClick={onClick}>
-                <Plus aria-hidden="true" />
+                <Plus className="icon-spin" aria-hidden="true" />
                 {label}
             </AppButton>
         </MobileCta>

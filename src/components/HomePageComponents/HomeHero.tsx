@@ -118,7 +118,7 @@ export default function HomeHero() {
                     </p>
                     <div className="mt-2 flex flex-wrap gap-3">
                         <Link href="/signup" className={btnPrimary}>
-                            Start free <ArrowRight className={iconSm} aria-hidden="true" />
+                            Start free <ArrowRight className={`${iconSm} icon-nudge`} aria-hidden="true" />
                         </Link>
                         <a href="#features" className={btnSecondary}>
                             See how it works

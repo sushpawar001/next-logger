@@ -21,7 +21,7 @@ export const lead =
 const focusRing =
     "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px]";
 
-const btnBase = `inline-flex h-[52px] items-center justify-center gap-2.5 rounded-lg px-6 text-base font-semibold transition-colors ${focusRing}`;
+const btnBase = `inline-flex h-[52px] items-center justify-center gap-2.5 rounded-lg px-6 text-base font-semibold transition duration-150 ease-out active:scale-[0.97] ${focusRing}`;
 
 export const btnPrimary = `${btnBase} bg-brand-aubergine text-brand-cream hover:bg-brand-aubergine-hover focus-visible:outline-brand-lavender`;
 
