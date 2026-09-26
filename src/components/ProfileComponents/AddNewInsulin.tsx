@@ -2,7 +2,7 @@ import notify from "@/helpers/notify";
 import React, { useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import type { InsulinNameType } from "@/types/models";
-import { Plus } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { useAddNewInsulin } from "@/hooks/queries/useInsulinMutations";
 import { mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 
@@ -85,7 +85,7 @@ export default function AddNewInsulin({
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
-                        <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                     ) : (
                         "Add"
                     )}

@@ -20,7 +20,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { BarChart3, TrendingUp, Loader2 } from "lucide-react";
 import { StatsTableCard } from "@/components/StatsTableCard";
 import TagFilterCard from "@/components/TagFilterCard";
 
@@ -225,7 +225,7 @@ export default function Stats() {
         return (
             <div className="w-full h-full flex justify-center items-center font-bold text-secondary text-xl gap-2">
                 <p>Loading</p>
-                <span className="loading-dots loading size-10"></span>
+                <Loader2 className="h-6 w-6 animate-spin" />
             </div>
         );
     }

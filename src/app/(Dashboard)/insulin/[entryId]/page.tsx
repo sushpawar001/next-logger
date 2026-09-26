@@ -4,7 +4,7 @@ import notify from "@/helpers/notify";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { useRouter } from "next/navigation";
 import { entryTags } from "@/constants/constants";
-import { Droplets, ArrowLeft, Save, Trash2 } from "lucide-react";
+import { Droplets, ArrowLeft, Save, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useEntry } from "@/hooks/queries/useEntries";
 import {
@@ -197,7 +197,7 @@ export default function EditEntry({ params }) {
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (
-                                <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                                <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                             ) : (
                                 <div className="flex items-center justify-center gap-2">
                                     <Save className="h-4 w-4" />
@@ -212,7 +212,7 @@ export default function EditEntry({ params }) {
                             onClick={() => deleteData(params.entryId)}
                         >
                             {isSubmitting ? (
-                                <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                                <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                             ) : (
                                 <div className="flex items-center justify-center gap-2">
                                     <Trash2 className="h-4 w-4" />

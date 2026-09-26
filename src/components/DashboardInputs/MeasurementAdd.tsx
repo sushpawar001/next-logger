@@ -1,7 +1,7 @@
 "use client";
 import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
-import { Ruler } from "lucide-react";
+import { Ruler, Loader2 } from "lucide-react";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { entryTags } from "@/constants/constants";
 import MeasurementInput from "../MeasurementInput";
@@ -160,7 +160,7 @@ export default function MeasurementAdd({ className = "", autoFocus = false }) {
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? (
-                            <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                            <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                         ) : (
                             "Submit"
                         )}
@@ -172,7 +172,7 @@ export default function MeasurementAdd({ className = "", autoFocus = false }) {
                         onClick={resetForm}
                     >
                         {isSubmitting ? (
-                            <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                            <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                         ) : (
                             "Reset"
                         )}

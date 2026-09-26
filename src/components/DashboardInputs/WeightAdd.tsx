@@ -4,7 +4,7 @@ import entryLogged from "@/helpers/entryLogged";
 import React, { useEffect, useRef, useState } from "react";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import { entryTags } from "@/constants/constants";
-import { Droplets, Weight, Syringe } from "lucide-react";
+import { Droplets, Weight, Syringe, Loader2 } from "lucide-react";
 import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 
 export default function WeightAdd(props) {
@@ -137,7 +137,7 @@ export default function WeightAdd(props) {
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
-                        <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                     ) : (
                         "Submit"
                     )}

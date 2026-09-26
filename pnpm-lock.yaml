@@ -165,9 +165,6 @@ importers:
       autoprefixer:
         specifier: ^10.5.4
         version: 10.5.4(postcss@8.5.26)
-      daisyui:
-        specifier: ^4.12.24
-        version: 4.12.24(postcss@8.5.26)
       eslint:
         specifier: ^8.57.1
         version: 8.57.1
@@ -2190,9 +2187,6 @@ packages:
   css-line-break@2.1.0:
     resolution: {integrity: sha512-FHcKFCZcAha3LwfVBhCQbW2nCNbkZXn7KVUJcsT5/P8YmfsVja0FMPJr0B903j/E69HUphKiV9iQArX8SDYA4w==}
 
-  css-selector-tokenizer@0.8.0:
-    resolution: {integrity: sha512-Jd6Ig3/pe62/qe5SBPTN8h8LeUg/pT4lLgtavPf7updwwHpvFzxvOQBHYj2LZDMjUnBzgvIUSjRcf6oT5HzHFg==}
-
   css.escape@1.5.1:
     resolution: {integrity: sha512-YUifsXXuknHlUsmlgyY0PKzgPOr7/FjCePfHNt0jxm83wHZi44VDMQ7/fGNkjY3/jV1MC+1CmZbaHzugyeRtpg==}
 
@@ -2210,10 +2204,6 @@ packages:
 
   csstype@3.2.3:
     resolution: {integrity: sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==}
-
-  culori@3.3.0:
-    resolution: {integrity: sha512-pHJg+jbuFsCjz9iclQBqyL3B2HLCBF71BwVNujUYEvCeQMvV97R59MNK3R2+jgJ3a1fcZgI9B3vYgz8lzr/BFQ==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   d3-array@3.2.4:
     resolution: {integrity: sha512-tdQAmyA18i4J7wprpYq8ClcxZy3SC31QMeByyCFyRt7BVHdREQZ5lpzoe5mFEYZUWe+oq8HBvk9JjpibyEV4Jg==}
@@ -2258,10 +2248,6 @@ packages:
   d3-timer@3.0.1:
     resolution: {integrity: sha512-ndfJ/JxxMd3nw31uyKoY2naivF+r29V+Lc0svZxe1JvvIRmi8hUsrMvdOwgS1o6uBHmiz91geQ0ylPP0aj1VUA==}
     engines: {node: '>=12'}
-
-  daisyui@4.12.24:
-    resolution: {integrity: sha512-JYg9fhQHOfXyLadrBrEqCDM6D5dWCSSiM6eTNCRrBRzx/VlOCrLS8eDfIw9RVvs64v2mJdLooKXY8EwQzoszAA==}
-    engines: {node: '>=16.9.0'}
 
   damerau-levenshtein@1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
@@ -2606,9 +2592,6 @@ packages:
 
   fast-png@6.4.0:
     resolution: {integrity: sha512-kAqZq1TlgBjZcLr5mcN6NP5Rv4V2f22z00c3g8vRrwkcqjerx7BEhPbOnWCPqaHUl2XWQBJQvOT/FQhdMT7X/Q==}
-
-  fastparse@1.1.2:
-    resolution: {integrity: sha512-483XLLxTVIwWK3QTrMGRqUfUpoOs/0hbQrl2oz4J0pAcm3A3bu84wxTFqGqkJzewCLdME38xJLJAxBABfQT8sQ==}
 
   fastq@1.20.1:
     resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
@@ -6357,11 +6340,6 @@ snapshots:
       utrie: 1.0.2
     optional: true
 
-  css-selector-tokenizer@0.8.0:
-    dependencies:
-      cssesc: 3.0.0
-      fastparse: 1.1.2
-
   css.escape@1.5.1: {}
 
   cssesc@3.0.0: {}
@@ -6374,8 +6352,6 @@ snapshots:
   csstype@3.1.1: {}
 
   csstype@3.2.3: {}
-
-  culori@3.3.0: {}
 
   d3-array@3.2.4:
     dependencies:
@@ -6414,15 +6390,6 @@ snapshots:
       d3-array: 3.2.4
 
   d3-timer@3.0.1: {}
-
-  daisyui@4.12.24(postcss@8.5.26):
-    dependencies:
-      css-selector-tokenizer: 0.8.0
-      culori: 3.3.0
-      picocolors: 1.1.1
-      postcss-js: 4.1.0(postcss@8.5.26)
-    transitivePeerDependencies:
-      - postcss
 
   damerau-levenshtein@1.0.8: {}
 
@@ -6933,8 +6900,6 @@ snapshots:
       '@types/pako': 2.0.4
       iobuffer: 5.4.0
       pako: 2.2.0
-
-  fastparse@1.1.2: {}
 
   fastq@1.20.1:
     dependencies:

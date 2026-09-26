@@ -6,6 +6,7 @@ import notify from "@/helpers/notify";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { FaUserGear, FaPlus } from "react-icons/fa6";
+import { Loader2 } from "lucide-react";
 
 const layoutSettingsOptions = ["Fitness", "Diabetes"];
 
@@ -84,7 +85,7 @@ export default function DashboardPreferences({
                         disabled={isSubmitting || !isChanged}
                     >
                         {isSubmitting ? (
-                            <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                            <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                         ) : (
                             "Save"
                         )}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, SetStateAction, useRef } from "react";
 import { FaSyringe } from "react-icons/fa";
-import { Syringe } from "lucide-react";
+import { Syringe, Loader2 } from "lucide-react";
 import type { InsulinNameType } from "@/types/models";
 import notify from "@/helpers/notify";
 import autoAnimate from "@formkit/auto-animate";
@@ -107,7 +107,7 @@ export default function UserInsulins({
                     disabled={isSubmitting || !isChanged}
                 >
                     {isSubmitting ? (
-                        <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                     ) : (
                         "Save"
                     )}

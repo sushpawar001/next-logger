@@ -5,7 +5,7 @@ import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
 import InsulinType from "@/models/insulinTypeModel"; // import to avoid error
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
-import { Droplets, Weight, Syringe } from "lucide-react";
+import { Droplets, Weight, Syringe, Loader2 } from "lucide-react";
 import { useUserInsulins } from "@/hooks/queries/useReferenceData";
 import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 
@@ -183,7 +183,7 @@ export default function InsulinAdd(props) {
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
-                        <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                     ) : (
                         "Submit"
                     )}

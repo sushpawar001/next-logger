@@ -3,7 +3,7 @@ import { entryTags } from "@/constants/constants";
 import { DatetimeLocalFormat } from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import entryLogged from "@/helpers/entryLogged";
-import { Droplets } from "lucide-react";
+import { Droplets, Loader2 } from "lucide-react";
 import { useAddEntry, mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 import { useEffect, useRef, useState } from "react";
 
@@ -136,7 +136,7 @@ export default function GlucoseAdd(props) {
                     disabled={isSubmitting}
                 >
                     {isSubmitting ? (
-                        <span className="loading loading-spinner loading-xs my-auto h-full"></span>
+                        <Loader2 className="mx-auto my-0.5 h-4 w-4 animate-spin" />
                     ) : (
                         "Submit"
                     )}
