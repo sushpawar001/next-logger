@@ -4,9 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, Activity, Target } from "lucide-react";
 import CopyUrlButton from "@/components/CopyUrlButton";
-import { toolsByCluster } from "@/lib/tools/registry";
+import { TOOLS, toolsByCluster } from "@/lib/tools/registry";
+import { buildIndexMetadata } from "@/lib/tools/metadata";
+import { itemListLd } from "@/lib/tools/jsonLd";
+import JsonLd from "@/components/tools/JsonLd";
 
 export const dynamic = "force-static";
+
+export const metadata = buildIndexMetadata();
 
 export default function ToolsPage() {
     return (
@@ -155,14 +160,7 @@ export default function ToolsPage() {
                     </CardContent>
                 </Card>
             </div>
+            <JsonLd data={itemListLd(TOOLS)} />
         </div>
     );
-}
-
-export async function generateMetadata() {
-    return {
-        title: "Health & Fitness Tools | FitDose",
-        description:
-            "Free health and fitness calculators for body composition, calorie needs and hydration. Every calculation runs in your browser.",
-    };
 }
