@@ -2,6 +2,7 @@ import {
     ArrowRightLeft,
     Calculator,
     Droplet,
+    Dumbbell,
     Flame,
     GlassWater,
     Percent,
@@ -440,6 +441,38 @@ export const TOOLS = [
         cta: {
             heading: "Find your real maintenance",
             body: "Log your weight in FitDose for two to three weeks at a steady intake. If the trend is flat, that intake is your true maintenance.",
+            label: "Start tracking free",
+        },
+        lastReviewed: "2026-09-27",
+    },
+    {
+        slug: "plate-calculator",
+        href: "/tools/plate-calculator",
+        title: "Plate Calculator",
+        h1: "Barbell Plate Calculator",
+        shortName: "Plate calculator",
+        description:
+            "See which plates to load on each side of the bar for a target weight, using the plates you have.",
+        features: [
+            "Plates per side",
+            "Choose your own plates",
+            "Any bar weight",
+            "Colour-coded plates",
+        ],
+        metaTitle: "Barbell Plate Calculator: What to Load Per Side | FitDose",
+        metaDescription:
+            "Enter a target weight and your bar weight to see which plates to load on each side of the barbell, using only the plates you have.",
+        icon: Dumbbell,
+        cluster: "strength",
+        keywords: [
+            "plate calculator",
+            "barbell calculator",
+            "barbell plate calculator",
+        ],
+        related: ["tdee-calculator", "body-fat-calculator", "bmi-calculator"],
+        cta: {
+            heading: "Track your body alongside your training",
+            body: "Log bodyweight and measurements in FitDose to see how your training changes your shape over time.",
             label: "Start tracking free",
         },
         lastReviewed: "2026-09-27",

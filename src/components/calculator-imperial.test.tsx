@@ -7,6 +7,7 @@ import IdealWeightCalculator from "./IdealWeightCalculator";
 import WHRCalculator from "./WHRCalculator";
 import WaterIntakeCalculator from "./WaterIntakeCalculator";
 import LoadCalc from "./LoadCalc";
+import { getTool } from "@/lib/tools/registry";
 
 /**
  * Imperial mode renders a different set of inputs (feet/inches, pounds,
@@ -190,6 +191,23 @@ describe("LoadCalc controls", () => {
         }
 
         expect(screen.getAllByRole("spinbutton").length).toBeGreaterThan(0);
+    });
+
+    it("shows the signup prompt only on the public page, once there is a target", async () => {
+        const user = userEvent.setup();
+        const { cta } = getTool("plate-calculator");
+        const { unmount } = renderWithProviders(<LoadCalc />);
+        await user.type(screen.getByLabelText(/target/i), "100");
+
+        // The signed-in /load page never pitches signup.
+        expect(screen.queryByText(cta.heading)).not.toBeInTheDocument();
+        unmount();
+
+        renderWithProviders(<LoadCalc cta />);
+        expect(screen.queryByText(cta.heading)).not.toBeInTheDocument();
+        await user.type(screen.getByLabelText(/target/i), "100");
+
+        expect(screen.getByText(cta.heading)).toBeInTheDocument();
     });
 
     it("recomputes after changing both the load and the plate set", async () => {

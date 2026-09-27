@@ -15,6 +15,7 @@ import BodyFatPage from "./(Public)/tools/body-fat-calculator/page";
 import TdeePage from "./(Public)/tools/tdee-calculator/page";
 import DeficitPage from "./(Public)/tools/calorie-deficit-calculator/page";
 import MaintenancePage from "./(Public)/tools/maintenance-calorie-calculator/page";
+import PlatePage from "./(Public)/tools/plate-calculator/page";
 import PrivacyPolicyPage from "./(Public)/privacy-policy/page";
 import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
@@ -42,6 +43,7 @@ const TOOL_PAGES = [
     { name: "TDEE", Page: TdeePage, heading: /total daily energy expenditure/i },
     { name: "calorie deficit", Page: DeficitPage, heading: /calorie deficit calculator/i },
     { name: "maintenance", Page: MaintenancePage, heading: /maintenance calorie calculator/i },
+    { name: "plate", Page: PlatePage, heading: /barbell plate calculator/i },
 ];
 
 // Every registered tool page, keyed by slug. A test below fails if a tool is
@@ -58,6 +60,7 @@ const PAGES_BY_SLUG: Record<string, () => React.JSX.Element> = {
     "tdee-calculator": TdeePage,
     "calorie-deficit-calculator": DeficitPage,
     "maintenance-calorie-calculator": MaintenancePage,
+    "plate-calculator": PlatePage,
 };
 
 describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {

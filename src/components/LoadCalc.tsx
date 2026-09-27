@@ -9,6 +9,7 @@ import { Check } from "lucide-react";
 import { Eyebrow, Panel, PanelHead, PanelSub, PanelTitle } from "@/components/app-ui/layout";
 import { Chip, Field, Segmented, TextInput } from "@/components/app-ui/controls";
 import { DataTable } from "@/components/app-ui/table";
+import ToolCta from "@/components/tools/ToolCta";
 
 /** Standard plates offered as chips. Any custom plates saved earlier are added. */
 const STANDARD_PLATES = [25, 20, 15, 10, 5, 2.5, 1.25];
@@ -63,7 +64,11 @@ function readSavedPlates(): number[] | null {
     }
 }
 
-export default function LoadCalc() {
+/**
+ * `cta` shows the signup prompt under a result. Only the public
+ * /tools/plate-calculator page sets it; the signed-in /load page does not.
+ */
+export default function LoadCalc({ cta = false }: { cta?: boolean }) {
     const [barWeight, setBarWeight] = useState(20);
     const [Load, setLoad] = useState(0);
     const [availablePlates, setAvailablePlates] = useState<number[]>(DEFAULT_PLATES);
@@ -228,6 +233,7 @@ export default function LoadCalc() {
                             )}
                         </p>
                     )}
+                    {cta && hasTarget && <ToolCta slug="plate-calculator" />}
                 </Panel>
 
                 <Panel aria-labelledby="list-title">
