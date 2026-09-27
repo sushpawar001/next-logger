@@ -323,4 +323,11 @@ describe("Clerk auth pages", () => {
     it("signup renders the Clerk sign-up widget", () => {
         expect(() => renderWithProviders(<SignupPage />)).not.toThrow();
     });
+
+    it("frames the form with the wordmark home link and legal links", () => {
+        renderWithProviders(<LoginPage />);
+        expect(screen.getByRole("img", { name: "FitDose" }).closest("a")).toHaveAttribute("href", "/");
+        expect(screen.getByRole("link", { name: "Privacy" })).toHaveAttribute("href", "/privacy-policy");
+        expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute("href", "/terms-service");
+    });
 });
