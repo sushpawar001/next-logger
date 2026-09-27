@@ -9,6 +9,7 @@ import BmrPage from "./(Public)/tools/bmr-calculator/page";
 import IdealWeightPage from "./(Public)/tools/ideal-weight-calculator/page";
 import WaterIntakePage from "./(Public)/tools/water-intake-calculator/page";
 import WhrPage from "./(Public)/tools/whr-calculator/page";
+import A1cPage from "./(Public)/tools/a1c-calculator/page";
 import PrivacyPolicyPage from "./(Public)/privacy-policy/page";
 import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
@@ -30,7 +31,19 @@ const TOOL_PAGES = [
     { name: "ideal weight", Page: IdealWeightPage, heading: /ideal body weight/i },
     { name: "water intake", Page: WaterIntakePage, heading: /water intake/i },
     { name: "WHR", Page: WhrPage, heading: /waist.to.hip|whr/i },
+    { name: "A1c", Page: A1cPage, heading: /a1c to average blood sugar/i },
 ];
+
+// Every registered tool page, keyed by slug. A test below fails if a tool is
+// added to the registry without being added here.
+const PAGES_BY_SLUG: Record<string, () => React.JSX.Element> = {
+    "bmi-calculator": BmiPage,
+    "bmr-calculator": BmrPage,
+    "ideal-weight-calculator": IdealWeightPage,
+    "water-intake-calculator": WaterIntakePage,
+    "whr-calculator": WhrPage,
+    "a1c-calculator": A1cPage,
+};
 
 describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {
     it("renders its heading", () => {
@@ -49,29 +62,38 @@ describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {
 });
 
 describe("calculator pages carry SEO content", () => {
-    it.each([
-        ["BMI", BmiPage],
-        ["BMR", BmrPage],
-        ["ideal weight", IdealWeightPage],
-        ["water intake", WaterIntakePage],
-        ["WHR", WhrPage],
-    ])("%s page renders a FAQ, a method section and JSON-LD", (_name, Page) => {
-        const { container } = renderWithProviders(<Page />);
-
-        expect(
-            screen.getByRole("heading", { name: /frequently asked questions/i })
-        ).toBeInTheDocument();
-        expect(
-            screen.getByRole("heading", { name: /how it.s calculated/i })
-        ).toBeInTheDocument();
-        const script = container.querySelector(
-            'script[type="application/ld+json"]'
+    it("covers every registered tool", () => {
+        expect(Object.keys(PAGES_BY_SLUG).sort()).toEqual(
+            TOOLS.map((t) => t.slug).sort()
         );
-        const types = JSON.parse(script!.innerHTML)["@graph"].map(
-            (n: any) => n["@type"]
-        );
-        expect(types).toEqual(["WebApplication", "BreadcrumbList", "FAQPage"]);
     });
+
+    it.each(Object.entries(PAGES_BY_SLUG))(
+        "%s renders a FAQ, a method section and JSON-LD",
+        (_slug, Page) => {
+            const { container } = renderWithProviders(<Page />);
+
+            expect(
+                screen.getByRole("heading", {
+                    name: /frequently asked questions/i,
+                })
+            ).toBeInTheDocument();
+            expect(
+                screen.getByRole("heading", { name: /how it.s calculated/i })
+            ).toBeInTheDocument();
+            const script = container.querySelector(
+                'script[type="application/ld+json"]'
+            );
+            const types = JSON.parse(script!.innerHTML)["@graph"].map(
+                (n: any) => n["@type"]
+            );
+            expect(types).toEqual([
+                "WebApplication",
+                "BreadcrumbList",
+                "FAQPage",
+            ]);
+        }
+    );
 });
 
 describe("calculator pages carry their calculator", () => {

@@ -1,5 +1,6 @@
 import {
     Calculator,
+    Droplet,
     Flame,
     GlassWater,
     Ruler,
@@ -74,6 +75,39 @@ export interface ToolDef {
 }
 
 export const TOOLS = [
+    {
+        slug: "a1c-calculator",
+        href: "/tools/a1c-calculator",
+        title: "A1c Calculator",
+        h1: "A1c to Average Blood Sugar (eAG) Calculator",
+        shortName: "A1c",
+        description:
+            "Convert an HbA1c result to estimated average glucose, or estimate A1c from your average blood sugar.",
+        features: [
+            "A1c to average glucose",
+            "Average glucose to A1c",
+            "% and mmol/mol",
+            "mg/dL and mmol/L",
+        ],
+        metaTitle: "A1c Calculator: A1c to Average Blood Sugar (eAG) | FitDose",
+        metaDescription:
+            "Convert HbA1c to estimated average glucose (eAG) or back, in %, mmol/mol, mg/dL and mmol/L, with the ADAG formula and an A1c chart.",
+        icon: Droplet,
+        cluster: "diabetes",
+        keywords: [
+            "a1c calculator",
+            "a1c to average glucose",
+            "eag calculator",
+            "a1c chart",
+        ],
+        related: ["bmi-calculator", "whr-calculator", "water-intake-calculator"],
+        cta: {
+            heading: "See your estimated A1c from your own readings",
+            body: "Log your glucose readings in FitDose and your dashboard estimates your A1c and time in range automatically as the readings build up.",
+            label: "Start logging free",
+        },
+        lastReviewed: "2026-09-27",
+    },
     {
         slug: "bmi-calculator",
         href: "/tools/bmi-calculator",
