@@ -17,6 +17,8 @@ import DeficitPage from "./(Public)/tools/calorie-deficit-calculator/page";
 import MaintenancePage from "./(Public)/tools/maintenance-calorie-calculator/page";
 import PlatePage from "./(Public)/tools/plate-calculator/page";
 import GmiPage from "./(Public)/tools/gmi-calculator/page";
+import WhtrPage from "./(Public)/tools/waist-to-height-ratio-calculator/page";
+import WeightLossPage from "./(Public)/tools/weight-loss-percentage-calculator/page";
 import PrivacyPolicyPage from "./(Public)/privacy-policy/page";
 import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
@@ -46,6 +48,8 @@ const TOOL_PAGES = [
     { name: "maintenance", Page: MaintenancePage, heading: /maintenance calorie calculator/i },
     { name: "plate", Page: PlatePage, heading: /barbell plate calculator/i },
     { name: "GMI", Page: GmiPage, heading: /gmi and time in range/i },
+    { name: "waist-to-height", Page: WhtrPage, heading: /waist-to-height ratio calculator/i },
+    { name: "weight loss", Page: WeightLossPage, heading: /weight loss percentage/i },
 ];
 
 // Every registered tool page, keyed by slug. A test below fails if a tool is
@@ -64,6 +68,8 @@ const PAGES_BY_SLUG: Record<string, () => React.JSX.Element> = {
     "maintenance-calorie-calculator": MaintenancePage,
     "plate-calculator": PlatePage,
     "gmi-calculator": GmiPage,
+    "waist-to-height-ratio-calculator": WhtrPage,
+    "weight-loss-percentage-calculator": WeightLossPage,
 };
 
 describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {

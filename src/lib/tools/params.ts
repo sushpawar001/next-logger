@@ -74,3 +74,19 @@ export const gmiParams = {
     mean: textParam,
     unit: glucoseUnitParam,
 };
+
+export const whtrParams = {
+    units: parseAsStringLiteral(["metric", "imperial"] as const).withDefault(
+        "metric"
+    ),
+    waist: textParam,
+    height: textParam,
+};
+
+export const weightLossParams = {
+    unit: parseAsStringLiteral(["kg", "lb"] as const).withDefault("kg"),
+    start: textParam,
+    current: textParam,
+    goal: textParam,
+    startDate: textParam,
+};
