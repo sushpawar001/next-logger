@@ -65,3 +65,12 @@ export const energyParams = {
     ),
     goalWeight: textParam,
 };
+
+export const gmiParams = {
+    mode: parseAsStringLiteral(["readings", "mean"] as const).withDefault(
+        "readings"
+    ),
+    readings: textParam,
+    mean: textParam,
+    unit: glucoseUnitParam,
+};

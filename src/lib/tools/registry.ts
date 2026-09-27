@@ -4,6 +4,7 @@ import {
     Droplet,
     Dumbbell,
     Flame,
+    Gauge,
     GlassWater,
     Percent,
     Ruler,
@@ -108,8 +109,8 @@ export const TOOLS = [
         ],
         related: [
             "blood-sugar-converter",
+            "gmi-calculator",
             "bmi-calculator",
-            "whr-calculator",
         ],
         cta: {
             heading: "See your estimated A1c from your own readings",
@@ -474,6 +475,39 @@ export const TOOLS = [
             heading: "Track your body alongside your training",
             body: "Log bodyweight and measurements in FitDose to see how your training changes your shape over time.",
             label: "Start tracking free",
+        },
+        lastReviewed: "2026-09-27",
+    },
+    {
+        slug: "gmi-calculator",
+        href: "/tools/gmi-calculator",
+        title: "GMI & Time in Range Calculator",
+        h1: "GMI and Time in Range Calculator",
+        shortName: "GMI & time in range",
+        description:
+            "Turn glucose readings into a Glucose Management Indicator, time in range and variability, checked against CGM targets.",
+        features: [
+            "Glucose Management Indicator",
+            "Five-band time in range",
+            "Glucose variability (CV)",
+            "International CGM targets",
+        ],
+        metaTitle: "GMI & Time in Range Calculator (CGM Targets) | FitDose",
+        metaDescription:
+            "Paste glucose readings or enter your average to get your GMI, time in range and variability, compared with the international CGM targets.",
+        icon: Gauge,
+        cluster: "diabetes",
+        keywords: [
+            "gmi calculator",
+            "glucose management indicator",
+            "time in range calculator",
+            "cgm time in range",
+        ],
+        related: ["a1c-calculator", "blood-sugar-converter", "bmi-calculator"],
+        cta: {
+            heading: "Get time in range from your own log",
+            body: "Log glucose readings in FitDose and your stats page shows estimated A1c and time in range for any period, without pasting anything.",
+            label: "Start logging free",
         },
         lastReviewed: "2026-09-27",
     },
