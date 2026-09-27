@@ -1,8 +1,8 @@
 import { MetadataRoute } from "next";
+import { getSiteUrl } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl =
-        process.env.NEXT_PUBLIC_BASE_URL || "https://fitdose.fitnationplus.com";
+    const baseUrl = getSiteUrl();
 
     // Static routes
     const staticRoutes: MetadataRoute.Sitemap = [

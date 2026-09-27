@@ -4,13 +4,12 @@ import { Toaster } from "react-hot-toast";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import PwaBootstrap from "@/components/pwa/PwaBootstrap";
+import { getSiteUrl } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-    metadataBase: new URL(
-        process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:4000"
-    ),
+    metadataBase: new URL(getSiteUrl()),
     title: "FitDose",
     description: "Your daily logger!",
     applicationName: "FitDose",

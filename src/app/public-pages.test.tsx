@@ -169,6 +169,19 @@ describe("metadata routes", () => {
         expect(disallow.join(" ")).toMatch(/api|dashboard/i);
     });
 
+    // robots.txt matches by prefix, so "/load/" would not block "/load".
+    it("robots.txt disallow entries have no trailing slash", () => {
+        const rules: any = robots().rules;
+        const disallow: string[] = (
+            Array.isArray(rules) ? rules : [rules]
+        ).flatMap((r: any) => r.disallow ?? []);
+
+        expect(disallow).toContain("/load");
+        for (const path of disallow) {
+            expect(path.endsWith("/")).toBe(false);
+        }
+    });
+
     it("the sitemap lists the public tools funnel", () => {
         const urls = sitemap().map((entry: any) => entry.url);
 

@@ -55,6 +55,10 @@ describe("public routes", () => {
         ["the tools index", "/tools"],
         ["a tools calculator", "/tools/bmi-calculator"],
         ["the sitemap", "/sitemap.xml"],
+        ["robots.txt", "/robots.txt"],
+        ["the contact page", "/contact-us"],
+        ["the contact form endpoint", "/api/contact-us/add"],
+        ["the public plate calculator", "/tools/plate-calculator"],
     ])("does not protect %s", (_label, pathname) => {
         expect(run(pathname)).toBe(false);
     });
@@ -78,17 +82,9 @@ describe("protected routes", () => {
         expect(run(pathname)).toBe(true);
     });
 
-    /**
-     * Worth knowing: the contact page and its API are NOT in the public list,
-     * so a signed-out visitor cannot reach a page that looks public.
-     * Characterizing current behavior.
-     */
-    it.each(["/contact-us", "/api/contact-us/add"])(
-        "protects %s despite it looking public",
-        (pathname) => {
-            expect(run(pathname)).toBe(true);
-        }
-    );
+    it("protects other contact-us API routes", () => {
+        expect(run("/api/contact-us/list")).toBe(true);
+    });
 
     it("protects a path that merely starts like a public one", () => {
         expect(run("/loading-secrets")).toBe(true);
@@ -116,6 +112,12 @@ describe("matcher config", () => {
 
         expect(matcher.test("/sw.js")).toBe(false);
         expect(matcher.test("/dashboard")).toBe(true);
+    });
+
+    it("does not skip .txt, which is why /robots.txt is a public route", () => {
+        const matcher = new RegExp(config.matcher[0]);
+
+        expect(matcher.test("/robots.txt")).toBe(true);
     });
 
     it("does not exclude .json, only .js", () => {

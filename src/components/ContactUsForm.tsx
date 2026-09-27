@@ -9,6 +9,8 @@ export default function ContactUsForm() {
         name: "",
         email: "",
         message: "",
+        // Honeypot, left empty by people; see /api/contact-us/add.
+        website: "",
     });
     // onsubmit handler
     const handleSubmit = async (e) => {
@@ -91,6 +93,17 @@ export default function ContactUsForm() {
                         placeholder="Write your message here..."
                         rows={4}
                         required
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="hidden" aria-hidden="true">
+                    <label htmlFor="website">Website</label>
+                    <input
+                        type="text"
+                        id="website"
+                        tabIndex={-1}
+                        autoComplete="off"
+                        value={formData.website}
                         onChange={handleChange}
                     />
                 </div>

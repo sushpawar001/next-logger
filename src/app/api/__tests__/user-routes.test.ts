@@ -414,13 +414,91 @@ describe("POST /api/contact-us/add", () => {
         const { POST } = await import("@/app/api/contact-us/add/route");
 
         const res = await POST(
-            makeJsonRequest("/x", { name: "", email: "", message: "" })
+            makeJsonRequest("/x", {
+                name: "Ada",
+                email: "ada@example.com",
+                message: "Hello",
+            })
         );
 
         expect(res.status).toBe(500);
         // The message is deliberately generic, not the mongoose error.
         await expect(res.json()).resolves.toEqual({
             message: "Error sending message",
+        });
+    });
+
+    // The route is public, so malformed or oversized input is rejected before
+    // anything is written.
+    it.each([
+        ["an empty body", { name: "", email: "", message: "" }],
+        ["a missing name", { email: "ada@example.com", message: "Hi" }],
+        ["a malformed email", { name: "Ada", email: "ada", message: "Hi" }],
+        ["a non-string message", { name: "Ada", email: "a@b.co", message: 42 }],
+        [
+            "an oversized message",
+            { name: "Ada", email: "a@b.co", message: "x".repeat(5001) },
+        ],
+        [
+            "an oversized name",
+            { name: "x".repeat(101), email: "a@b.co", message: "Hi" },
+        ],
+    ])("returns 400 and saves nothing for %s", async (_label, body) => {
+        const { POST } = await import("@/app/api/contact-us/add/route");
+
+        const res = await POST(makeJsonRequest("/x", body));
+
+        expect(res.status).toBe(400);
+        expect(contactUs).not.toHaveBeenCalled();
+    });
+
+    it("returns 400 for a body that is not JSON", async () => {
+        const { POST } = await import("@/app/api/contact-us/add/route");
+
+        const res = await POST(
+            new Request("http://localhost:4000/x", {
+                method: "POST",
+                body: "not json",
+            }) as any
+        );
+
+        expect(res.status).toBe(400);
+        expect(contactUs).not.toHaveBeenCalled();
+    });
+
+    it("pretends to succeed but saves nothing when the honeypot is filled", async () => {
+        const { POST } = await import("@/app/api/contact-us/add/route");
+
+        const res = await POST(
+            makeJsonRequest("/x", {
+                name: "Bot",
+                email: "bot@example.com",
+                message: "Buy now",
+                website: "https://spam.example",
+            })
+        );
+
+        expect(res.status).toBe(201);
+        expect(contactUs).not.toHaveBeenCalled();
+    });
+
+    it("trims the stored fields", async () => {
+        contactUs.save.mockResolvedValueOnce(asDoc({ _id: "c2" }));
+        const { POST } = await import("@/app/api/contact-us/add/route");
+
+        await POST(
+            makeJsonRequest("/x", {
+                name: "  Ada ",
+                email: " ada@example.com ",
+                message: " Hello ",
+                website: "",
+            })
+        );
+
+        expect(contactUs).toHaveBeenCalledWith({
+            name: "Ada",
+            email: "ada@example.com",
+            message: "Hello",
         });
     });
 });

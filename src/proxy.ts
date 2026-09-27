@@ -6,12 +6,17 @@ const isPublicRoute = createRouteMatcher([
     "/login(.*)",
     "/api/webhooks/user(.*)",
     "/api/seed(.*)",
+    "/api/contact-us/add",
+    "/contact-us",
     "/load",
     "/offline",
     "/privacy-policy",
     "/terms-service",
     "/tools(.*)",
     "/sitemap.xml",
+    // .txt is not in the matcher's static-file skip list, so robots.txt must be
+    // listed here or crawlers get an auth redirect instead of the file.
+    "/robots.txt",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
