@@ -3,8 +3,6 @@ import ToolCta from "@/components/tools/ToolCta";
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
     Table,
@@ -14,12 +12,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import {
-    RadioGroup,
-    RadioGroupItem,
-} from "@/components/animate-ui/radix/radio-group";
 import PrivacyNotice from "./PrivacyNotice";
-import { useQueryState } from "nuqs";
+import {
+    BodyStatsFields,
+    useBodyStatsParams,
+} from "@/components/tools/BodyStatsFields";
 import {
     ACTIVITY_FACTORS,
     formatCalories,
@@ -258,190 +255,10 @@ const EmptyResultsCard: React.FC = () => (
     </Card>
 );
 
-const HeightInput: React.FC<{
-    heightUnit: "cm" | "ft";
-    heightCm: string;
-    heightFeet: string;
-    heightInches: string;
-    onHeightUnitChange: (unit: "cm" | "ft") => void;
-    onHeightCmChange: (value: string) => void;
-    onHeightFeetChange: (value: string) => void;
-    onHeightInchesChange: (value: string) => void;
-    suffix?: string;
-}> = ({
-    heightUnit,
-    heightCm,
-    heightFeet,
-    heightInches,
-    onHeightUnitChange,
-    onHeightCmChange,
-    onHeightFeetChange,
-    onHeightInchesChange,
-    suffix = "",
-}) => (
-    <div className="space-y-4">
-        <Label className="block text-sm leading-6 font-medium text-gray-700">Height</Label>
-        <RadioGroup
-            value={heightUnit}
-            onValueChange={(value) => onHeightUnitChange(value as "cm" | "ft")}
-            className="flex gap-4"
-        >
-            <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                    value="cm"
-                    id={`cm${suffix}`}
-                    className="w-4 h-4 text-primary"
-                />
-                <Label htmlFor={`cm${suffix}`}>Centimeters (cm)</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                    value="ft"
-                    id={`ft${suffix}`}
-                    className="w-4 h-4 text-primary"
-                />
-                <Label htmlFor={`ft${suffix}`}>Feet & Inches</Label>
-            </div>
-        </RadioGroup>
-
-        {heightUnit === "cm" ? (
-            <Input
-                type="number"
-                placeholder="Enter height in centimeters"
-                value={heightCm}
-                onChange={(e) => onHeightCmChange(e.target.value)}
-                min="50"
-                max="300"
-                className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-        ) : (
-            <div className="flex gap-4">
-                <div className="flex-1">
-                    <Label htmlFor={`feet${suffix}`}>Feet</Label>
-                    <Input
-                        id={`feet${suffix}`}
-                        type="number"
-                        placeholder="5"
-                        value={heightFeet}
-                        onChange={(e) => onHeightFeetChange(e.target.value)}
-                        min="1"
-                        max="8"
-                        className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
-                    />
-                </div>
-                <div className="flex-1">
-                    <Label htmlFor={`inches${suffix}`}>Inches</Label>
-                    <Input
-                        id={`inches${suffix}`}
-                        type="number"
-                        placeholder="10"
-                        value={heightInches}
-                        onChange={(e) => onHeightInchesChange(e.target.value)}
-                        min="0"
-                        max="11"
-                        className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
-                    />
-                </div>
-            </div>
-        )}
-    </div>
-);
-
-const WeightInput: React.FC<{
-    weightUnit: "kg" | "lbs";
-    weight: string;
-    onWeightUnitChange: (unit: "kg" | "lbs") => void;
-    onWeightChange: (value: string) => void;
-    suffix?: string;
-}> = ({
-    weightUnit,
-    weight,
-    onWeightUnitChange,
-    onWeightChange,
-    suffix = "",
-}) => (
-    <div className="space-y-4">
-        <Label className="block text-sm leading-6 font-medium text-gray-700">Weight</Label>
-        <RadioGroup
-            value={weightUnit}
-            onValueChange={(value) => onWeightUnitChange(value as "kg" | "lbs")}
-            className="flex gap-4"
-        >
-            <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                    value="kg"
-                    id={`kg${suffix}`}
-                    className="w-4 h-4 text-primary"
-                />
-                <Label htmlFor={`kg${suffix}`}>Kilograms (kg)</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                    value="lbs"
-                    id={`lbs${suffix}`}
-                    className="w-4 h-4 text-primary"
-                />
-                <Label htmlFor={`lbs${suffix}`}>Pounds (lbs)</Label>
-            </div>
-        </RadioGroup>
-
-        <Input
-            type="number"
-            placeholder={
-                weightUnit === "kg"
-                    ? "Enter weight in kilograms"
-                    : "Enter weight in pounds"
-            }
-            value={weight}
-            onChange={(e) => onWeightChange(e.target.value)}
-            min="1"
-            max="500"
-            className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
-        />
-    </div>
-);
-
-const GenderSelection: React.FC<{
-    gender: "male" | "female";
-    onGenderChange: (gender: "male" | "female") => void;
-    suffix?: string;
-}> = ({ gender, onGenderChange, suffix = "" }) => (
-    <div className="space-y-2">
-        <Label className="block text-sm leading-6 font-medium text-gray-700">Gender</Label>
-        <RadioGroup
-            value={gender}
-            onValueChange={(value) =>
-                onGenderChange(value as "male" | "female")
-            }
-            className="flex gap-4"
-        >
-            <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                    value="male"
-                    id={`male${suffix}`}
-                    className="w-4 h-4 text-primary"
-                />
-                <Label htmlFor={`male${suffix}`}>Male</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-                <RadioGroupItem
-                    value="female"
-                    id={`female${suffix}`}
-                    className="w-4 h-4 text-primary"
-                />
-                <Label htmlFor={`female${suffix}`}>Female</Label>
-            </div>
-        </RadioGroup>
-    </div>
-);
-
 const InputForm: React.FC<{
     formData: FormData;
     errors: string[];
-    onFormDataChange: (
-        field: keyof FormData,
-        value: string | "cm" | "ft" | "kg" | "lbs" | "male" | "female"
-    ) => void;
+    onFormDataChange: (field: keyof FormData, value: string) => void;
     onCalculate: () => void;
     onClear: () => void;
     suffix?: string;
@@ -460,62 +277,9 @@ const InputForm: React.FC<{
             </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-            {/* Age Input */}
-            <div className="space-y-2">
-                <Label
-                    htmlFor={`age${suffix}`}
-                    className="block text-sm leading-6 font-medium text-gray-700"
-                >
-                    Age (years)
-                </Label>
-                <Input
-                    id={`age${suffix}`}
-                    type="number"
-                    placeholder="Enter your age"
-                    value={formData.age}
-                    onChange={(e) => onFormDataChange("age", e.target.value)}
-                    min="1"
-                    max="120"
-                    className="border border-border focus:border-primary focus:ring-ring focus-visible:ring-0 focus-visible:ring-offset-0"
-                />
-            </div>
-
-            {/* Gender Selection */}
-            <GenderSelection
-                gender={formData.gender}
-                onGenderChange={(gender) => onFormDataChange("gender", gender)}
-                suffix={suffix}
-            />
-
-            {/* Height Input */}
-            <HeightInput
-                heightUnit={formData.heightUnit}
-                heightCm={formData.heightCm}
-                heightFeet={formData.heightFeet}
-                heightInches={formData.heightInches}
-                onHeightUnitChange={(unit) =>
-                    onFormDataChange("heightUnit", unit)
-                }
-                onHeightCmChange={(value) =>
-                    onFormDataChange("heightCm", value)
-                }
-                onHeightFeetChange={(value) =>
-                    onFormDataChange("heightFeet", value)
-                }
-                onHeightInchesChange={(value) =>
-                    onFormDataChange("heightInches", value)
-                }
-                suffix={suffix}
-            />
-
-            {/* Weight Input */}
-            <WeightInput
-                weightUnit={formData.weightUnit}
-                weight={formData.weight}
-                onWeightUnitChange={(unit) =>
-                    onFormDataChange("weightUnit", unit)
-                }
-                onWeightChange={(value) => onFormDataChange("weight", value)}
+            <BodyStatsFields
+                formData={formData}
+                onChange={onFormDataChange}
                 suffix={suffix}
             />
 
@@ -537,98 +301,12 @@ const InputForm: React.FC<{
 
 // Main Component
 const BMRCalculator: React.FC = () => {
-    // Form inputs in query parameters
-    const [age, setAge] = useQueryState("age", { defaultValue: "" });
-    const [gender, setGender] = useQueryState<"male" | "female">("gender", {
-        defaultValue: "male",
-        parse: (value) =>
-            value === "male" || value === "female" ? value : "male",
-        serialize: (value) => value,
-    });
-    const [heightUnit, setHeightUnit] = useQueryState<"cm" | "ft">(
-        "heightUnit",
-        {
-            defaultValue: "cm",
-            parse: (value) => (value === "cm" || value === "ft" ? value : "cm"),
-            serialize: (value) => value,
-        }
-    );
-    const [heightCm, setHeightCm] = useQueryState("heightCm", {
-        defaultValue: "",
-    });
-    const [heightFeet, setHeightFeet] = useQueryState("heightFeet", {
-        defaultValue: "",
-    });
-    const [heightInches, setHeightInches] = useQueryState("heightInches", {
-        defaultValue: "",
-    });
-    const [weightUnit, setWeightUnit] = useQueryState<"kg" | "lbs">(
-        "weightUnit",
-        {
-            defaultValue: "kg",
-            parse: (value) =>
-                value === "kg" || value === "lbs" ? value : "kg",
-            serialize: (value) => value,
-        }
-    );
-    const [weight, setWeight] = useQueryState("weight", {
-        defaultValue: "",
-    });
+    // Form inputs live in the URL so a result can be shared.
+    const { formData, setField, clear } = useBodyStatsParams();
 
     // Results and errors in local state
     const [results, setResults] = useState<BMRResult | null>(null);
     const [errors, setErrors] = useState<string[]>([]);
-
-    // Create formData object from query parameters
-    const formData: FormData = {
-        age: age || "",
-        gender: gender || "male",
-        heightUnit: heightUnit || "cm",
-        heightCm: heightCm || "",
-        heightFeet: heightFeet || "",
-        heightInches: heightInches || "",
-        weightUnit: weightUnit || "kg",
-        weight: weight || "",
-    };
-
-    const handleFormDataChange = (
-        field: keyof FormData,
-        value: string | "cm" | "ft" | "kg" | "lbs" | "male" | "female"
-    ) => {
-        switch (field) {
-            case "age":
-                setAge(value as string);
-                break;
-            case "gender":
-                setGender(value as "male" | "female");
-                break;
-            case "heightUnit":
-                setHeightUnit(value as "cm" | "ft");
-                // Remove unused height unit parameters
-                if (value === "cm") {
-                    setHeightFeet("");
-                    setHeightInches("");
-                } else {
-                    setHeightCm("");
-                }
-                break;
-            case "heightCm":
-                setHeightCm(value as string);
-                break;
-            case "heightFeet":
-                setHeightFeet(value as string);
-                break;
-            case "heightInches":
-                setHeightInches(value as string);
-                break;
-            case "weightUnit":
-                setWeightUnit(value as "kg" | "lbs");
-                break;
-            case "weight":
-                setWeight(value as string);
-                break;
-        }
-    };
 
     const handleCalculate = () => {
         const validationErrors = validateInputs(formData);
@@ -643,14 +321,7 @@ const BMRCalculator: React.FC = () => {
     };
 
     const handleClear = () => {
-        setAge("");
-        setGender("male");
-        setHeightUnit("cm");
-        setHeightCm("");
-        setHeightFeet("");
-        setHeightInches("");
-        setWeightUnit("kg");
-        setWeight("");
+        clear();
         setResults(null);
         setErrors([]);
     };
@@ -665,7 +336,7 @@ const BMRCalculator: React.FC = () => {
                 <InputForm
                     formData={formData}
                     errors={errors}
-                    onFormDataChange={handleFormDataChange}
+                    onFormDataChange={setField}
                     onCalculate={handleCalculate}
                     onClear={handleClear}
                 />
@@ -676,7 +347,7 @@ const BMRCalculator: React.FC = () => {
                 <InputForm
                     formData={formData}
                     errors={errors}
-                    onFormDataChange={handleFormDataChange}
+                    onFormDataChange={setField}
                     onCalculate={handleCalculate}
                     onClear={handleClear}
                     suffix="-desktop"
