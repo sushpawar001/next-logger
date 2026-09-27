@@ -3,6 +3,7 @@
  * they can be unit-tested without Recharts or a query client.
  */
 import dayjs, { type Dayjs } from "dayjs";
+import { getHba1cPrecise } from "@/helpers/statsHelpers";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -46,11 +47,11 @@ export function average(values: number[]): number | null {
 }
 
 /**
- * Estimated HbA1c (%) from average glucose in mg/dL — the ADAG formula also
- * used by `getHba1cValue` in statsHelpers, kept to one decimal here.
+ * Estimated HbA1c (%) from average glucose in mg/dL, to one decimal: the ADAG
+ * formula shared with the public A1c calculator via statsHelpers.
  */
 export const estimateHba1c = (avgGlucose: number) =>
-    Math.round(((avgGlucose + 46.7) / 28.7) * 10) / 10;
+    getHba1cPrecise(avgGlucose);
 
 export type TodayItem = {
     kind: "glucose" | "insulin" | "weight";

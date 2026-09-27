@@ -1,4 +1,5 @@
 import { insulin } from "@/types/models";
+import { a1cFromEag } from "@/lib/calculators/a1c";
 
 export function getDailyInsulinValues(valuesArray: insulin[]): number[] {
     const dates = {};
@@ -32,14 +33,14 @@ export function simpleMovingAverage(arr: number[], period: number): number[] {
 }
 
 export function getHba1cValue(averageGlucose: number): number {
-    return Math.round((averageGlucose + 46.7) / 28.7);
+    return Math.round(a1cFromEag(averageGlucose));
 }
 /**
  * Estimated HbA1c (ADAG formula) to one decimal, the precision it is quoted
  * at clinically. `getHba1cValue` above rounds to a whole number.
  */
 export function getHba1cPrecise(averageGlucose: number): number {
-    return Math.round(((averageGlucose + 46.7) / 28.7) * 10) / 10;
+    return Math.round(a1cFromEag(averageGlucose) * 10) / 10;
 }
 
 export interface Summary {
