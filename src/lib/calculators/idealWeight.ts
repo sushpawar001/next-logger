@@ -53,7 +53,7 @@ export const calculateIBW = (
         return {
             robinson: 49 + 1.7 * inchesOver5Feet,
             miller: 53.1 + 1.36 * inchesOver5Feet,
-            devine: 45.5 + 2.2 * inchesOver5Feet,
+            devine: 45.5 + 2.3 * inchesOver5Feet,
             hamwi: 45.5 + 2.2 * inchesOver5Feet,
         };
     }

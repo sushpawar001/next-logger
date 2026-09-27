@@ -29,6 +29,11 @@ export interface FormData {
 }
 
 
+/**
+ * A six-level activity scale (the one calculator.net uses). `moderate` (1.465,
+ * exercise 4-5 times/week) deliberately sits between `light` (1.375) and
+ * `active` (1.55); it is not a mistyped 1.55. See docs/BUGS.md #25.
+ */
 export const ACTIVITY_FACTORS = {
     sedentary: 1.2,
     light: 1.375,

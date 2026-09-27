@@ -578,6 +578,11 @@ const BMICalculator: React.FC = () => {
         const weightKg = getWeightInKg(formData);
         const bmi = calculateBMI(weightKg, heightM);
         const result = getBMIClassification(bmi);
+        if (!result) {
+            setErrors(["Please check your height and weight"]);
+            setResults(null);
+            return;
+        }
         setResults(result);
     };
 

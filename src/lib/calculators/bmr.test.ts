@@ -106,12 +106,20 @@ describe("ACTIVITY_FACTORS", () => {
         expect(ACTIVITY_FACTORS).toEqual({
             sedentary: 1.2,
             light: 1.375,
-            // Note: 1.465 is non-standard; the usual moderate factor is 1.55.
+            // Deliberate six-level scale, not a typo for 1.55 (docs/BUGS.md #25).
             moderate: 1.465,
             active: 1.55,
             veryActive: 1.725,
             extraActive: 1.9,
         });
+    });
+
+    it("strictly increases from sedentary to extra active", () => {
+        const values = Object.values(ACTIVITY_FACTORS);
+
+        for (let i = 1; i < values.length; i++) {
+            expect(values[i]).toBeGreaterThan(values[i - 1]);
+        }
     });
 });
 

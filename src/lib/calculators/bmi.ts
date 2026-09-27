@@ -55,7 +55,14 @@ export const calculateBMI = (weightKg: number, heightM: number): number => {
     return weightKg / (heightM * heightM);
 };
 
-export const getBMIClassification = (bmi: number): BMIResult => {
+/**
+ * Returns null for a BMI that cannot come from real measurements (NaN,
+ * Infinity, zero or negative) so callers show an error instead of a category.
+ */
+export const getBMIClassification = (bmi: number): BMIResult | null => {
+    if (!Number.isFinite(bmi) || bmi <= 0) {
+        return null;
+    }
     for (const [category, range] of Object.entries(BMI_CLASSIFICATIONS)) {
         if (bmi >= range.min && bmi < range.max) {
             return {

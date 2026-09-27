@@ -3,6 +3,53 @@ import BMRCalculator from "@/components/BMRCalculator";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import CopyUrlButton from "@/components/CopyUrlButton";
+import { ACTIVITY_FACTORS } from "@/lib/calculators/bmr";
+
+// Multipliers are read from ACTIVITY_FACTORS so this table cannot drift from
+// the calculator.
+const ACTIVITY_ROWS: {
+    key: keyof typeof ACTIVITY_FACTORS;
+    name: string;
+    badgeClass: string;
+    description: string;
+}[] = [
+    {
+        key: "sedentary",
+        name: "Sedentary",
+        badgeClass: "bg-gray-50 text-gray-700 border-gray-200",
+        description: "Little or no exercise",
+    },
+    {
+        key: "light",
+        name: "Lightly Active",
+        badgeClass: "bg-blue-50 text-blue-700 border-blue-200",
+        description: "Exercise 1-3 times/week",
+    },
+    {
+        key: "moderate",
+        name: "Moderately Active",
+        badgeClass: "bg-green-50 text-green-700 border-green-200",
+        description: "Exercise 4-5 times/week",
+    },
+    {
+        key: "active",
+        name: "Very Active",
+        badgeClass: "bg-yellow-50 text-yellow-700 border-yellow-200",
+        description: "Daily exercise or intense exercise 3-4 times/week",
+    },
+    {
+        key: "veryActive",
+        name: "Extremely Active",
+        badgeClass: "bg-orange-50 text-orange-700 border-orange-200",
+        description: "Intense exercise 6-7 times/week",
+    },
+    {
+        key: "extraActive",
+        name: "Extra Active",
+        badgeClass: "bg-red-50 text-red-700 border-red-200",
+        description: "Very intense exercise daily, or physical job",
+    },
+];
 
 export const dynamic = "force-static";
 
@@ -56,104 +103,24 @@ export default function BMRCalculatorPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td className="border border-gray-200 px-4 py-3">
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-gray-50 text-gray-700 border-gray-200"
-                                            >
-                                                Sedentary
-                                            </Badge>
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            1.2
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            Little or no exercise
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="border border-gray-200 px-4 py-3">
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-blue-50 text-blue-700 border-blue-200"
-                                            >
-                                                Lightly Active
-                                            </Badge>
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            1.375
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            Exercise 1-3 times/week
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="border border-gray-200 px-4 py-3">
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-green-50 text-green-700 border-green-200"
-                                            >
-                                                Moderately Active
-                                            </Badge>
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            1.465
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            Exercise 4-5 times/week
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="border border-gray-200 px-4 py-3">
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-yellow-50 text-yellow-700 border-yellow-200"
-                                            >
-                                                Very Active
-                                            </Badge>
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            1.55
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            Daily exercise or intense exercise
-                                            3-4 times/week
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="border border-gray-200 px-4 py-3">
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-orange-50 text-orange-700 border-orange-200"
-                                            >
-                                                Extremely Active
-                                            </Badge>
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            1.725
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            Intense exercise 6-7 times/week
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td className="border border-gray-200 px-4 py-3">
-                                            <Badge
-                                                variant="outline"
-                                                className="bg-red-50 text-red-700 border-red-200"
-                                            >
-                                                Extra Active
-                                            </Badge>
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            1.9
-                                        </td>
-                                        <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
-                                            Very intense exercise daily, or
-                                            physical job
-                                        </td>
-                                    </tr>
+                                    {ACTIVITY_ROWS.map((row) => (
+                                        <tr key={row.key}>
+                                            <td className="border border-gray-200 px-4 py-3">
+                                                <Badge
+                                                    variant="outline"
+                                                    className={row.badgeClass}
+                                                >
+                                                    {row.name}
+                                                </Badge>
+                                            </td>
+                                            <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
+                                                {ACTIVITY_FACTORS[row.key]}
+                                            </td>
+                                            <td className="border border-gray-200 px-4 py-3 text-sm text-gray-700">
+                                                {row.description}
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

@@ -35,7 +35,7 @@ export const WHR_CLASSIFICATIONS = {
         },
         moderate: {
             min: 0.9,
-            max: 0.99,
+            max: 1.0,
             label: "Moderate Risk",
             color: "yellow",
             riskLevel: "Moderate cardiovascular risk",
@@ -58,7 +58,7 @@ export const WHR_CLASSIFICATIONS = {
         },
         moderate: {
             min: 0.8,
-            max: 0.84,
+            max: 0.85,
             label: "Moderate Risk",
             color: "yellow",
             riskLevel: "Moderate cardiovascular risk",

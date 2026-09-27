@@ -114,17 +114,15 @@ describe("getBMIClassification", () => {
         expect(getBMIClassification(1000).category).toBe("obesity");
     });
 
-    /**
-     * KNOWN BUG (docs/BUGS.md #23): the underweight band starts at min 0, so any
-     * negative or NaN BMI matches no range and hits the `obesity` fallback --
-     * a nonsensical input is reported as the most severe category rather than
-     * as an error. Characterizing current behavior.
-     */
+    // Regression for docs/BUGS.md #23: impossible values used to fall through
+    // to the obesity fallback instead of being rejected.
     it.each([
         ["a negative BMI", -5],
         ["NaN", NaN],
-    ])("reports %s as obesity via the fallback", (_label, bmi) => {
-        expect(getBMIClassification(bmi).category).toBe("obesity");
+        ["zero", 0],
+        ["Infinity", Infinity],
+    ])("returns null for %s", (_label, bmi) => {
+        expect(getBMIClassification(bmi)).toBeNull();
     });
 });
 

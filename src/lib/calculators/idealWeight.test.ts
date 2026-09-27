@@ -74,22 +74,17 @@ describe("calculateIBW", () => {
 
         expect(result.robinson).toBeCloseTo(49 + 1.7 * 11, 6);
         expect(result.miller).toBeCloseTo(53.1 + 1.36 * 11, 6);
-        expect(result.devine).toBeCloseTo(45.5 + 2.2 * 11, 6);
+        expect(result.devine).toBeCloseTo(45.5 + 2.3 * 11, 6);
         expect(result.hamwi).toBeCloseTo(45.5 + 2.2 * 11, 6);
     });
 
-    /**
-     * KNOWN BUG (docs/BUGS.md #24): the female Devine and Hamwi formulas are
-     * identical (45.5 + 2.2/inch). The published Hamwi female formula is
-     * 45.5 + 2.2/inch and Devine female is 45.5 + 2.3/inch, so `devine` is
-     * understated for women. The male pair differ as expected.
-     * Characterizing current behavior.
-     */
-    it("returns identical female Devine and Hamwi values", () => {
+    // Regression for docs/BUGS.md #24: female Devine used Hamwi's 2.2/inch
+    // coefficient, so the two formulas returned identical values.
+    it("returns different female Devine and Hamwi values", () => {
         const female = calculateIBW(71, "female");
         const male = calculateIBW(71, "male");
 
-        expect(female.devine).toBe(female.hamwi);
+        expect(female.devine).not.toBe(female.hamwi);
         expect(male.devine).not.toBe(male.hamwi);
     });
 

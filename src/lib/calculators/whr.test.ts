@@ -5,6 +5,7 @@ import {
     getWaistInCm,
     getWHRClassification,
     validateInputs,
+    WHR_CLASSIFICATIONS,
     type FormData,
 } from "./whr";
 
@@ -75,22 +76,14 @@ describe("getWHRClassification (male)", () => {
         expect(getWHRClassification(0.8999, "male").category).toBe("low");
     });
 
-    /**
-     * KNOWN BUG (docs/BUGS.md #22): male `moderate` ends at 0.99 but `high` starts at
-     * 1.0, so 0.99 <= whr < 1.0 matches no range and falls through to the
-     * `high` fallback. The table's intent is clearly Moderate up to 1.0, so
-     * these values are over-reported as High Risk.
-     * Characterizing current behavior.
-     */
-    it.each([0.99, 0.995, 0.9999])(
-        "reports %f as High Risk because it falls in the range gap",
-        (whr) => {
-            const result = getWHRClassification(whr, "male");
+    // Regression for docs/BUGS.md #22: [0.99, 1.0) used to fall into a gap
+    // between the moderate and high bands and was reported as High Risk.
+    it.each([0.99, 0.995, 0.9999])("classifies %f as Moderate Risk", (whr) => {
+        const result = getWHRClassification(whr, "male");
 
-            expect(result.classification).toBe("High Risk");
-            expect(result.category).toBe("high");
-        }
-    );
+        expect(result.classification).toBe("Moderate Risk");
+        expect(result.category).toBe("moderate");
+    });
 
     it("echoes the input ratio and a risk level back", () => {
         const result = getWHRClassification(0.85, "male");
@@ -112,18 +105,27 @@ describe("getWHRClassification (female)", () => {
         expect(getWHRClassification(whr, "female").classification).toBe(expected);
     });
 
-    // KNOWN BUG (docs/BUGS.md #22): the same gap exists at [0.84, 0.85).
-    it.each([0.84, 0.845])(
-        "reports %f as High Risk because it falls in the range gap",
-        (whr) => {
-            expect(getWHRClassification(whr, "female").category).toBe("high");
-        }
-    );
+    // Regression for docs/BUGS.md #22: the same gap existed at [0.84, 0.85).
+    it.each([0.84, 0.845])("classifies %f as Moderate Risk", (whr) => {
+        expect(getWHRClassification(whr, "female").category).toBe("moderate");
+    });
 
     it("uses lower thresholds than the male table", () => {
         expect(getWHRClassification(0.85, "female").category).toBe("high");
         expect(getWHRClassification(0.85, "male").category).toBe("low");
     });
+});
+
+describe("WHR_CLASSIFICATIONS", () => {
+    it.each(["male", "female"] as const)(
+        "has contiguous %s bands with no gaps",
+        (gender) => {
+            const { low, moderate, high } = WHR_CLASSIFICATIONS[gender];
+
+            expect(low.max).toBe(moderate.min);
+            expect(moderate.max).toBe(high.min);
+        }
+    );
 });
 
 describe("validateInputs", () => {
