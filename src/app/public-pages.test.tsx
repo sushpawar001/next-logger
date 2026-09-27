@@ -19,6 +19,9 @@ import PlatePage from "./(Public)/tools/plate-calculator/page";
 import GmiPage from "./(Public)/tools/gmi-calculator/page";
 import WhtrPage from "./(Public)/tools/waist-to-height-ratio-calculator/page";
 import WeightLossPage from "./(Public)/tools/weight-loss-percentage-calculator/page";
+import IsfPage from "./(Public)/tools/insulin-sensitivity-factor-calculator/page";
+import CarbRatioPage from "./(Public)/tools/insulin-to-carb-ratio-calculator/page";
+import BolusPage from "./(Public)/tools/bolus-calculator/page";
 import PrivacyPolicyPage from "./(Public)/privacy-policy/page";
 import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
@@ -50,6 +53,9 @@ const TOOL_PAGES = [
     { name: "GMI", Page: GmiPage, heading: /gmi and time in range/i },
     { name: "waist-to-height", Page: WhtrPage, heading: /waist-to-height ratio calculator/i },
     { name: "weight loss", Page: WeightLossPage, heading: /weight loss percentage/i },
+    { name: "correction factor", Page: IsfPage, heading: /insulin sensitivity factor/i },
+    { name: "carb ratio", Page: CarbRatioPage, heading: /insulin-to-carb ratio/i },
+    { name: "bolus", Page: BolusPage, heading: /bolus insulin calculator/i },
 ];
 
 // Every registered tool page, keyed by slug. A test below fails if a tool is
@@ -70,6 +76,9 @@ const PAGES_BY_SLUG: Record<string, () => React.JSX.Element> = {
     "gmi-calculator": GmiPage,
     "waist-to-height-ratio-calculator": WhtrPage,
     "weight-loss-percentage-calculator": WeightLossPage,
+    "insulin-sensitivity-factor-calculator": IsfPage,
+    "insulin-to-carb-ratio-calculator": CarbRatioPage,
+    "bolus-calculator": BolusPage,
 };
 
 describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {

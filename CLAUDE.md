@@ -84,7 +84,7 @@ Practical implications:
 
 ### Route groups (`src/app`)
 - `(Dashboard)` — authenticated app: `/dashboard`, `/glucose`, `/insulin`, `/weight`, `/measurement`, `/charts`, `/stats`, `/profile`, `/load`. Each metric has an `[entryId]` edit page. Its `layout.tsx` wraps everything in `ClerkProvider` + shadcn `SidebarProvider`/`LeftSidebar`/`DashboardHeader`.
-- `(Public)` — `/tools/*` calculators (diabetes: A1c, blood sugar converter; body: BMI, body fat, ideal weight, WHR; energy: BMR, TDEE, calorie deficit, maintenance, water intake; strength: plate calculator), legal pages, contact. No Clerk, static-friendly; `robots.ts` and `sitemap.ts` live at `src/app`. See **Public tools** below.
+- `(Public)` — `/tools/*` calculators (diabetes: A1c, blood sugar converter, GMI/time in range, correction factor, carb ratio, bolus; body: BMI, body fat, ideal weight, WHR, waist-to-height, weight loss %; energy: BMR, TDEE, calorie deficit, maintenance, water intake; strength: plate calculator), legal pages, contact. No Clerk, static-friendly; `robots.ts` and `sitemap.ts` live at `src/app`. See **Public tools** below.
 - `(Auth)` — Clerk catch-all sign-in/sign-up routes plus legacy password-reset/verify pages.
 - `api` — all backend logic (route handlers only; there are no server actions).
 
@@ -132,7 +132,7 @@ All four metric models share the same shape: value field(s), `user` ObjectId ref
 - `ToolCta` (signup prompt) is rendered **inside each calculator's result card**, so it only shows once there is a result. `LoadCalc` only shows it with the `cta` prop, since `/load` is the signed-in copy (noindexed).
 - Newer calculators (A1c, blood sugar, body fat, energy) compute live from URL state with `useQueryStates` and parsers in `src/lib/tools/params.ts` (no Calculate button, so shared links render the result), use `CalculatorLayout` and the `fields.tsx` controls, and render the form once. The original five still use a Calculate button and render the form twice (mobile + desktop).
 - Glucose units: `src/lib/units/glucose.ts` (`MGDL_PER_MMOL = 18.016`, from glucose's molar mass). Use `roundTo` rather than `Math.round` for displayed values so exact halves match published tables (28.7 × 6 − 46.7 = 125.5 → 126). The A1c maths in `src/lib/calculators/a1c.ts` also backs the dashboard's estimated HbA1c via `statsHelpers.getHba1cPrecise`.
-- Keep medical copy sourced: FAQ answers and formula sources must match the cited guideline, and dosing calculators (ISF, carb ratio, bolus) are out of scope without an acknowledgement gate. Bump a tool's `lastReviewed` when its content changes; it drives the sitemap `lastModified`.
+- Keep medical copy sourced: FAQ answers and formula sources must match the cited guideline, and the dosing calculators (correction factor, carb ratio, bolus, in `DosingCalculators.tsx`) must stay behind `DosingGate`, an education-only acknowledgement kept in sessionStorage. The bolus calculator never shows a dose for a reading below 70 mg/dL, and insulin on board only offsets a positive correction. Bump a tool's `lastReviewed` when its content changes; it drives the sitemap `lastModified`.
 - `src/lib/site.ts` `getSiteUrl()` is the canonical origin for `metadataBase`, robots, sitemap and JSON-LD; production falls back to the live domain, never localhost.
 - Two dashboard variants exist (`DiabetesDashboard`, `FitnessDashboard`) selected by the user's `layoutSettings`; only the diabetes one is currently wired up on `/dashboard`.
 

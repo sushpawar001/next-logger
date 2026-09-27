@@ -90,3 +90,28 @@ export const weightLossParams = {
     goal: textParam,
     startDate: textParam,
 };
+
+const insulinKindParam = parseAsStringLiteral([
+    "rapid",
+    "regular",
+] as const).withDefault("rapid");
+
+export const correctionFactorParams = {
+    tdd: textParam,
+    insulin: insulinKindParam,
+};
+
+export const carbRatioParams = {
+    tdd: textParam,
+    insulin: insulinKindParam,
+};
+
+export const bolusParams = {
+    unit: glucoseUnitParam,
+    carbs: textParam,
+    ratio: textParam,
+    glucose: textParam,
+    target: textParam,
+    sensitivity: textParam,
+    onBoard: textParam,
+};
