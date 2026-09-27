@@ -1,4 +1,5 @@
 import {
+    ArrowRightLeft,
     Calculator,
     Droplet,
     Flame,
@@ -100,10 +101,47 @@ export const TOOLS = [
             "eag calculator",
             "a1c chart",
         ],
-        related: ["bmi-calculator", "whr-calculator", "water-intake-calculator"],
+        related: [
+            "blood-sugar-converter",
+            "bmi-calculator",
+            "whr-calculator",
+        ],
         cta: {
             heading: "See your estimated A1c from your own readings",
             body: "Log your glucose readings in FitDose and your dashboard estimates your A1c and time in range automatically as the readings build up.",
+            label: "Start logging free",
+        },
+        lastReviewed: "2026-09-27",
+    },
+    {
+        slug: "blood-sugar-converter",
+        href: "/tools/blood-sugar-converter",
+        title: "Blood Sugar Converter",
+        h1: "Blood Sugar Converter: mg/dL to mmol/L",
+        shortName: "Blood sugar",
+        description:
+            "Convert blood glucose between mg/dL and mmol/L and see where a reading sits against standard ranges.",
+        features: [
+            "mg/dL to mmol/L and back",
+            "Fasting and after-meal ranges",
+            "Low blood sugar levels",
+            "Conversion chart",
+        ],
+        metaTitle: "Blood Sugar Converter: mg/dL to mmol/L | FitDose",
+        metaDescription:
+            "Convert blood glucose between mg/dL and mmol/L instantly and check a reading against fasting, after-meal and low blood sugar ranges.",
+        icon: ArrowRightLeft,
+        cluster: "diabetes",
+        keywords: [
+            "mg/dl to mmol/l",
+            "mmol to mg/dl",
+            "blood sugar converter",
+            "blood sugar chart",
+        ],
+        related: ["a1c-calculator", "bmi-calculator", "water-intake-calculator"],
+        cta: {
+            heading: "Keep every reading in one place",
+            body: "FitDose keeps your glucose readings, insulin and weight together, with charts against a 70–180 mg/dL target range.",
             label: "Start logging free",
         },
         lastReviewed: "2026-09-27",

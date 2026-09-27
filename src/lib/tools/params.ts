@@ -26,3 +26,13 @@ export const a1cParams = {
     glucose: textParam,
     unit: glucoseUnitParam,
 };
+
+export const bloodSugarParams = {
+    value: textParam,
+    unit: glucoseUnitParam,
+    context: parseAsStringLiteral([
+        "random",
+        "fasting",
+        "postMeal",
+    ] as const).withDefault("random"),
+};
