@@ -56,8 +56,8 @@ that every single-row handler filters on `_id` **and** `user` together, plus a
 source-level sweep that fails if a new `delete`/`update`/`get-one` route is
 added without a matching case.
 
-**`docs/BUGS.md`** lists 28 defects found while writing these tests. #17, #19 and
-#22–24 are fixed and #25 was closed as deliberate; each open one is pinned by a
+**`docs/BUGS.md`** lists 28 defects found while writing these tests. #1, #17, #19
+and #22–24 are fixed and #25 was closed as deliberate; each open one is pinned by a
 test asserting current behavior with a `KNOWN BUG (docs/BUGS.md #n)` comment, so
 a future fix fails loudly rather than silently changing behavior. When fixing
 one, flip its pinning test to assert the correct behavior and mark the entry

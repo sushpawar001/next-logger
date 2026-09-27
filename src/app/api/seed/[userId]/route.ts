@@ -6,6 +6,22 @@ import Glucose from "@/models/glucoseModel";
 import Insulin from "@/models/insulinModel";
 import mongoose from "mongoose";
 import { entryTags } from "@/constants/constants";
+import { timingSafeEqual } from "node:crypto";
+
+/**
+ * This route is public (src/proxy.ts), so the token is the only gate. It must
+ * fail closed: a missing or empty token is rejected, and so is every request
+ * when SEED_TOKEN is not configured on the server.
+ */
+function isValidSeedToken(token: unknown): boolean {
+    const expected = process.env.SEED_TOKEN;
+    if (!expected || typeof token !== "string" || token.length === 0) {
+        return false;
+    }
+    const a = Buffer.from(token);
+    const b = Buffer.from(expected);
+    return a.length === b.length && timingSafeEqual(a, b);
+}
 // Helper function to generate random number between min and max
 const randomNumber = (min: number, max: number, fractionAllowed: boolean = false) => {
     if (fractionAllowed) {
@@ -47,10 +63,10 @@ export async function POST(
         const { userId } = params;
         const { days = 60, count = 180, seed_token } = await req.json();
 
-        if (seed_token && seed_token !== process.env.SEED_TOKEN) {
+        if (!isValidSeedToken(seed_token)) {
             return NextResponse.json(
                 { error: "Invalid seed token" },
-                { status: 400 }
+                { status: 401 }
             );
         }
 

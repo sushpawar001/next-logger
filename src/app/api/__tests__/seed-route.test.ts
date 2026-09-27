@@ -64,30 +64,39 @@ describe("token handling", () => {
         expect((await res.json()).success).toBe(true);
     });
 
-    it("rejects a wrong token with 400", async () => {
+    it("rejects a wrong token with 401", async () => {
         const res = await seed(VALID_USER_ID, { seed_token: "wrong", count: 2 });
 
-        expect(res.status).toBe(400);
+        expect(res.status).toBe(401);
         await expect(res.json()).resolves.toEqual({ error: "Invalid seed token" });
         for (const model of MODELS) expect(model.insertMany).not.toHaveBeenCalled();
     });
 
-    /**
-     * KNOWN BUG (docs/BUGS.md #1): the guard is
-     *   `if (seed_token && seed_token !== process.env.SEED_TOKEN)`
-     * so it only runs when a token is PRESENT. Omitting the field entirely
-     * skips the check and seeds successfully on a publicly-routable endpoint.
-     * Characterizing current behavior.
-     */
+    // Regression for docs/BUGS.md #1: the guard used to run only when a token
+    // was present, so omitting it skipped the check entirely.
     it.each([
         ["the field omitted", {}],
         ["an undefined token", { seed_token: undefined }],
         ["an empty-string token", { seed_token: "" }],
-    ])("seeds successfully with %s, bypassing the check", async (_label, body) => {
+        ["a non-string token", { seed_token: 12345 }],
+        ["a token with the right prefix", { seed_token: `${TOKEN}x` }],
+    ])("rejects %s with 401 and writes nothing", async (_label, body) => {
         const res = await seed(VALID_USER_ID, { ...body, count: 1 });
 
-        expect(res.status).toBe(200);
-        expect(Glucose.insertMany).toHaveBeenCalled();
+        expect(res.status).toBe(401);
+        for (const model of MODELS) expect(model.insertMany).not.toHaveBeenCalled();
+    });
+
+    it("rejects every request when SEED_TOKEN is not configured", async () => {
+        vi.stubEnv("SEED_TOKEN", "");
+        try {
+            const res = await seed(VALID_USER_ID, { seed_token: "", count: 1 });
+
+            expect(res.status).toBe(401);
+            expect(Glucose.insertMany).not.toHaveBeenCalled();
+        } finally {
+            vi.unstubAllEnvs();
+        }
     });
 });
 
