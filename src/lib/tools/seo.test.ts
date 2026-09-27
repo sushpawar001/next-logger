@@ -3,8 +3,12 @@ import {
     buildHubMetadata,
     buildIndexMetadata,
     buildToolMetadata,
-    DEFAULT_OG_IMAGE,
+    shareImage,
 } from "./metadata";
+import { existsSync } from "node:fs";
+import path from "node:path";
+
+const PUBLIC_DIR = path.resolve(__dirname, "../../../public");
 import {
     breadcrumbLd,
     faqPageLd,
@@ -14,7 +18,7 @@ import {
     toolGraph,
     webApplicationLd,
 } from "./jsonLd";
-import { getHub, getTool, TOOLS, type ToolDef } from "./registry";
+import { getHub, getTool, HUBS, TOOLS, type ToolDef } from "./registry";
 
 const tools = TOOLS as readonly ToolDef[];
 
@@ -30,9 +34,11 @@ describe("buildToolMetadata", () => {
             expect(meta.openGraph.url).toBe(tool.href);
             // Must be explicit: a child openGraph without images drops the
             // root's file-based default card.
-            expect(meta.openGraph.images).toEqual([DEFAULT_OG_IMAGE]);
+            expect(meta.openGraph.images).toEqual([
+                shareImage(slug, `${tool.title}: ${tool.description}`),
+            ]);
             expect(meta.twitter.card).toBe("summary_large_image");
-            expect(meta.twitter.images).toEqual([DEFAULT_OG_IMAGE.url]);
+            expect(meta.twitter.images).toEqual([`/og/${slug}.png`]);
         }
     );
 
@@ -44,16 +50,27 @@ describe("buildToolMetadata", () => {
         const meta: any = buildHubMetadata("diabetes");
 
         expect(meta.alternates.canonical).toBe("/tools/diabetes");
-        expect(meta.openGraph.images).toEqual([DEFAULT_OG_IMAGE]);
+        expect(meta.openGraph.images[0].url).toBe("/og/diabetes.png");
     });
 
     it("builds the tools index metadata the same way", () => {
         const meta: any = buildIndexMetadata();
 
         expect(meta.alternates.canonical).toBe("/tools");
-        expect(meta.openGraph.images).toEqual([DEFAULT_OG_IMAGE]);
+        expect(meta.openGraph.images[0].url).toBe("/og/tools.png");
         expect(meta.title.absolute.length).toBeLessThanOrEqual(60);
     });
+});
+
+describe("share cards", () => {
+    // scripts/og/build.js writes these; a new tool or hub needs a card added
+    // there and the script re-run.
+    it.each(["tools", ...tools.map((t) => t.slug), ...HUBS.map((h) => h.slug)])(
+        "public/og/%s.png exists",
+        (slug) => {
+            expect(existsSync(path.join(PUBLIC_DIR, "og", `${slug}.png`))).toBe(true);
+        }
+    );
 });
 
 describe("JSON-LD builders", () => {
