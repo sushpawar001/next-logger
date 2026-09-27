@@ -84,14 +84,14 @@ Practical implications:
 
 ### Route groups (`src/app`)
 - `(Dashboard)` — authenticated app: `/dashboard`, `/glucose`, `/insulin`, `/weight`, `/measurement`, `/charts`, `/stats`, `/profile`, `/load`. Each metric has an `[entryId]` edit page. Its `layout.tsx` wraps everything in `ClerkProvider` + shadcn `SidebarProvider`/`LeftSidebar`/`DashboardHeader`.
-- `(Public)` — `/tools/*` calculators (BMI, BMR, ideal weight, WHR, water intake), legal pages, contact. No Clerk, static-friendly, each page exports SEO `metadata`; `robots.ts` and `sitemap.ts` live at `src/app`.
+- `(Public)` — `/tools/*` calculators (diabetes: A1c, blood sugar converter; body: BMI, body fat, ideal weight, WHR; energy: BMR, TDEE, calorie deficit, maintenance, water intake; strength: plate calculator), legal pages, contact. No Clerk, static-friendly; `robots.ts` and `sitemap.ts` live at `src/app`. See **Public tools** below.
 - `(Auth)` — Clerk catch-all sign-in/sign-up routes plus legacy password-reset/verify pages.
 - `api` — all backend logic (route handlers only; there are no server actions).
 
 Note the root layout is `src/app/layout.js` (JS, not TS) and holds `NuqsAdapter`, `Toaster`, and GA.
 
 ### Auth and user identity
-`src/proxy.ts` runs `clerkMiddleware` and protects everything **except** the `isPublicRoute` matcher (`/`, `/login`, `/signup`, `/tools`, legal pages, `/api/webhooks/user`, `/api/seed`, `/sitemap.xml`). Adding a public page means adding it there.
+`src/proxy.ts` runs `clerkMiddleware` and protects everything **except** the `isPublicRoute` matcher (`/`, `/login`, `/signup`, `/tools`, legal pages, `/contact-us` and `/api/contact-us/add`, `/api/webhooks/user`, `/api/seed`, `/sitemap.xml`, `/robots.txt`). Adding a public page means adding it there. `.txt` is not in the matcher's static-file skip list, which is why `/robots.txt` must be listed explicitly. The contact endpoint is public, so it validates and caps its input and has a honeypot field.
 
 Clerk users are mirrored into Mongo (`users` collection, `userModelClerk.ts`) keyed by `clerkUserId`. **Every data query must be scoped with `await getUserObjectId()`** (`src/helpers/getUserObjectId.ts`), which maps the Clerk session to the Mongo `_id` used as the `user` field on all records. `src/app/api/webhooks/user/route.ts` handles `user.created` (creates the Mongo user, sets a 30-day trial in Clerk publicMetadata) and `user.deleted` (cascade-deletes glucose/insulin/insulinType/measurements/weight, then the user).
 
@@ -125,6 +125,15 @@ All four metric models share the same shape: value field(s), `user` ObjectId ref
 - **Charts: `src/components/Charts/RechartComponents/*` (Recharts) are the live components.** The Chart.js components directly under `src/components/Charts/` are the superseded originals, only still referenced by the scratch page `(Dashboard)/try`. New charts go in `RechartComponents`.
 - Dates use dayjs (moment was removed); always format via `src/helpers/formatDate.ts` — `formatDate` and `ShortDateformat` do UTC→local conversion with `dayjs.tz.guess()`, and `DatetimeLocalFormat` produces `datetime-local` input values. Timezone drift has been a recurring bug source here.
 - Public calculators keep their inputs in the URL via `nuqs` so results are shareable (`CopyUrlButton`).
+
+### Public tools (SEO)
+- **`src/lib/tools/registry.ts` is the single source of truth** for every `/tools/*` page: title, h1, meta title/description, icon, cluster, related tools, CTA copy, `lastReviewed`, and whether it is on the landing grid (`home`, exactly five). The tools index, public sidebar, landing grid, sitemap, page metadata and JSON-LD all read it. **Adding a tool = a registry entry + a page folder**; `registry.test.ts` fails if the two drift, and `public-pages.test.tsx` fails until the page is added to `PAGES_BY_SLUG`.
+- Pages wrap their calculator in `ToolPageShell` (`src/components/tools/`), which renders the breadcrumb, h1, reference tables, formula + sources + last-reviewed date, disclaimer, FAQ (native `<details>`), related tools and JSON-LD (`WebApplication` + `BreadcrumbList` + `FAQPage` from the same `FAQS` array as the visible FAQ). Metadata is `export const metadata = buildToolMetadata(slug)` (`src/lib/tools/metadata.ts`), which sets a self-referencing canonical (nuqs makes endless query variants) and passes the OG image explicitly, because a child `openGraph` without `images` drops the root default.
+- `ToolCta` (signup prompt) is rendered **inside each calculator's result card**, so it only shows once there is a result. `LoadCalc` only shows it with the `cta` prop, since `/load` is the signed-in copy (noindexed).
+- Newer calculators (A1c, blood sugar, body fat, energy) compute live from URL state with `useQueryStates` and parsers in `src/lib/tools/params.ts` (no Calculate button, so shared links render the result), use `CalculatorLayout` and the `fields.tsx` controls, and render the form once. The original five still use a Calculate button and render the form twice (mobile + desktop).
+- Glucose units: `src/lib/units/glucose.ts` (`MGDL_PER_MMOL = 18.016`, from glucose's molar mass). Use `roundTo` rather than `Math.round` for displayed values so exact halves match published tables (28.7 × 6 − 46.7 = 125.5 → 126). The A1c maths in `src/lib/calculators/a1c.ts` also backs the dashboard's estimated HbA1c via `statsHelpers.getHba1cPrecise`.
+- Keep medical copy sourced: FAQ answers and formula sources must match the cited guideline, and dosing calculators (ISF, carb ratio, bolus) are out of scope without an acknowledgement gate. Bump a tool's `lastReviewed` when its content changes; it drives the sitemap `lastModified`.
+- `src/lib/site.ts` `getSiteUrl()` is the canonical origin for `metadataBase`, robots, sitemap and JSON-LD; production falls back to the live domain, never localhost.
 - Two dashboard variants exist (`DiabetesDashboard`, `FitnessDashboard`) selected by the user's `layoutSettings`; only the diabetes one is currently wired up on `/dashboard`.
 
 ## Rules
