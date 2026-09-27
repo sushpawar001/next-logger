@@ -43,6 +43,16 @@ export const ACTIVITY_FACTORS = {
     extraActive: 1.9,
 } as const;
 
+/** What each activity level means, shown next to the multipliers. */
+export const ACTIVITY_LABELS: Record<keyof typeof ACTIVITY_FACTORS, string> = {
+    sedentary: "Sedentary (little or no exercise)",
+    light: "Exercise 1-3 times/week",
+    moderate: "Exercise 4-5 times/week",
+    active: "Daily exercise or intense exercise 3-4 times/week",
+    veryActive: "Intense exercise 6-7 times/week",
+    extraActive: "Very intense exercise daily, or physical job",
+};
+
 // Utility functions
 export const formatCalories = (calories: number): string =>
     `${Math.round(calories).toLocaleString()} Calories/day`;

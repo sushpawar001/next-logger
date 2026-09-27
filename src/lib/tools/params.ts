@@ -50,3 +50,18 @@ export const bodyFatParams = {
     hip: textParam,
     weight: textParam,
 };
+
+export const energyParams = {
+    activity: parseAsStringLiteral([
+        "sedentary",
+        "light",
+        "moderate",
+        "active",
+        "veryActive",
+        "extraActive",
+    ] as const).withDefault("sedentary"),
+    pace: parseAsStringLiteral(["0.25", "0.5", "0.75", "1"] as const).withDefault(
+        "0.5"
+    ),
+    goalWeight: textParam,
+};

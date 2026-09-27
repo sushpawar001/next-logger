@@ -19,6 +19,7 @@ import {
 } from "@/components/tools/BodyStatsFields";
 import {
     ACTIVITY_FACTORS,
+    ACTIVITY_LABELS,
     formatCalories,
     convertHeightToCm,
     convertWeightToKg,
@@ -30,15 +31,6 @@ import type {
     FormData,
 } from "@/lib/calculators/bmr";
 
-// Activity level definitions
-const ACTIVITY_LEVELS = {
-    sedentary: "Sedentary (little or no exercise)",
-    light: "Exercise 1-3 times/week",
-    moderate: "Exercise 4-5 times/week",
-    active: "Daily exercise or intense exercise 3-4 times/week",
-    veryActive: "Intense exercise 6-7 times/week",
-    extraActive: "Very intense exercise daily, or physical job",
-} as const;
 
 
 const EXERCISE_DEFINITIONS = [
@@ -109,7 +101,7 @@ const ActivityLevelTable: React.FC<{
                 <TableBody>
                     <TableRow>
                         <TableCell className="text-sm text-gray-700">
-                            {ACTIVITY_LEVELS.sedentary}
+                            {ACTIVITY_LABELS.sedentary}
                         </TableCell>
                         <TableCell className="text-sm font-semibold text-gray-900 text-right">
                             {formatCalories(activityLevels.sedentary)}
@@ -117,7 +109,7 @@ const ActivityLevelTable: React.FC<{
                     </TableRow>
                     <TableRow>
                         <TableCell className="text-sm text-gray-700">
-                            {ACTIVITY_LEVELS.light}
+                            {ACTIVITY_LABELS.light}
                         </TableCell>
                         <TableCell className="text-sm font-semibold text-gray-900 text-right">
                             {formatCalories(activityLevels.light)}
@@ -125,7 +117,7 @@ const ActivityLevelTable: React.FC<{
                     </TableRow>
                     <TableRow>
                         <TableCell className="text-sm text-gray-700">
-                            {ACTIVITY_LEVELS.moderate}
+                            {ACTIVITY_LABELS.moderate}
                         </TableCell>
                         <TableCell className="text-sm font-semibold text-gray-900 text-right">
                             {formatCalories(activityLevels.moderate)}
@@ -133,7 +125,7 @@ const ActivityLevelTable: React.FC<{
                     </TableRow>
                     <TableRow>
                         <TableCell className="text-sm text-gray-700">
-                            {ACTIVITY_LEVELS.active}
+                            {ACTIVITY_LABELS.active}
                         </TableCell>
                         <TableCell className="text-sm font-semibold text-gray-900 text-right">
                             {formatCalories(activityLevels.active)}
@@ -141,7 +133,7 @@ const ActivityLevelTable: React.FC<{
                     </TableRow>
                     <TableRow>
                         <TableCell className="text-sm text-gray-700">
-                            {ACTIVITY_LEVELS.veryActive}
+                            {ACTIVITY_LABELS.veryActive}
                         </TableCell>
                         <TableCell className="text-sm font-semibold text-gray-900 text-right">
                             {formatCalories(activityLevels.veryActive)}
@@ -149,7 +141,7 @@ const ActivityLevelTable: React.FC<{
                     </TableRow>
                     <TableRow>
                         <TableCell className="text-sm text-gray-700">
-                            {ACTIVITY_LEVELS.extraActive}
+                            {ACTIVITY_LABELS.extraActive}
                         </TableCell>
                         <TableCell className="text-sm font-semibold text-gray-900 text-right">
                             {formatCalories(activityLevels.extraActive)}

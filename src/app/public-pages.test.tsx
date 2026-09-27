@@ -12,6 +12,9 @@ import WhrPage from "./(Public)/tools/whr-calculator/page";
 import A1cPage from "./(Public)/tools/a1c-calculator/page";
 import BloodSugarPage from "./(Public)/tools/blood-sugar-converter/page";
 import BodyFatPage from "./(Public)/tools/body-fat-calculator/page";
+import TdeePage from "./(Public)/tools/tdee-calculator/page";
+import DeficitPage from "./(Public)/tools/calorie-deficit-calculator/page";
+import MaintenancePage from "./(Public)/tools/maintenance-calorie-calculator/page";
 import PrivacyPolicyPage from "./(Public)/privacy-policy/page";
 import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
@@ -36,6 +39,9 @@ const TOOL_PAGES = [
     { name: "A1c", Page: A1cPage, heading: /a1c to average blood sugar/i },
     { name: "blood sugar", Page: BloodSugarPage, heading: /mg\/dl to mmol\/l/i },
     { name: "body fat", Page: BodyFatPage, heading: /body fat calculator/i },
+    { name: "TDEE", Page: TdeePage, heading: /total daily energy expenditure/i },
+    { name: "calorie deficit", Page: DeficitPage, heading: /calorie deficit calculator/i },
+    { name: "maintenance", Page: MaintenancePage, heading: /maintenance calorie calculator/i },
 ];
 
 // Every registered tool page, keyed by slug. A test below fails if a tool is
@@ -49,6 +55,9 @@ const PAGES_BY_SLUG: Record<string, () => React.JSX.Element> = {
     "a1c-calculator": A1cPage,
     "blood-sugar-converter": BloodSugarPage,
     "body-fat-calculator": BodyFatPage,
+    "tdee-calculator": TdeePage,
+    "calorie-deficit-calculator": DeficitPage,
+    "maintenance-calorie-calculator": MaintenancePage,
 };
 
 describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {

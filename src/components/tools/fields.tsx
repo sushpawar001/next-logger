@@ -20,12 +20,15 @@ export function ChoiceGroup<T extends string>({
     value,
     options,
     onChange,
+    layout = "row",
 }: {
     name: string;
     label: string;
     value: T;
     options: readonly { value: T; label: string }[];
     onChange: (value: T) => void;
+    /** "column" stacks options, for long labels. */
+    layout?: "row" | "column";
 }) {
     const labelId = `${name}-label`;
     return (
@@ -40,7 +43,11 @@ export function ChoiceGroup<T extends string>({
                 aria-labelledby={labelId}
                 value={value}
                 onValueChange={(next) => onChange(next as T)}
-                className="flex flex-wrap gap-x-4 gap-y-2"
+                className={
+                    layout === "row"
+                        ? "flex flex-wrap gap-x-4 gap-y-2"
+                        : "flex flex-col gap-2"
+                }
             >
                 {options.map((option) => {
                     const id = `${name}-${option.value}`;

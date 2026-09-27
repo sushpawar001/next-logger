@@ -6,7 +6,10 @@ import {
     GlassWater,
     Percent,
     Ruler,
+    Scale,
     Target,
+    TrendingDown,
+    Zap,
     type LucideIcon,
 } from "lucide-react";
 
@@ -233,7 +236,11 @@ export const TOOLS = [
         icon: Flame,
         cluster: "energy",
         keywords: ["bmr calculator", "basal metabolic rate calculator"],
-        related: ["water-intake-calculator", "bmi-calculator", "ideal-weight-calculator"],
+        related: [
+            "tdee-calculator",
+            "water-intake-calculator",
+            "bmi-calculator",
+        ],
         cta: {
             heading: "See how your weight responds",
             body: "Calorie estimates are a starting point. Log your weight in FitDose and watch the trend to see what your body actually does.",
@@ -332,6 +339,110 @@ export const TOOLS = [
         },
         lastReviewed: "2026-09-27",
         home: { order: 5, body: "How much to drink in a day." },
+    },
+    {
+        slug: "tdee-calculator",
+        href: "/tools/tdee-calculator",
+        title: "TDEE Calculator",
+        h1: "TDEE Calculator: Total Daily Energy Expenditure",
+        shortName: "TDEE",
+        description:
+            "Work out how many calories you burn in a day from your body stats and activity level.",
+        features: [
+            "Mifflin-St Jeor BMR",
+            "Six activity levels",
+            "Calories for every level",
+            "Metric or imperial",
+        ],
+        metaTitle: "TDEE Calculator: Total Daily Energy Expenditure | FitDose",
+        metaDescription:
+            "Calculate your total daily energy expenditure (TDEE) from age, sex, height, weight and activity level with the Mifflin-St Jeor equation.",
+        icon: Zap,
+        cluster: "energy",
+        keywords: ["tdee calculator", "tdee", "total daily energy expenditure"],
+        related: [
+            "calorie-deficit-calculator",
+            "maintenance-calorie-calculator",
+            "bmr-calculator",
+        ],
+        cta: {
+            heading: "Check your TDEE against real life",
+            body: "Log your weight weekly in FitDose. If it holds steady at this intake you have found your real TDEE; if not, the trend shows which way to adjust.",
+            label: "Start tracking free",
+        },
+        lastReviewed: "2026-09-27",
+    },
+    {
+        slug: "calorie-deficit-calculator",
+        href: "/tools/calorie-deficit-calculator",
+        title: "Calorie Deficit Calculator",
+        h1: "Calorie Deficit Calculator for Weight Loss",
+        shortName: "Calorie deficit",
+        description:
+            "Find a daily calorie target for losing weight at a pace you choose, with a safe-minimum check.",
+        features: [
+            "Targets for four weekly paces",
+            "Minimum calorie check",
+            "Weeks to your goal weight",
+            "Based on your TDEE",
+        ],
+        metaTitle: "Calorie Deficit Calculator for Weight Loss | FitDose",
+        metaDescription:
+            "Find how many calories to eat to lose 0.25 to 1 kg a week, based on your TDEE, with a safe minimum check and weeks to your goal weight.",
+        icon: TrendingDown,
+        cluster: "energy",
+        keywords: [
+            "calorie deficit calculator",
+            "how many calories to lose weight",
+            "weight loss calorie calculator",
+        ],
+        related: [
+            "tdee-calculator",
+            "maintenance-calorie-calculator",
+            "body-fat-calculator",
+        ],
+        cta: {
+            heading: "See whether the deficit is working",
+            body: "Log your weight in FitDose and the trend shows whether you are losing at the pace you planned, so you can adjust early.",
+            label: "Start tracking free",
+        },
+        lastReviewed: "2026-09-27",
+    },
+    {
+        slug: "maintenance-calorie-calculator",
+        href: "/tools/maintenance-calorie-calculator",
+        title: "Maintenance Calorie Calculator",
+        h1: "Maintenance Calorie Calculator",
+        shortName: "Maintenance",
+        description:
+            "Estimate the calories you need to keep your weight steady, plus lean-gain and steady-loss targets.",
+        features: [
+            "Maintenance range",
+            "Lean-gain target",
+            "Steady-loss target",
+            "Six activity levels",
+        ],
+        metaTitle: "Maintenance Calorie Calculator: Keep Weight Steady | FitDose",
+        metaDescription:
+            "Estimate the calories you need to maintain your current weight, plus targets for a lean gain or a steady loss, from your body stats and activity.",
+        icon: Scale,
+        cluster: "energy",
+        keywords: [
+            "maintenance calorie calculator",
+            "maintenance calories",
+            "calories to maintain weight",
+        ],
+        related: [
+            "tdee-calculator",
+            "calorie-deficit-calculator",
+            "bmr-calculator",
+        ],
+        cta: {
+            heading: "Find your real maintenance",
+            body: "Log your weight in FitDose for two to three weeks at a steady intake. If the trend is flat, that intake is your true maintenance.",
+            label: "Start tracking free",
+        },
+        lastReviewed: "2026-09-27",
     },
 ] as const satisfies readonly ToolDef[];
 

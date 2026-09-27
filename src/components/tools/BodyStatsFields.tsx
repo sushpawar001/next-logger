@@ -15,7 +15,7 @@ import type { FormData } from "@/lib/calculators/bmr";
  * link can carry someone's numbers from one calculator to the next.
  */
 
-const bodyStatsParams = {
+export const bodyStatsParams = {
     age: parseAsString.withDefault(""),
     gender: parseAsStringLiteral(["male", "female"] as const).withDefault(
         "male"
