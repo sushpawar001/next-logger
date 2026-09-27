@@ -1,4 +1,5 @@
 "use client";
+import ToolCta from "@/components/tools/ToolCta";
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -126,6 +127,7 @@ const ResultsCard: React.FC<{ result: BMIResult }> = ({ result }) => (
             <div className="space-y-4">
                 <BMIClassificationCard result={result} />
                 <ImportantNotes />
+                <ToolCta slug="bmi-calculator" />
             </div>
         </CardContent>
     </Card>

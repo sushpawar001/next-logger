@@ -1,4 +1,5 @@
 "use client";
+import ToolCta from "@/components/tools/ToolCta";
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -143,6 +144,7 @@ const ResultsCard: React.FC<{
         </CardHeader>
         <CardContent>
             <WHRClassificationCard result={result} gender={gender} />
+            <ToolCta slug="whr-calculator" />
         </CardContent>
     </Card>
 );

@@ -1,4 +1,5 @@
 "use client";
+import ToolCta from "@/components/tools/ToolCta";
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -117,6 +118,7 @@ const ResultsCard: React.FC<{ results: IBWResult }> = ({ results }) => (
                 <DevineFormulaCard weight={results.devine} />
                 <OtherFormulas results={results} />
                 <ImportantNotes />
+                <ToolCta slug="ideal-weight-calculator" />
             </div>
         </CardContent>
     </Card>

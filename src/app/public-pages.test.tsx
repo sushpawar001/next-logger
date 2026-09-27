@@ -48,6 +48,32 @@ describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {
     });
 });
 
+describe("calculator pages carry SEO content", () => {
+    it.each([
+        ["BMI", BmiPage],
+        ["BMR", BmrPage],
+        ["ideal weight", IdealWeightPage],
+        ["water intake", WaterIntakePage],
+        ["WHR", WhrPage],
+    ])("%s page renders a FAQ, a method section and JSON-LD", (_name, Page) => {
+        const { container } = renderWithProviders(<Page />);
+
+        expect(
+            screen.getByRole("heading", { name: /frequently asked questions/i })
+        ).toBeInTheDocument();
+        expect(
+            screen.getByRole("heading", { name: /how it.s calculated/i })
+        ).toBeInTheDocument();
+        const script = container.querySelector(
+            'script[type="application/ld+json"]'
+        );
+        const types = JSON.parse(script!.innerHTML)["@graph"].map(
+            (n: any) => n["@type"]
+        );
+        expect(types).toEqual(["WebApplication", "BreadcrumbList", "FAQPage"]);
+    });
+});
+
 describe("calculator pages carry their calculator", () => {
     it.each([
         ["BMI", BmiPage],

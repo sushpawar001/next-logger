@@ -1,4 +1,5 @@
 "use client";
+import ToolCta from "@/components/tools/ToolCta";
 import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -216,6 +217,7 @@ const ResultsCard: React.FC<{ results: BMRResult }> = ({ results }) => (
                 <ActivityLevelTable activityLevels={results.activityLevels} />
                 <ExerciseDefinitions />
                 <ImportantNotes />
+                <ToolCta slug="bmr-calculator" />
             </div>
         </CardContent>
     </Card>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderWithProviders, screen, userEvent, within } from "@/test/render";
+import { getTool } from "@/lib/tools/registry";
 
 import BMICalculator from "./BMICalculator";
 import BMRCalculator from "./BMRCalculator";
@@ -98,6 +99,23 @@ describe("BMI calculator", () => {
         // 75kg at 1.8m -> 23.1, which is Normal
         expect(screen.getAllByText(/23\.1/).length).toBeGreaterThan(0);
         expect(screen.getAllByText(/normal/i).length).toBeGreaterThan(0);
+    });
+
+    it("offers the signup prompt only once there is a result", async () => {
+        const user = userEvent.setup();
+        const { cta } = getTool("bmi-calculator");
+        renderWithProviders(<BMICalculator />, {
+            searchParams: "?age=30&heightCm=180&weightKg=75",
+        });
+
+        expect(screen.queryByText(cta.heading)).not.toBeInTheDocument();
+
+        await user.click(calculateButton());
+
+        // Rendered in both the mobile and desktop result cards.
+        const links = screen.getAllByRole("link", { name: new RegExp(cta.label) });
+        expect(links.length).toBeGreaterThan(0);
+        expect(links[0]).toHaveAttribute("href", "/signup");
     });
 
     it("classifies an obese BMI", async () => {

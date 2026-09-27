@@ -1,4 +1,5 @@
 "use client";
+import ToolCta from "@/components/tools/ToolCta";
 import React, { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -128,6 +129,7 @@ const ResultsCard: React.FC<{
                         </li>
                     </ul>
                 </div>
+                <ToolCta slug="water-intake-calculator" />
             </div>
         </CardContent>
     </Card>
