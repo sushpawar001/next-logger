@@ -36,3 +36,17 @@ export const bloodSugarParams = {
         "postMeal",
     ] as const).withDefault("random"),
 };
+
+export const bodyFatParams = {
+    gender: parseAsStringLiteral(["male", "female"] as const).withDefault(
+        "male"
+    ),
+    units: parseAsStringLiteral(["metric", "imperial"] as const).withDefault(
+        "metric"
+    ),
+    height: textParam,
+    neck: textParam,
+    waist: textParam,
+    hip: textParam,
+    weight: textParam,
+};

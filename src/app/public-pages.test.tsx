@@ -11,6 +11,7 @@ import WaterIntakePage from "./(Public)/tools/water-intake-calculator/page";
 import WhrPage from "./(Public)/tools/whr-calculator/page";
 import A1cPage from "./(Public)/tools/a1c-calculator/page";
 import BloodSugarPage from "./(Public)/tools/blood-sugar-converter/page";
+import BodyFatPage from "./(Public)/tools/body-fat-calculator/page";
 import PrivacyPolicyPage from "./(Public)/privacy-policy/page";
 import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
@@ -34,6 +35,7 @@ const TOOL_PAGES = [
     { name: "WHR", Page: WhrPage, heading: /waist.to.hip|whr/i },
     { name: "A1c", Page: A1cPage, heading: /a1c to average blood sugar/i },
     { name: "blood sugar", Page: BloodSugarPage, heading: /mg\/dl to mmol\/l/i },
+    { name: "body fat", Page: BodyFatPage, heading: /body fat calculator/i },
 ];
 
 // Every registered tool page, keyed by slug. A test below fails if a tool is
@@ -46,6 +48,7 @@ const PAGES_BY_SLUG: Record<string, () => React.JSX.Element> = {
     "whr-calculator": WhrPage,
     "a1c-calculator": A1cPage,
     "blood-sugar-converter": BloodSugarPage,
+    "body-fat-calculator": BodyFatPage,
 };
 
 describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {

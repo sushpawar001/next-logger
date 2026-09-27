@@ -4,6 +4,7 @@ import {
     Droplet,
     Flame,
     GlassWater,
+    Percent,
     Ruler,
     Target,
     type LucideIcon,
@@ -147,6 +148,38 @@ export const TOOLS = [
         lastReviewed: "2026-09-27",
     },
     {
+        slug: "body-fat-calculator",
+        href: "/tools/body-fat-calculator",
+        title: "Body Fat Calculator",
+        h1: "Body Fat Calculator (US Navy Method)",
+        shortName: "Body fat",
+        description:
+            "Estimate your body fat percentage from a few tape measurements with the US Navy method.",
+        features: [
+            "US Navy tape method",
+            "ACE body fat categories",
+            "Fat and lean mass",
+            "Centimetres or inches",
+        ],
+        metaTitle: "Body Fat Calculator: US Navy Tape Method | FitDose",
+        metaDescription:
+            "Estimate your body fat percentage from height, neck, waist and hip measurements using the US Navy method, in centimetres or inches.",
+        icon: Percent,
+        cluster: "body",
+        keywords: [
+            "body fat calculator",
+            "navy body fat calculator",
+            "body fat percentage calculator",
+        ],
+        related: ["bmi-calculator", "whr-calculator", "ideal-weight-calculator"],
+        cta: {
+            heading: "Watch your shape change over time",
+            body: "Log your waist, hips and five other measurements in FitDose to see body composition change, not just the number on the scale.",
+            label: "Start tracking free",
+        },
+        lastReviewed: "2026-09-27",
+    },
+    {
         slug: "bmi-calculator",
         href: "/tools/bmi-calculator",
         title: "BMI Calculator",
@@ -166,7 +199,12 @@ export const TOOLS = [
         icon: Calculator,
         cluster: "body",
         keywords: ["bmi calculator", "body mass index calculator"],
-        related: ["whr-calculator", "ideal-weight-calculator", "bmr-calculator"],
+        related: [
+            "body-fat-calculator",
+            "whr-calculator",
+            "ideal-weight-calculator",
+            "bmr-calculator",
+        ],
         cta: {
             heading: "Track your weight, not just one BMI",
             body: "A single BMI is a snapshot. Log your weight in FitDose to see your trend, averages and progress over time.",
@@ -253,7 +291,11 @@ export const TOOLS = [
         icon: Ruler,
         cluster: "body",
         keywords: ["waist to hip ratio calculator", "whr calculator"],
-        related: ["bmi-calculator", "ideal-weight-calculator", "water-intake-calculator"],
+        related: [
+            "body-fat-calculator",
+            "bmi-calculator",
+            "ideal-weight-calculator",
+        ],
         cta: {
             heading: "Watch your waist and hips change",
             body: "Log waist, hip and five other measurements in FitDose to see body shape change even when the scale stalls.",
