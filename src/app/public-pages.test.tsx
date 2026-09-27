@@ -23,6 +23,7 @@ import IsfPage from "./(Public)/tools/insulin-sensitivity-factor-calculator/page
 import CarbRatioPage from "./(Public)/tools/insulin-to-carb-ratio-calculator/page";
 import BolusPage from "./(Public)/tools/bolus-calculator/page";
 import DiabetesHubPage from "./(Public)/tools/diabetes/page";
+import OneRepMaxPage from "./(Public)/tools/one-rep-max-calculator/page";
 import PrivacyPolicyPage from "./(Public)/privacy-policy/page";
 import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
@@ -57,6 +58,7 @@ const TOOL_PAGES = [
     { name: "correction factor", Page: IsfPage, heading: /insulin sensitivity factor/i },
     { name: "carb ratio", Page: CarbRatioPage, heading: /insulin-to-carb ratio/i },
     { name: "bolus", Page: BolusPage, heading: /bolus insulin calculator/i },
+    { name: "one rep max", Page: OneRepMaxPage, heading: /one rep max/i },
 ];
 
 // Every registered tool page, keyed by slug. A test below fails if a tool is
@@ -80,6 +82,7 @@ const PAGES_BY_SLUG: Record<string, () => React.JSX.Element> = {
     "insulin-sensitivity-factor-calculator": IsfPage,
     "insulin-to-carb-ratio-calculator": CarbRatioPage,
     "bolus-calculator": BolusPage,
+    "one-rep-max-calculator": OneRepMaxPage,
 };
 
 describe.each(TOOL_PAGES)("$name page", ({ Page, heading }) => {

@@ -115,3 +115,9 @@ export const bolusParams = {
     sensitivity: textParam,
     onBoard: textParam,
 };
+
+export const oneRepMaxParams = {
+    unit: parseAsStringLiteral(["kg", "lb"] as const).withDefault("kg"),
+    weight: textParam,
+    reps: textParam,
+};
