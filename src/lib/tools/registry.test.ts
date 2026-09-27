@@ -3,7 +3,10 @@ import path from "node:path";
 import { describe, expect, it } from "vitest";
 import {
     CLUSTERS,
+    getHub,
     getTool,
+    HUBS,
+    hubForCluster,
     homeTools,
     relatedTools,
     TOOLS,
@@ -32,7 +35,15 @@ describe("tools registry", () => {
             .map((entry) => entry.name)
             .sort();
 
-        expect(folders).toEqual(tools.map((t) => t.slug).sort());
+        expect(folders).toEqual(
+            [...tools.map((t) => t.slug), ...HUBS.map((h) => h.slug)].sort()
+        );
+    });
+
+    it("keeps hub and tool slugs distinct", () => {
+        const toolSlugs = new Set(tools.map((t) => t.slug));
+
+        for (const hub of HUBS) expect(toolSlugs.has(hub.slug)).toBe(false);
     });
 
     it.each(tools.map((t) => [t.slug, t] as const))(
@@ -81,6 +92,29 @@ describe("tools registry", () => {
         expect(featured).toHaveLength(5);
         const orders = featured.map((t) => t.home!.order);
         expect(orders).toEqual([...orders].sort((a, b) => a - b));
+    });
+});
+
+describe("hubs", () => {
+    it.each(HUBS.map((h) => [h.slug, h] as const))(
+        "%s has valid metadata and links",
+        (_slug, hub) => {
+            expect(hub.href).toBe(`/tools/${hub.slug}`);
+            expect(hub.metaTitle.length).toBeLessThanOrEqual(60);
+            expect(hub.metaDescription.length).toBeGreaterThanOrEqual(120);
+            expect(hub.metaDescription.length).toBeLessThanOrEqual(160);
+            expect(CLUSTERS.map((c) => c.id)).toContain(hub.cluster);
+            for (const slug of hub.alsoUseful) {
+                expect(getTool(slug).cluster).not.toBe(hub.cluster);
+            }
+        }
+    );
+
+    it("finds a hub by slug and by cluster", () => {
+        expect(getHub("diabetes").cluster).toBe("diabetes");
+        expect(hubForCluster("diabetes")?.slug).toBe("diabetes");
+        expect(hubForCluster("strength")).toBeUndefined();
+        expect(() => getHub("nope")).toThrow(/unknown hub/i);
     });
 });
 

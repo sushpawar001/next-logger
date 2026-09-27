@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getTool } from "./registry";
+import { getHub, getTool } from "./registry";
 
 /**
  * The site-wide social card (src/app/opengraph-image.png). Next merges
@@ -49,6 +49,15 @@ export function buildToolMetadata(slug: string): Metadata {
         path: tool.href,
         title: tool.metaTitle,
         description: tool.metaDescription,
+    });
+}
+
+export function buildHubMetadata(slug: string): Metadata {
+    const hub = getHub(slug);
+    return buildMetadata({
+        path: hub.href,
+        title: hub.metaTitle,
+        description: hub.metaDescription,
     });
 }
 

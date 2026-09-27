@@ -110,6 +110,16 @@ describe("RelatedTools", () => {
     });
 });
 
+describe("RelatedTools with a hub", () => {
+    it("points a diabetes tool at the diabetes hub", () => {
+        renderWithProviders(<RelatedTools slug="a1c-calculator" />);
+
+        expect(
+            screen.getByRole("link", { name: /all diabetes tools/i })
+        ).toHaveAttribute("href", "/tools/diabetes");
+    });
+});
+
 describe("ToolCta", () => {
     it("links to signup with the tool's copy and records the click", async () => {
         const user = userEvent.setup();
@@ -126,6 +136,22 @@ describe("ToolCta", () => {
         expect(trackPwaEvent).toHaveBeenCalledWith("tool_cta_click", {
             tool: "bmi-calculator",
         });
+    });
+});
+
+describe("ToolCta with custom copy", () => {
+    it("uses copy passed in for pages that are not tools", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(
+            <ToolCta slug="diabetes" cta={{ heading: "Hub heading", body: "Hub body", label: "Join" }} />
+        );
+
+        const link = screen.getByRole("link", { name: /join/i });
+        link.addEventListener("click", (e) => e.preventDefault());
+        await user.click(link);
+
+        expect(screen.getByText("Hub heading")).toBeInTheDocument();
+        expect(trackPwaEvent).toHaveBeenCalledWith("tool_cta_click", { tool: "diabetes" });
     });
 });
 

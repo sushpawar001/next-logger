@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import CopyUrlButton from "@/components/CopyUrlButton";
 import { getTool } from "@/lib/tools/registry";
-import { toolGraph, type Faq } from "@/lib/tools/jsonLd";
+import { breadcrumbTrail, toolGraph, type Faq } from "@/lib/tools/jsonLd";
 import FormulaSource, { type FormulaSourceProps } from "./FormulaSource";
 import JsonLd from "./JsonLd";
 import RelatedTools from "./RelatedTools";
@@ -41,21 +41,20 @@ export default function ToolPageShell({
         <div className="container mx-auto px-4 py-8 max-w-4xl">
             <nav aria-label="Breadcrumb" className="mb-3 text-xs text-gray-500">
                 <ol className="flex flex-wrap items-center gap-1">
-                    <li>
-                        <Link href="/" className="hover:text-gray-900">
-                            Home
-                        </Link>
-                    </li>
-                    <li aria-hidden="true">/</li>
-                    <li>
-                        <Link href="/tools" className="hover:text-gray-900">
-                            Tools
-                        </Link>
-                    </li>
-                    <li aria-hidden="true">/</li>
-                    <li aria-current="page" className="text-gray-700">
-                        {tool.title}
-                    </li>
+                    {breadcrumbTrail(tool).map((crumb, i, trail) =>
+                        i < trail.length - 1 ? (
+                            <li key={crumb.href} className="flex items-center gap-1">
+                                <Link href={crumb.href} className="hover:text-gray-900">
+                                    {crumb.name}
+                                </Link>
+                                <span aria-hidden="true">/</span>
+                            </li>
+                        ) : (
+                            <li key={crumb.href} aria-current="page" className="text-gray-700">
+                                {crumb.name}
+                            </li>
+                        )
+                    )}
                 </ol>
             </nav>
             <div className="mb-4 md:mb-8">

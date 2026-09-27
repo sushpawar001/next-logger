@@ -10,12 +10,12 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Home, LayoutGrid, User } from "lucide-react";
+import { BookOpen, Home, LayoutGrid, User } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/brand/Logo";
 import { usePathname } from "next/navigation";
 import type { ElementType } from "react";
-import { toolsByCluster } from "@/lib/tools/registry";
+import { hubForCluster, toolsByCluster } from "@/lib/tools/registry";
 
 const menuItems = [
     {
@@ -36,14 +36,22 @@ const menuItems = [
     },
 ];
 
-const toolGroups = toolsByCluster().map((cluster) => ({
-    label: cluster.label,
-    items: cluster.tools.map((tool) => ({
-        title: tool.shortName,
-        url: tool.href,
-        icon: tool.icon,
-    })),
-}));
+const toolGroups = toolsByCluster().map((cluster) => {
+    const hub = hubForCluster(cluster.id);
+    return {
+        label: cluster.label,
+        items: [
+            ...(hub
+                ? [{ title: `${cluster.label} guide`, url: hub.href, icon: BookOpen }]
+                : []),
+            ...cluster.tools.map((tool) => ({
+                title: tool.shortName,
+                url: tool.href,
+                icon: tool.icon,
+            })),
+        ],
+    };
+});
 
 const itemClass =
     "h-11 rounded-xl hover:bg-accent/50 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground pl-2.5";

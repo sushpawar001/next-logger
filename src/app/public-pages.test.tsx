@@ -22,12 +22,13 @@ import WeightLossPage from "./(Public)/tools/weight-loss-percentage-calculator/p
 import IsfPage from "./(Public)/tools/insulin-sensitivity-factor-calculator/page";
 import CarbRatioPage from "./(Public)/tools/insulin-to-carb-ratio-calculator/page";
 import BolusPage from "./(Public)/tools/bolus-calculator/page";
+import DiabetesHubPage from "./(Public)/tools/diabetes/page";
 import PrivacyPolicyPage from "./(Public)/privacy-policy/page";
 import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
 import robots from "./robots";
 import sitemap from "./sitemap";
-import { TOOLS } from "@/lib/tools/registry";
+import { getHub, getTool, HUBS, TOOLS } from "@/lib/tools/registry";
 import manifest from "./manifest";
 
 /**
@@ -130,6 +131,53 @@ describe("calculator pages carry SEO content", () => {
             ]);
         }
     );
+});
+
+describe("diabetes hub", () => {
+    const hub = getHub("diabetes");
+
+    it("links every diabetes tool and the related weight tools", () => {
+        renderWithProviders(<DiabetesHubPage />);
+
+        const hrefs = screen.getAllByRole("link").map((a) => a.getAttribute("href"));
+        const diabetes = TOOLS.filter((t) => t.cluster === "diabetes");
+        expect(diabetes.length).toBeGreaterThan(0);
+        for (const tool of diabetes) expect(hrefs).toContain(tool.href);
+        for (const slug of hub.alsoUseful) expect(hrefs).toContain(getTool(slug).href);
+    });
+
+    it("renders its heading, key numbers, FAQ and a signup prompt", () => {
+        renderWithProviders(<DiabetesHubPage />);
+
+        expect(screen.getByRole("heading", { level: 1, name: hub.h1 })).toBeInTheDocument();
+        expect(screen.getByText("Normal fasting glucose")).toBeInTheDocument();
+        expect(screen.getByText("Below 100 mg/dL (5.6 mmol/L)")).toBeInTheDocument();
+        expect(
+            screen.getByRole("heading", { name: /frequently asked questions/i })
+        ).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: /start logging free/i })).toHaveAttribute(
+            "href",
+            "/signup"
+        );
+    });
+
+    it("emits a CollectionPage listing the diabetes tools", () => {
+        const { container } = renderWithProviders(<DiabetesHubPage />);
+
+        const data = JSON.parse(
+            container.querySelector('script[type="application/ld+json"]')!.innerHTML
+        );
+        const types = data["@graph"].map((n: any) => n["@type"]);
+        expect(types).toEqual(["CollectionPage", "BreadcrumbList", "FAQPage"]);
+        const items = data["@graph"][0].mainEntity.itemListElement;
+        expect(items).toHaveLength(TOOLS.filter((t) => t.cluster === "diabetes").length);
+    });
+
+    it("is in the sitemap", () => {
+        const urls = sitemap().map((entry: any) => entry.url);
+
+        for (const h of HUBS) expect(urls.some((u: string) => u.endsWith(h.href))).toBe(true);
+    });
 });
 
 describe("calculator pages carry their calculator", () => {

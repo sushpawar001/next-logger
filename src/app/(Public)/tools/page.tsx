@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calculator, Activity, Target } from "lucide-react";
 import CopyUrlButton from "@/components/CopyUrlButton";
-import { TOOLS, toolsByCluster } from "@/lib/tools/registry";
+import { hubForCluster, TOOLS, toolsByCluster } from "@/lib/tools/registry";
 import { buildIndexMetadata } from "@/lib/tools/metadata";
 import { itemListLd } from "@/lib/tools/jsonLd";
 import JsonLd from "@/components/tools/JsonLd";
@@ -46,6 +46,17 @@ export default function ToolsPage() {
                         </h2>
                         <p className="text-sm text-gray-600 mb-4">
                             {cluster.blurb}
+                            {hubForCluster(cluster.id) && (
+                                <>
+                                    {" "}
+                                    <Link
+                                        href={hubForCluster(cluster.id)!.href}
+                                        className="font-medium text-primary hover:underline"
+                                    >
+                                        Read the {cluster.label.toLowerCase()} guide
+                                    </Link>
+                                </>
+                            )}
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {cluster.tools.map((tool) => {

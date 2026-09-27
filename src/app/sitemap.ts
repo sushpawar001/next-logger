@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next";
 import { absoluteUrl } from "@/lib/site";
-import { TOOLS, type ToolDef } from "@/lib/tools/registry";
+import { HUBS, TOOLS, type ToolDef } from "@/lib/tools/registry";
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const now = new Date();
@@ -24,11 +24,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
         })
     );
 
+    const hubRoutes: MetadataRoute.Sitemap = HUBS.map((hub) => ({
+        url: absoluteUrl(hub.href),
+        lastModified: new Date(hub.lastReviewed),
+        changeFrequency: "monthly",
+        priority: 0.9,
+    }));
+
     // Auth routes (lower priority since they're not meant for SEO)
     const authRoutes: MetadataRoute.Sitemap = [
         { url: absoluteUrl("/signup"), lastModified: now, changeFrequency: "yearly", priority: 0.3 },
         { url: absoluteUrl("/login"), lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     ];
 
-    return [...staticRoutes, ...toolRoutes, ...authRoutes];
+    return [...staticRoutes, ...hubRoutes, ...toolRoutes, ...authRoutes];
 }

@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { CLUSTERS, getTool, relatedTools } from "@/lib/tools/registry";
+import {
+    CLUSTERS,
+    getTool,
+    hubForCluster,
+    relatedTools,
+} from "@/lib/tools/registry";
 
 export default function RelatedTools({ slug }: { slug: string }) {
     const tool = getTool(slug);
     const related = relatedTools(slug);
     const cluster = CLUSTERS.find((c) => c.id === tool.cluster);
+    const hub = hubForCluster(tool.cluster);
 
     return (
         <section aria-labelledby="related-tools-heading" className="mt-10">
@@ -17,7 +23,7 @@ export default function RelatedTools({ slug }: { slug: string }) {
                     Related calculators
                 </h2>
                 <Link
-                    href={`/tools#${tool.cluster}`}
+                    href={hub?.href ?? `/tools#${tool.cluster}`}
                     className="text-sm font-medium text-primary hover:underline"
                 >
                     All {cluster?.label.toLowerCase()} tools

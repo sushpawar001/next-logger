@@ -1,14 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { buildIndexMetadata, buildToolMetadata, DEFAULT_OG_IMAGE } from "./metadata";
+import {
+    buildHubMetadata,
+    buildIndexMetadata,
+    buildToolMetadata,
+    DEFAULT_OG_IMAGE,
+} from "./metadata";
 import {
     breadcrumbLd,
     faqPageLd,
+    hubGraph,
     itemListLd,
     serializeJsonLd,
     toolGraph,
     webApplicationLd,
 } from "./jsonLd";
-import { getTool, TOOLS, type ToolDef } from "./registry";
+import { getHub, getTool, TOOLS, type ToolDef } from "./registry";
 
 const tools = TOOLS as readonly ToolDef[];
 
@@ -32,6 +38,13 @@ describe("buildToolMetadata", () => {
 
     it("throws for an unknown tool rather than emitting empty metadata", () => {
         expect(() => buildToolMetadata("missing")).toThrow();
+    });
+
+    it("builds hub metadata with a canonical and OG image", () => {
+        const meta: any = buildHubMetadata("diabetes");
+
+        expect(meta.alternates.canonical).toBe("/tools/diabetes");
+        expect(meta.openGraph.images).toEqual([DEFAULT_OG_IMAGE]);
     });
 
     it("builds the tools index metadata the same way", () => {
@@ -74,6 +87,31 @@ describe("JSON-LD builders", () => {
         for (const crumb of crumbs.itemListElement) {
             expect(crumb.item).toMatch(/^https?:\/\//);
         }
+    });
+
+    it("routes a diabetes tool's breadcrumb through its hub", () => {
+        const crumbs: any = breadcrumbLd(getTool("a1c-calculator"));
+
+        expect(crumbs.itemListElement.map((c: any) => c.name)).toEqual([
+            "Home",
+            "Tools",
+            "Diabetes",
+            "A1c Calculator",
+        ]);
+        expect(crumbs.itemListElement[2].item).toMatch(/\/tools\/diabetes$/);
+    });
+
+    it("describes a hub as a CollectionPage of its tools", () => {
+        const hub = getHub("diabetes");
+        const graph: any = hubGraph(hub, [getTool("a1c-calculator")], []);
+
+        expect(graph["@graph"].map((n: any) => n["@type"])).toEqual([
+            "CollectionPage",
+            "BreadcrumbList",
+        ]);
+        expect(graph["@graph"][0].mainEntity.itemListElement[0].url).toMatch(
+            /\/tools\/a1c-calculator$/
+        );
     });
 
     it("emits one Question per FAQ entry", () => {

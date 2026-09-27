@@ -719,3 +719,51 @@ export function homeTools(): ToolDef[] {
         .filter((t) => t.home)
         .sort((a, b) => a.home!.order - b.home!.order);
 }
+
+/**
+ * Cluster landing pages under /tools. Each lives in its own folder beside the
+ * tools (the parity test counts both) and anchors its cluster: tool
+ * breadcrumbs and "all ... tools" links point at it.
+ */
+export interface HubDef {
+    slug: string;
+    href: `/tools/${string}`;
+    cluster: ToolCluster;
+    /** Short name for breadcrumbs. */
+    title: string;
+    h1: string;
+    metaTitle: string;
+    metaDescription: string;
+    /** Tools from other clusters worth linking from the hub. */
+    alsoUseful: string[];
+    lastReviewed: string;
+}
+
+export const HUBS: HubDef[] = [
+    {
+        slug: "diabetes",
+        href: "/tools/diabetes",
+        cluster: "diabetes",
+        title: "Diabetes",
+        h1: "Diabetes Calculators",
+        metaTitle: "Diabetes Calculators: A1c, Blood Sugar & Insulin | FitDose",
+        metaDescription:
+            "Free diabetes calculators: A1c to average glucose, mg/dL to mmol/L, GMI and time in range, plus education-only insulin dosing tools.",
+        alsoUseful: [
+            "waist-to-height-ratio-calculator",
+            "weight-loss-percentage-calculator",
+            "bmi-calculator",
+        ],
+        lastReviewed: "2026-09-27",
+    },
+];
+
+export function getHub(slug: string): HubDef {
+    const hub = HUBS.find((h) => h.slug === slug);
+    if (!hub) throw new Error(`Unknown hub slug: ${slug}`);
+    return hub;
+}
+
+export function hubForCluster(cluster: ToolCluster): HubDef | undefined {
+    return HUBS.find((h) => h.cluster === cluster);
+}

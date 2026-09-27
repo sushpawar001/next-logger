@@ -10,7 +10,7 @@ import CopyUrlButton from "./CopyUrlButton";
 import { StatsTableCard } from "./StatsTableCard";
 import { DashboardHeader } from "./DashboardHeader";
 import PublicLeftSidebar from "./PublicLeftSidebar";
-import { TOOLS } from "@/lib/tools/registry";
+import { HUBS, TOOLS } from "@/lib/tools/registry";
 import { entryTags } from "@/constants/constants";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
@@ -455,6 +455,9 @@ describe("PublicLeftSidebar", () => {
 
         for (const tool of TOOLS) {
             expect(hrefs).toContain(tool.href);
+        }
+        for (const hub of HUBS) {
+            expect(hrefs).toContain(hub.href);
         }
         expect(hrefs).toContain("/tools");
     });

@@ -1,5 +1,5 @@
 import { absoluteUrl } from "@/lib/site";
-import type { ToolDef } from "./registry";
+import { hubForCluster, type HubDef, type ToolDef } from "./registry";
 
 /**
  * schema.org builders for the tool pages. Plain objects rather than schema-dts
@@ -37,21 +37,62 @@ export function webApplicationLd(tool: ToolDef): JsonLdObject {
     };
 }
 
-export function breadcrumbLd(tool: ToolDef): JsonLdObject {
-    const crumbs = [
-        { name: "Home", url: absoluteUrl("/") },
-        { name: "Tools", url: absoluteUrl("/tools") },
-        { name: tool.title, url: absoluteUrl(tool.href) },
+/** Home › Tools › [cluster hub] › page. */
+export function breadcrumbTrail(tool: ToolDef): { name: string; href: string }[] {
+    const hub = hubForCluster(tool.cluster);
+    return [
+        { name: "Home", href: "/" },
+        { name: "Tools", href: "/tools" },
+        ...(hub ? [{ name: hub.title, href: hub.href }] : []),
+        { name: tool.title, href: tool.href },
     ];
+}
+
+function breadcrumbList(trail: { name: string; href: string }[]): JsonLdObject {
     return {
         "@type": "BreadcrumbList",
-        itemListElement: crumbs.map((crumb, i) => ({
+        itemListElement: trail.map((crumb, i) => ({
             "@type": "ListItem",
             position: i + 1,
             name: crumb.name,
-            item: crumb.url,
+            item: absoluteUrl(crumb.href),
         })),
     };
+}
+
+export function breadcrumbLd(tool: ToolDef): JsonLdObject {
+    return breadcrumbList(breadcrumbTrail(tool));
+}
+
+/** A cluster hub: CollectionPage listing its tools, plus breadcrumb and FAQ. */
+export function hubGraph(hub: HubDef, tools: readonly ToolDef[], faqs: Faq[]): JsonLdObject {
+    const graph: JsonLdObject[] = [
+        {
+            "@type": "CollectionPage",
+            "@id": `${absoluteUrl(hub.href)}#page`,
+            name: hub.h1,
+            url: absoluteUrl(hub.href),
+            description: hub.metaDescription,
+            dateModified: hub.lastReviewed,
+            publisher: publisher(),
+            mainEntity: {
+                "@type": "ItemList",
+                itemListElement: tools.map((tool, i) => ({
+                    "@type": "ListItem",
+                    position: i + 1,
+                    name: tool.title,
+                    url: absoluteUrl(tool.href),
+                })),
+            },
+        },
+        breadcrumbList([
+            { name: "Home", href: "/" },
+            { name: "Tools", href: "/tools" },
+            { name: hub.title, href: hub.href },
+        ]),
+    ];
+    if (faqs.length > 0) graph.push(faqPageLd(faqs));
+    return { "@context": "https://schema.org", "@graph": graph };
 }
 
 export function faqPageLd(faqs: Faq[]): JsonLdObject {
