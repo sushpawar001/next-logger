@@ -14,6 +14,7 @@ import TermsPage from "./(Public)/terms-service/page";
 import ContactUsPage from "./(Public)/contact-us/page";
 import robots from "./robots";
 import sitemap from "./sitemap";
+import { TOOLS } from "@/lib/tools/registry";
 import manifest from "./manifest";
 
 /**
@@ -182,19 +183,31 @@ describe("metadata routes", () => {
         }
     });
 
-    it("the sitemap lists the public tools funnel", () => {
+    it("the sitemap lists every registered tool", () => {
         const urls = sitemap().map((entry: any) => entry.url);
 
         expect(urls.some((u: string) => u.endsWith("/tools"))).toBe(true);
-        for (const tool of [
-            "bmi-calculator",
-            "bmr-calculator",
-            "ideal-weight-calculator",
-            "water-intake-calculator",
-            "whr-calculator",
-        ]) {
-            expect(urls.some((u: string) => u.includes(tool))).toBe(true);
+        for (const tool of TOOLS) {
+            expect(urls.some((u: string) => u.endsWith(tool.href))).toBe(true);
         }
+    });
+
+    it("dates each tool entry by its lastReviewed date", () => {
+        for (const tool of TOOLS) {
+            const entry: any = sitemap().find((e: any) =>
+                e.url.endsWith(tool.href)
+            );
+
+            expect(entry.lastModified).toEqual(new Date(tool.lastReviewed));
+        }
+    });
+
+    it("the sitemap drops the retired password-reset page", () => {
+        const urls = sitemap().map((entry: any) => entry.url);
+
+        expect(urls.some((u: string) => u.includes("forget-password"))).toBe(
+            false
+        );
     });
 
     it("the sitemap does not expose authenticated routes", () => {

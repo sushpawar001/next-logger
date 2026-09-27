@@ -10,6 +10,7 @@ import CopyUrlButton from "./CopyUrlButton";
 import { StatsTableCard } from "./StatsTableCard";
 import { DashboardHeader } from "./DashboardHeader";
 import PublicLeftSidebar from "./PublicLeftSidebar";
+import { TOOLS } from "@/lib/tools/registry";
 import { entryTags } from "@/constants/constants";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
@@ -452,8 +453,10 @@ describe("PublicLeftSidebar", () => {
             .getAllByRole("link")
             .map((a) => a.getAttribute("href"));
 
-        expect(hrefs.some((h) => h?.includes("bmi"))).toBe(true);
-        expect(hrefs.some((h) => h?.includes("tools"))).toBe(true);
+        for (const tool of TOOLS) {
+            expect(hrefs).toContain(tool.href);
+        }
+        expect(hrefs).toContain("/tools");
     });
 
     it("shows the wordmark logo", () => {

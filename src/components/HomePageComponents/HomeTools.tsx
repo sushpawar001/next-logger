@@ -1,15 +1,17 @@
 import Link from "next/link";
-import { ArrowRight, Calculator, Flame, GlassWater, Ruler, Target } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { homeTools } from "@/lib/tools/registry";
 import { card, eyebrow, h2, textLink, tile, wrap } from "./styles";
 
-export const HOME_TOOLS = [
-    { href: "/tools/bmi-calculator", Icon: Calculator, name: "BMI", body: "Where your weight sits for your height." },
-    { href: "/tools/bmr-calculator", Icon: Flame, name: "BMR", body: "Calories your body uses at rest." },
-    { href: "/tools/ideal-weight-calculator", Icon: Target, name: "Ideal weight", body: "Healthy ranges from common formulas." },
-    { href: "/tools/whr-calculator", Icon: Ruler, name: "Waist-to-hip", body: "A quick read on fat distribution." },
-    { href: "/tools/water-intake-calculator", Icon: GlassWater, name: "Water intake", body: "How much to drink in a day." },
-];
+// The grid CSS below is tuned for exactly five tiles; registry.test.ts keeps
+// the count of tools with a `home` entry at five.
+export const HOME_TOOLS = homeTools().map((tool) => ({
+    href: tool.href,
+    Icon: tool.icon,
+    name: tool.shortName,
+    body: tool.home!.body,
+}));
 
 export default function HomeTools() {
     return (

@@ -2,77 +2,11 @@ import React from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calculator, Activity, Target, Ruler } from "lucide-react";
+import { Calculator, Activity, Target } from "lucide-react";
 import CopyUrlButton from "@/components/CopyUrlButton";
+import { toolsByCluster } from "@/lib/tools/registry";
 
 export const dynamic = "force-static";
-
-const tools = [
-    {
-        title: "BMI Calculator",
-        description:
-            "Calculate your Body Mass Index (BMI) to assess your weight status and health risk categories.",
-        href: "/tools/bmi-calculator",
-        icon: Calculator,
-        features: [
-            "Adult BMI classification",
-            "Children & teens BMI",
-            "WHO standards",
-            "Health risk assessment",
-        ],
-        color: "bg-blue-50 border-blue-200",
-        textColor: "text-blue-900",
-        badgeColor: "bg-blue-100 text-blue-800",
-    },
-    {
-        title: "BMR Calculator",
-        description:
-            "Calculate your Basal Metabolic Rate and daily calorie needs based on activity levels using the Mifflin-St Jeor Equation.",
-        href: "/tools/bmr-calculator",
-        icon: Activity,
-        features: [
-            "Mifflin-St Jeor formula",
-            "Activity level multipliers",
-            "Daily calorie needs",
-            "Gender-specific calculations",
-        ],
-        color: "bg-green-50 border-green-200",
-        textColor: "text-green-900",
-        badgeColor: "bg-green-100 text-green-800",
-    },
-    {
-        title: "Ideal Weight Calculator",
-        description:
-            "Calculate your ideal body weight using multiple established formulas and methods.",
-        href: "/tools/ideal-weight-calculator",
-        icon: Target,
-        features: [
-            "Multiple formulas",
-            "Height-based calculation",
-            "Frame size consideration",
-            "Personalized ranges",
-        ],
-        color: "bg-accent/50 border-border",
-        textColor: "text-purple-900",
-        badgeColor: "bg-purple-100 text-purple-800",
-    },
-    {
-        title: "WHR Calculator",
-        description:
-            "Calculate your Waist-to-Hip Ratio to assess body fat distribution and cardiovascular risk.",
-        href: "/tools/whr-calculator",
-        icon: Ruler,
-        features: [
-            "Cardiovascular risk assessment",
-            "Gender-specific ranges",
-            "WHO standards",
-            "Body fat distribution",
-        ],
-        color: "bg-orange-50 border-orange-200",
-        textColor: "text-orange-900",
-        badgeColor: "bg-orange-100 text-orange-800",
-    },
-];
 
 export default function ToolsPage() {
     return (
@@ -91,57 +25,81 @@ export default function ToolsPage() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {tools.map((tool, index) => {
-                    const IconComponent = tool.icon;
-                    return (
-                        <Link href={tool.href} key={index} className="block">
-                            <Card className="border-border shadow-sm hover:shadow-md-md transition-shadow-md duration-200 cursor-pointer">
-                                <CardHeader>
-                                    <div className="flex items-center gap-3">
-                                        <div className="p-2 rounded-lg bg-primary">
-                                            <IconComponent className="w-5 h-5 text-white" />
-                                        </div>
-                                        <div>
-                                            <CardTitle className="text-lg font-semibold text-gray-900">
-                                                {tool.title}
-                                            </CardTitle>
-                                            <Badge
-                                                variant="outline"
-                                                className="mt-1 text-xs"
-                                            >
-                                                Free Tool
-                                            </Badge>
-                                        </div>
-                                    </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <p className="text-gray-700 text-sm mb-4">
-                                        {tool.description}
-                                    </p>
-                                    <div className="space-y-2">
-                                        <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                                            Features:
-                                        </h4>
-                                        <ul className="space-y-1">
-                                            {tool.features.map(
-                                                (feature, featureIndex) => (
-                                                    <li
-                                                        key={featureIndex}
-                                                        className="text-xs text-gray-600 flex items-center gap-2"
-                                                    >
-                                                        <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
-                                                        {feature}
-                                                    </li>
-                                                )
-                                            )}
-                                        </ul>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </Link>
-                    );
-                })}
+            <div className="space-y-10">
+                {toolsByCluster().map((cluster) => (
+                    <section
+                        key={cluster.id}
+                        id={cluster.id}
+                        aria-labelledby={`${cluster.id}-heading`}
+                        className="scroll-mt-20"
+                    >
+                        <h2
+                            id={`${cluster.id}-heading`}
+                            className="text-lg md:text-xl font-semibold text-gray-900"
+                        >
+                            {cluster.label}
+                        </h2>
+                        <p className="text-sm text-gray-600 mb-4">
+                            {cluster.blurb}
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {cluster.tools.map((tool) => {
+                                const IconComponent = tool.icon;
+                                return (
+                                    <Link
+                                        href={tool.href}
+                                        key={tool.slug}
+                                        className="block"
+                                    >
+                                        <Card className="h-full border-border shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer">
+                                            <CardHeader>
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 rounded-lg bg-primary">
+                                                        <IconComponent className="w-5 h-5 text-white" />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold text-gray-900">
+                                                            {tool.title}
+                                                        </h3>
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="mt-1 text-xs"
+                                                        >
+                                                            Free Tool
+                                                        </Badge>
+                                                    </div>
+                                                </div>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <p className="text-gray-700 text-sm mb-4">
+                                                    {tool.description}
+                                                </p>
+                                                <div className="space-y-2">
+                                                    <h4 className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+                                                        Features:
+                                                    </h4>
+                                                    <ul className="space-y-1">
+                                                        {tool.features.map(
+                                                            (feature) => (
+                                                                <li
+                                                                    key={feature}
+                                                                    className="text-xs text-gray-600 flex items-center gap-2"
+                                                                >
+                                                                    <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                                                                    {feature}
+                                                                </li>
+                                                            )
+                                                        )}
+                                                    </ul>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </section>
+                ))}
             </div>
 
             {/* Information Section */}
@@ -205,6 +163,6 @@ export async function generateMetadata() {
     return {
         title: "Health & Fitness Tools | FitDose",
         description:
-            "Access our comprehensive collection of health and fitness calculators including BMI, BMR, Ideal Weight, and WHR calculators.",
+            "Free health and fitness calculators for body composition, calorie needs and hydration. Every calculation runs in your browser.",
     };
 }

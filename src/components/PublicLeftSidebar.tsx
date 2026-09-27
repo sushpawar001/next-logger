@@ -4,23 +4,18 @@ import {
     SidebarContent,
     SidebarGroup,
     SidebarGroupContent,
+    SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import {
-    Home,
-    User,
-    Target,
-    Scale,
-    Heart,
-    Zap,
-    Droplets,
-} from "lucide-react";
+import { Home, LayoutGrid, User } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/brand/Logo";
 import { usePathname } from "next/navigation";
+import type { ElementType } from "react";
+import { toolsByCluster } from "@/lib/tools/registry";
 
 const menuItems = [
     {
@@ -35,31 +30,50 @@ const menuItems = [
         icon: User,
     },
     {
-        title: "Ideal Weight",
-        url: "/tools/ideal-weight-calculator",
-        icon: Target,
-    },
-    {
-        title: "BMI Calculator",
-        url: "/tools/bmi-calculator",
-        icon: Scale,
-    },
-    {
-        title: "WHR Calculator",
-        url: "/tools/whr-calculator",
-        icon: Heart,
-    },
-    {
-        title: "BMR Calculator",
-        url: "/tools/bmr-calculator",
-        icon: Zap,
-    },
-    {
-        title: "Water Intake",
-        url: "/tools/water-intake-calculator",
-        icon: Droplets,
+        title: "All tools",
+        url: "/tools",
+        icon: LayoutGrid,
     },
 ];
+
+const toolGroups = toolsByCluster().map((cluster) => ({
+    label: cluster.label,
+    items: cluster.tools.map((tool) => ({
+        title: tool.shortName,
+        url: tool.href,
+        icon: tool.icon,
+    })),
+}));
+
+const itemClass =
+    "h-11 rounded-xl hover:bg-accent/50 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground pl-2.5";
+
+function MenuLinks({
+    items,
+    currentRoute,
+}: {
+    items: { title: string; url: string; icon: ElementType }[];
+    currentRoute: string;
+}) {
+    return (
+        <SidebarMenu className="space-y-1">
+            {items.map((item) => (
+                <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                        asChild
+                        isActive={currentRoute === item.url}
+                        className={itemClass}
+                    >
+                        <a href={item.url} className="flex items-center gap-3">
+                            <item.icon className="h-5 w-5" />
+                            <span className="font-medium">{item.title}</span>
+                        </a>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
+        </SidebarMenu>
+    );
+}
 
 export default function PublicLeftSidebar() {
     const currentRoute = usePathname();
@@ -74,33 +88,23 @@ export default function PublicLeftSidebar() {
 
             <SidebarContent className="px-4 mt-8">
                 <SidebarGroup>
-                    {/* <SidebarGroupLabel className="text-gray-600 font-medium mb-2">
-                        Dashboard
-                    </SidebarGroupLabel> */}
                     <SidebarGroupContent>
-                        <SidebarMenu className="space-y-1">
-                            {menuItems.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={currentRoute === item.url}
-                                        className="h-11 rounded-xl hover:bg-accent/50 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground pl-2.5"
-                                    >
-                                        <a
-                                            href={item.url}
-                                            className="flex items-center gap-3"
-                                        >
-                                            <item.icon className="h-5 w-5" />
-                                            <span className="font-medium">
-                                                {item.title}
-                                            </span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
+                        <MenuLinks items={menuItems} currentRoute={currentRoute} />
                     </SidebarGroupContent>
                 </SidebarGroup>
+                {toolGroups.map((group) => (
+                    <SidebarGroup key={group.label}>
+                        <SidebarGroupLabel className="text-gray-600 font-medium">
+                            {group.label}
+                        </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <MenuLinks
+                                items={group.items}
+                                currentRoute={currentRoute}
+                            />
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
         </Sidebar>
     );
