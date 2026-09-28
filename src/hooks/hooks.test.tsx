@@ -222,6 +222,28 @@ describe("useInstallPrompt", () => {
                 true
             );
         });
+
+        it("offers install again after the app was uninstalled", () => {
+            window.localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({ count: 0, lastShownAt: 0, installed: true })
+            );
+            const { result } = renderHook(() => useInstallPrompt());
+            expect(result.current.installed).toBe(true);
+
+            // Chrome only fires this once the app is no longer installed.
+            fireBeforeInstallPrompt();
+
+            expect(result.current.installed).toBe(false);
+            expect(result.current.isSupported).toBe(true);
+            expect(
+                JSON.parse(window.localStorage.getItem(STORAGE_KEY)!).installed
+            ).toBe(false);
+            act(() => {
+                expect(result.current.requestShow()).toBe(true);
+            });
+            expect(result.current.open).toBe(true);
+        });
     });
 
     describe("requestShow caps", () => {

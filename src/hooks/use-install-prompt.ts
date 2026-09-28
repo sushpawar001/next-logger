@@ -63,6 +63,11 @@ export function useInstallPrompt() {
             // Suppress Chrome's own mini-infobar so we can choose the moment.
             event.preventDefault();
             setDeferredPrompt(event as InstallPromptEvent);
+            // Chrome only fires this when the app is NOT installed, so a
+            // persisted "installed" flag is stale — the user uninstalled it.
+            // Clear it, or the card and sidebar item stay hidden forever.
+            if (readState().installed) writeState({ installed: false });
+            setInstalled(isStandalone());
         };
 
         const onAppInstalled = () => {
