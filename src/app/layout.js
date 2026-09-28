@@ -5,6 +5,7 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import PwaBootstrap from "@/components/pwa/PwaBootstrap";
 import { getSiteUrl } from "@/lib/site";
+import { splashStartupImages } from "@/lib/pwa/splash";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +20,8 @@ export const metadata = {
         // "default" keeps a readable light status bar. "black-translucent" would
         // render the app under the clock and need safe-area work on every screen.
         statusBarStyle: "default",
+        // iOS ignores the manifest splash; without these it launches on a blank screen.
+        startupImage: splashStartupImages(),
     },
     formatDetection: { telephone: false },
     // Explicit icons are the single source of <link rel="icon"> tags. In Next

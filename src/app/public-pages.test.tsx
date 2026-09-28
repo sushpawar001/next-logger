@@ -372,6 +372,6 @@ describe("metadata routes", () => {
         const result = manifest();
 
         expect(result.theme_color).toBe("#4A3470");
-        expect(result.background_color).toBe("#FAF7F2");
+        expect(result.background_color).toBe("#4A3470");
     });
 });

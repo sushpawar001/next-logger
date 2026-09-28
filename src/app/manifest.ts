@@ -17,7 +17,9 @@ export default function manifest(): MetadataRoute.Manifest {
         scope: "/",
         display: "standalone",
         // No orientation lock: /charts is materially more readable in landscape.
-        background_color: "#FAF7F2",
+        // Android's launch screen colour. Aubergine to match theme_color and the
+        // iOS launch images (public/splash/, scripts/splash/build.js).
+        background_color: "#4A3470",
         theme_color: "#4A3470",
         categories: ["health", "medical", "lifestyle"],
         icons: [
