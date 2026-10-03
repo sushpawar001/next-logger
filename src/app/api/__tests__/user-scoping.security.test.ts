@@ -36,6 +36,7 @@ import WeightModel from "@/models/weightModel";
 import InsulinModel from "@/models/insulinModel";
 import MeasurementsModel from "@/models/measurementsModel";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { HttpError } from "@/helpers/httpError";
 import { asDoc, createQuery } from "@/test/mongoose";
 import { USER_A, USER_B } from "@/test/auth";
 import { makeJsonRequest, makeRequest } from "@/test/http";
@@ -60,7 +61,7 @@ type Case = {
     owned: Record<string, any>;
     body?: Record<string, any>;
     /** How the handler behaves when the scoped query matches nothing. */
-    onMiss: "null-200" | "throws-500";
+    onMiss: "null-200" | "404";
 };
 
 // The modules are mocked, but their imported types are still the real
@@ -72,10 +73,10 @@ const Measurements = MeasurementsModel as any;
 
 const CASES: Case[] = [
     // ---- DELETE ---------------------------------------------------------
-    { name: "DELETE /api/glucose/delete/[id]", load: () => import("@/app/api/glucose/delete/[id]/route"), method: "DELETE", model: Glucose, op: "findOneAndDelete", owned: ownedBy(glucoseRow()), onMiss: "null-200" },
-    { name: "DELETE /api/weight/delete/[id]", load: () => import("@/app/api/weight/delete/[id]/route"), method: "DELETE", model: Weight, op: "findOneAndDelete", owned: ownedBy(weightRow()), onMiss: "null-200" },
-    { name: "DELETE /api/insulin/delete/[id]", load: () => import("@/app/api/insulin/delete/[id]/route"), method: "DELETE", model: Insulin, op: "findOneAndDelete", owned: ownedBy(insulinRow()), onMiss: "null-200" },
-    { name: "DELETE /api/measurements/delete/[id]", load: () => import("@/app/api/measurements/delete/[id]/route"), method: "DELETE", model: Measurements, op: "findOneAndDelete", owned: ownedBy(measurementRow()), onMiss: "null-200" },
+    { name: "DELETE /api/glucose/delete/[id]", load: () => import("@/app/api/glucose/delete/[id]/route"), method: "DELETE", model: Glucose, op: "findOneAndDelete", owned: ownedBy(glucoseRow()), onMiss: "404" },
+    { name: "DELETE /api/weight/delete/[id]", load: () => import("@/app/api/weight/delete/[id]/route"), method: "DELETE", model: Weight, op: "findOneAndDelete", owned: ownedBy(weightRow()), onMiss: "404" },
+    { name: "DELETE /api/insulin/delete/[id]", load: () => import("@/app/api/insulin/delete/[id]/route"), method: "DELETE", model: Insulin, op: "findOneAndDelete", owned: ownedBy(insulinRow()), onMiss: "404" },
+    { name: "DELETE /api/measurements/delete/[id]", load: () => import("@/app/api/measurements/delete/[id]/route"), method: "DELETE", model: Measurements, op: "findOneAndDelete", owned: ownedBy(measurementRow()), onMiss: "404" },
 
     // ---- UPDATE ---------------------------------------------------------
     { name: "PUT /api/glucose/update/[id]", load: () => import("@/app/api/glucose/update/[id]/route"), method: "PUT", model: Glucose, op: "findOneAndUpdate", owned: ownedBy(glucoseRow()), body: { value: 130, tag: "Fasting" }, onMiss: "null-200" },
@@ -84,10 +85,10 @@ const CASES: Case[] = [
     { name: "PUT /api/measurements/update/[id]", load: () => import("@/app/api/measurements/update/[id]/route"), method: "PUT", model: Measurements, op: "findOneAndUpdate", owned: ownedBy(measurementRow()), body: { arms: 33, createdAt: "2026-01-30T06:00:00.000Z" }, onMiss: "null-200" },
 
     // ---- GET ONE --------------------------------------------------------
-    { name: "GET /api/glucose/get-one/[id]", load: () => import("@/app/api/glucose/get-one/[id]/route"), method: "GET", model: Glucose, op: "findOne", owned: glucoseRow(), onMiss: "throws-500" },
-    { name: "GET /api/weight/get-one/[id]", load: () => import("@/app/api/weight/get-one/[id]/route"), method: "GET", model: Weight, op: "findOne", owned: weightRow(), onMiss: "throws-500" },
-    { name: "GET /api/insulin/get-one/[id]", load: () => import("@/app/api/insulin/get-one/[id]/route"), method: "GET", model: Insulin, op: "findOne", owned: insulinRow(), onMiss: "throws-500" },
-    { name: "GET /api/measurements/get-one/[id]", load: () => import("@/app/api/measurements/get-one/[id]/route"), method: "GET", model: Measurements, op: "findOne", owned: measurementRow(), onMiss: "throws-500" },
+    { name: "GET /api/glucose/get-one/[id]", load: () => import("@/app/api/glucose/get-one/[id]/route"), method: "GET", model: Glucose, op: "findOne", owned: glucoseRow(), onMiss: "404" },
+    { name: "GET /api/weight/get-one/[id]", load: () => import("@/app/api/weight/get-one/[id]/route"), method: "GET", model: Weight, op: "findOne", owned: weightRow(), onMiss: "404" },
+    { name: "GET /api/insulin/get-one/[id]", load: () => import("@/app/api/insulin/get-one/[id]/route"), method: "GET", model: Insulin, op: "findOne", owned: insulinRow(), onMiss: "404" },
+    { name: "GET /api/measurements/get-one/[id]", load: () => import("@/app/api/measurements/get-one/[id]/route"), method: "GET", model: Measurements, op: "findOne", owned: measurementRow(), onMiss: "404" },
 ];
 
 /**
@@ -150,23 +151,22 @@ describe("every single-row handler is scoped to the caller", () => {
                 expect(res.status).toBe(200);
                 expect(body.data).toBeNull();
             } else {
-                // get-one calls .toObject() on null, so a miss surfaces as 500.
-                expect(res.status).toBe(500);
+                // Indistinguishable from a row that does not exist at all.
+                expect(res.status).toBe(404);
             }
             expect(JSON.stringify(body)).not.toContain(secretOf(c));
         });
 
         it("never touches the model when the caller is unauthenticated", async () => {
             vi.mocked(getUserObjectId).mockRejectedValue(
-                new Error("User not logged in")
+                new HttpError(401, "User not logged in")
             );
 
             const res = await invoke(await c.load(), c);
 
             expect(c.model[c.op]).not.toHaveBeenCalled();
-            // Characterization: the shared try/catch turns this into a 500
-            // rather than a 401. See docs/BUGS.md #14.
-            expect(res.status).toBe(500);
+            // docs/BUGS.md #14 (fixed): this used to surface as a 500.
+            expect(res.status).toBe(401);
             await expect(res.json()).resolves.toEqual({
                 error: "User not logged in",
             });

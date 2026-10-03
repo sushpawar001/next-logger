@@ -3,6 +3,7 @@ import InsulinType from "@/models/insulinTypeModel";
 import User from "@/models/userModel";
 import { NextResponse, NextRequest } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { errorStatus } from "@/helpers/httpError";
 
 connectDB();
 
@@ -34,6 +35,6 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.log("Error adding insulin to user: " + error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: errorStatus(error) });
   }
 }

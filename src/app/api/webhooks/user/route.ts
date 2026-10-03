@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
         const requestType = body.type;
 
         switch (requestType) {
-            case "user.created":
+            case "user.created": {
                 const email = data.email_addresses[0].email_address;
                 const id = data.id;
                 console.log(email, id);
@@ -33,6 +33,15 @@ export async function POST(request: NextRequest) {
                     ),
                 });
 
+                // Every path out of this case returns, so it can never fall
+                // through into the cascade delete below.
+                if (!user) {
+                    return NextResponse.json(
+                        { error: "Failed to create user" },
+                        { status: 500 }
+                    );
+                }
+
                 await (await clerkClient()).users.updateUserMetadata(id, {
                     publicMetadata: {
                         subscriptionPlan: "trial",
@@ -42,51 +51,21 @@ export async function POST(request: NextRequest) {
                     },
                 });
 
-                if (user) {
-                    return NextResponse.json(
-                        {
-                            message: "User created successfully",
-                        },
-                        { status: 200 }
-                    );
-                }
+                return NextResponse.json(
+                    {
+                        message: "User created successfully",
+                    },
+                    { status: 200 }
+                );
+            }
 
-            case "user.deleted":
+            case "user.deleted": {
                 const clerkUserId = data.id;
                 const existingUser = await ClerkUser.findOne({
                     clerkUserId: clerkUserId,
                 });
-                console.log(existingUser._id);
 
-                if (existingUser) {
-                    const glucoseData = await Glucose.deleteMany({
-                        user: existingUser._id,
-                    });
-                    const insulinData = await Insulin.deleteMany({
-                        user: existingUser._id,
-                    });
-                    const insulinTypeData = await InsulinType.deleteMany({
-                        user: existingUser._id,
-                    });
-                    const measurementsData = await Measurements.deleteMany({
-                        user: existingUser._id,
-                    });
-                    const weightData = await Weight.deleteMany({
-                        user: existingUser._id,
-                    });
-                    const deletedUser = await ClerkUser.findOneAndDelete({
-                        clerkUserId: clerkUserId,
-                    });
-
-                    if (deletedUser) {
-                        return NextResponse.json(
-                            {
-                                message: "User deleted successfully",
-                            },
-                            { status: 200 }
-                        );
-                    }
-                } else {
+                if (!existingUser) {
                     return NextResponse.json(
                         {
                             message: "User not found",
@@ -94,6 +73,32 @@ export async function POST(request: NextRequest) {
                         { status: 404 }
                     );
                 }
+                console.log(existingUser._id);
+
+                await Glucose.deleteMany({ user: existingUser._id });
+                await Insulin.deleteMany({ user: existingUser._id });
+                await InsulinType.deleteMany({ user: existingUser._id });
+                await Measurements.deleteMany({ user: existingUser._id });
+                await Weight.deleteMany({ user: existingUser._id });
+                const deletedUser = await ClerkUser.findOneAndDelete({
+                    clerkUserId: clerkUserId,
+                });
+
+                if (!deletedUser) {
+                    return NextResponse.json(
+                        {
+                            message: "User not found",
+                        },
+                        { status: 404 }
+                    );
+                }
+                return NextResponse.json(
+                    {
+                        message: "User deleted successfully",
+                    },
+                    { status: 200 }
+                );
+            }
 
             default:
                 return NextResponse.json(

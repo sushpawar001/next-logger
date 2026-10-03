@@ -29,6 +29,7 @@ import WeightModel from "@/models/weightModel";
 import InsulinModel from "@/models/insulinModel";
 import MeasurementsModel from "@/models/measurementsModel";
 import { makeJsonRequest } from "@/test/http";
+import { decryptDocumentFields } from "@/lib/mongooseEncryption";
 
 // The modules are mocked, but their imported types are still the real
 // mongoose models, which do not carry vitest's mock members.
@@ -41,6 +42,12 @@ const MODELS = [Glucose, Weight, Insulin, Measurements] as any[];
 const [glucoseMock, , insulinMock, measurementsMock] = MODELS;
 const VALID_USER_ID = "65a000000000000000000001";
 const TOKEN = "test-seed-token"; // matches vitest.config.ts TEST_ENV
+
+/** The rows passed to a model's insertMany, decrypted back to plain values. */
+const inserted = (model: any, fields: string[]) =>
+    model.insertMany.mock.calls[0][0].map((row: Record<string, any>) =>
+        decryptDocumentFields(row, fields, true)
+    );
 
 const seed = async (userId: string, body: Record<string, any>) => {
     const { POST } = await import("@/app/api/seed/[userId]/route");
@@ -174,11 +181,11 @@ describe("generated data", () => {
     it("generates values inside each metric's documented range", async () => {
         await seed(VALID_USER_ID, { seed_token: TOKEN, count: 30 });
 
-        for (const row of Glucose.insertMany.mock.calls[0][0]) {
+        for (const row of inserted(Glucose, ["value"])) {
             expect(row.value).toBeGreaterThanOrEqual(32);
             expect(row.value).toBeLessThanOrEqual(540);
         }
-        for (const row of Insulin.insertMany.mock.calls[0][0]) {
+        for (const row of inserted(Insulin, ["units", "name"])) {
             expect(row.units).toBeGreaterThanOrEqual(2);
             expect(row.units).toBeLessThanOrEqual(20);
             expect(["Lantus", "Humalog", "NovoLog", "Levemir", "Tresiba"]).toContain(
@@ -192,7 +199,7 @@ describe("generated data", () => {
 
         await seed(VALID_USER_ID, { seed_token: TOKEN, count: 40 });
 
-        for (const row of Glucose.insertMany.mock.calls[0][0]) {
+        for (const row of inserted(Glucose, ["tag"])) {
             expect([...entryTags, null]).toContain(row.tag);
         }
     });
@@ -216,18 +223,34 @@ describe("generated data", () => {
     });
 
     /**
-     * KNOWN BUG (docs/BUGS.md #2): insertMany bypasses the schema's pre('save')
-     * hooks, so seeded health values are written to MongoDB in PLAINTEXT while
-     * every value written through the normal API is encrypted at rest.
-     * Characterizing current behavior.
+     * insertMany bypasses the schemas' pre('save') hooks, so the route encrypts
+     * every field the models encrypt itself (docs/BUGS.md #2, fixed). Seeded
+     * rows must be indistinguishable at rest from ones written through the API.
      */
-    it("writes plaintext values because insertMany skips the encryption hooks", async () => {
+    it.each([
+        ["glucose", Glucose, ["value"]],
+        ["weight", Weight, ["value"]],
+        ["insulin", Insulin, ["units", "name"]],
+        ["measurements", Measurements, ["arms", "chest", "abdomen", "waist", "hip", "thighs", "calves"]],
+    ])("encrypts %s values at rest", async (_name, model, fields) => {
         await seed(VALID_USER_ID, { seed_token: TOKEN, count: 3 });
 
+        for (const row of model.insertMany.mock.calls[0][0]) {
+            for (const field of fields as string[]) {
+                // Stored as a JSON string with iv/tag members, as storeAsString does
+                expect(typeof row[field]).toBe("string");
+                expect(JSON.parse(row[field])).toHaveProperty("iv");
+            }
+        }
+    });
+
+    it("encrypts a tag but leaves a null tag null", async () => {
+        await seed(VALID_USER_ID, { seed_token: TOKEN, count: 40 });
+
         for (const row of Glucose.insertMany.mock.calls[0][0]) {
-            // A real encrypted value would be a JSON string with iv/tag members
-            expect(typeof row.value).toBe("number");
-            expect(String(row.value)).not.toContain("iv");
+            if (row.tag !== null) {
+                expect(JSON.parse(row.tag)).toHaveProperty("iv");
+            }
         }
     });
 

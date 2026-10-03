@@ -1,5 +1,6 @@
 "use client";
 import notify from "@/helpers/notify";
+import { mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 import axios from "axios";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
@@ -20,7 +21,7 @@ export default function ContactUsForm() {
             notify(response.data.message, "success");
         } catch (error) {
             console.log(error);
-            notify(error.response.data.error, "error");
+            notify(mutationErrorMessage(error, "Could not send your message"), "error");
         }
     };
 

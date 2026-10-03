@@ -2,6 +2,7 @@ import { connectDB } from "@/dbConfig/connectDB";
 import Glucose from "@/models/glucoseModel";
 import { NextResponse, NextRequest } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { errorStatus } from "@/helpers/httpError";
 
 connectDB();
 
@@ -27,6 +28,6 @@ export async function PUT(request: NextRequest, props) {
 
     } catch (error) {
         console.log("Error updating Glucose " + error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: errorStatus(error) });
     }
 }

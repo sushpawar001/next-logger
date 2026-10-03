@@ -56,8 +56,8 @@ that every single-row handler filters on `_id` **and** `user` together, plus a
 source-level sweep that fails if a new `delete`/`update`/`get-one` route is
 added without a matching case.
 
-**`docs/BUGS.md`** lists 28 defects found while writing these tests. #1, #17, #19
-and #22–24 are fixed and #25 was closed as deliberate; each open one is pinned by a
+**`docs/BUGS.md`** lists 28 defects found while writing these tests. #1, #2, #4, #5,
+#12–20 and #22–24 are fixed and #25 was closed as deliberate; each open one is pinned by a
 test asserting current behavior with a `KNOWN BUG (docs/BUGS.md #n)` comment, so
 a future fix fails loudly rather than silently changing behavior. When fixing
 one, flip its pinning test to assert the correct behavior and mark the entry
@@ -107,7 +107,7 @@ Sensitive values are encrypted at rest with AES-256-GCM. Models call `addEncrypt
 - `scripts/*.js` are standalone Node migration scripts with their own copy of the crypto code; they are what backfills pre-encryption rows. See `scripts/README.md`.
 
 ### API route conventions
-Handlers live at fixed paths per resource: `/api/{glucose|insulin|weight|measurements}/add`, `/get/[days]`, `/get-one/[id]`, `/update/[id]`, `/delete/[id]`, and `/get-range/[days]` (glucose, weight — returns current vs. previous period for stats). Each file calls `connectDB()` at module scope, resolves the user with `getUserObjectId()`, projects out `{ __v: 0, user: 0 }`, sorts `{ createdAt: -1 }`, and returns `NextResponse.json({ data })` or `{ error: error.message }` with status 500. Mutating handlers must match on `{ _id, user }` together so users cannot touch other users' rows.
+Handlers live at fixed paths per resource: `/api/{glucose|insulin|weight|measurements}/add`, `/get/[days]`, `/get-one/[id]`, `/update/[id]`, `/delete/[id]`, and `/get-range/[days]` (glucose, weight — returns current vs. previous period for stats). Each file calls `connectDB()` at module scope, resolves the user with `getUserObjectId()`, projects out `{ __v: 0, user: 0 }`, sorts `{ createdAt: -1 }`, and returns `NextResponse.json({ data })` or `{ error: error.message }` with status `errorStatus(error)` (`src/helpers/httpError.ts`: an `HttpError`'s own status, else 500; `getUserObjectId` throws a 401 one). `get-one` and `delete` return 404 when nothing matched. Mutating handlers must match on `{ _id, user }` together so users cannot touch other users' rows.
 
 `/api/seed/[userId]` is a public route gated only by a `seed_token` body field matching `SEED_TOKEN` — it bulk-inserts random data for demos.
 

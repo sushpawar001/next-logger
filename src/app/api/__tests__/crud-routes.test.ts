@@ -350,12 +350,8 @@ describe.each(RESOURCES)("$name routes", (r) => {
             }
         });
 
-        /**
-         * KNOWN BUG (docs/BUGS.md #12): a missing row means `data` is null and the
-         * handler calls `.toObject()` on it, so a not-found becomes a 500
-         * rather than a 404. Characterizing current behavior.
-         */
-        it("returns 500 rather than 404 when the row does not exist", async () => {
+        // docs/BUGS.md #12 (fixed): a miss used to call .toObject() on null and 500.
+        it("returns 404 when the row does not exist", async () => {
             r.model.findOne.mockReturnValue(createQuery(null));
             const { GET } = await r.routes.getOne();
 
@@ -363,8 +359,8 @@ describe.each(RESOURCES)("$name routes", (r) => {
                 params: { id: ENTRY_ID },
             });
 
-            expect(res.status).toBe(500);
-            expect((await res.json()).error).toMatch(/toObject|null/i);
+            expect(res.status).toBe(404);
+            await expect(res.json()).resolves.toEqual({ error: "Entry not found" });
         });
     });
 
@@ -384,6 +380,39 @@ describe.each(RESOURCES)("$name routes", (r) => {
 
             expect(res.status).toBe(200);
             expect((await res.json()).message).toBe("Data updated");
+        });
+
+        // docs/BUGS.md #15 (fixed): weight and insulin stamped `new Date(undefined)`.
+        it("leaves createdAt alone when the body has none", async () => {
+            r.model.findOneAndUpdate.mockReturnValue(createQuery(asDoc(r.row())));
+            const { PUT } = await r.routes.update();
+
+            // addBody carries no createdAt
+            const res = await PUT(
+                makeJsonRequest(`/update/${ENTRY_ID}`, r.addBody, "PUT"),
+                { params: { id: ENTRY_ID } }
+            );
+
+            const [, update] = r.model.findOneAndUpdate.mock.calls[0];
+            expect(update).not.toHaveProperty("createdAt");
+            expect(res.status).toBe(200);
+        });
+
+        it("converts a supplied createdAt to a Date", async () => {
+            r.model.findOneAndUpdate.mockReturnValue(createQuery(asDoc(r.row())));
+            const { PUT } = await r.routes.update();
+
+            await PUT(
+                makeJsonRequest(
+                    `/update/${ENTRY_ID}`,
+                    { ...r.addBody, createdAt: "2026-01-30T07:00:00.000Z" },
+                    "PUT"
+                ),
+                { params: { id: ENTRY_ID } }
+            );
+
+            const [, update] = r.model.findOneAndUpdate.mock.calls[0];
+            expect(update.createdAt).toEqual(new Date("2026-01-30T07:00:00.000Z"));
         });
 
         it("returns 500 when the update fails", async () => {
@@ -420,12 +449,8 @@ describe.each(RESOURCES)("$name routes", (r) => {
             expect((await res.json()).message).toBe("Data deleted");
         });
 
-        /**
-         * KNOWN BUG (docs/BUGS.md #13): deleting a row that does not exist still
-         * reports success with `data: null` instead of a 404, so the client
-         * cannot tell a real delete from a no-op.
-         */
-        it("reports success even when nothing matched", async () => {
+        // docs/BUGS.md #13 (fixed): a no-op delete used to report 200 with data: null.
+        it("returns 404 when nothing matched", async () => {
             r.model.findOneAndDelete.mockReturnValue(createQuery(null));
             const { DELETE } = await r.routes.del();
 
@@ -434,8 +459,8 @@ describe.each(RESOURCES)("$name routes", (r) => {
                 { params: { id: ENTRY_ID } }
             );
 
-            expect(res.status).toBe(200);
-            expect((await res.json()).data).toBeNull();
+            expect(res.status).toBe(404);
+            await expect(res.json()).resolves.toEqual({ error: "Entry not found" });
         });
 
         it("returns 500 when the delete fails", async () => {

@@ -2,6 +2,7 @@ import { connectDB } from "@/dbConfig/connectDB";
 import Measurements from "@/models/measurementsModel";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { errorStatus } from "@/helpers/httpError";
 import { decryptDocumentFields } from "@/lib/mongooseEncryption";
 
 connectDB();
@@ -49,6 +50,6 @@ export async function POST(request: NextRequest) {
         });
     } catch (error) {
         console.log("Error adding Measurements" + error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: errorStatus(error) });
     }
 }

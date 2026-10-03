@@ -167,21 +167,21 @@ describe("user.created", () => {
         });
     });
 
-    /**
-     * KNOWN BUG (docs/BUGS.md #3): the `user.created` case has no `break`, so when
-     * `create` resolves falsy the switch FALLS THROUGH into `user.deleted` and
-     * starts a cascade delete using the created event's payload.
-     * Characterizing current behavior.
-     */
-    it("falls through into the delete branch when create returns falsy", async () => {
+    // docs/BUGS.md #4 (fixed): a falsy create used to fall through into the
+    // `user.deleted` case and start a cascade delete.
+    it("returns 500 without deleting anything when create returns falsy", async () => {
         clerkUser.create.mockResolvedValue(null);
 
-        await post(createdEvent());
+        const res = await post(createdEvent());
 
-        expect(clerkUser.findOne).toHaveBeenCalledWith({
-            clerkUserId: CLERK_ID_A,
-        });
-        expect(Glucose.deleteMany).toHaveBeenCalled();
+        expect(res.status).toBe(500);
+        expect(clerkUser.findOne).not.toHaveBeenCalled();
+        for (const model of CASCADE_MODELS) {
+            expect(model.deleteMany).not.toHaveBeenCalled();
+        }
+        expect(clerkUser.findOneAndDelete).not.toHaveBeenCalled();
+        // No trial is granted in Clerk for a user that was never mirrored.
+        expect(clerk.users.updateUserMetadata).not.toHaveBeenCalled();
     });
 });
 
@@ -202,14 +202,15 @@ describe("user.deleted", () => {
         });
     });
 
-    it("returns 500 when the user does not exist", async () => {
-        // The handler logs existingUser._id before the null check, so a missing
-        // user throws rather than reaching the intended 404. See docs/BUGS.md #16.
+    // docs/BUGS.md #16 (fixed): logging existingUser._id before the null check
+    // used to throw, turning this into a 500.
+    it("returns 404 when the user does not exist", async () => {
         clerkUser.findOne.mockReturnValue(createQuery(null));
 
         const res = await post(deletedEvent());
 
-        expect(res.status).toBe(500);
+        expect(res.status).toBe(404);
+        await expect(res.json()).resolves.toEqual({ message: "User not found" });
         for (const model of CASCADE_MODELS) {
             expect(model.deleteMany).not.toHaveBeenCalled();
         }

@@ -7,6 +7,22 @@ import Insulin from "@/models/insulinModel";
 import mongoose from "mongoose";
 import { entryTags } from "@/constants/constants";
 import { timingSafeEqual } from "node:crypto";
+import { encryptDocumentFields } from "@/lib/mongooseEncryption";
+
+/**
+ * insertMany skips the schemas' pre('save') hooks, so rows are encrypted here
+ * instead. These mirror each model's addEncryptionHooks field list, stored as
+ * strings (`storeAsString: true`) just as the hooks would.
+ */
+const ENCRYPTED_FIELDS = {
+    measurements: ["arms", "chest", "abdomen", "waist", "hip", "thighs", "calves", "tag"],
+    weight: ["value", "tag"],
+    glucose: ["value", "tag"],
+    insulin: ["units", "name", "tag"],
+};
+
+const encryptRows = (rows: Record<string, any>[], fields: string[]) =>
+    rows.map((row) => encryptDocumentFields(row, fields, true));
 
 /**
  * This route is public (src/proxy.ts), so the token is the only gate. It must
@@ -129,10 +145,12 @@ export async function POST(
 
         // Insert all data
         await Promise.all([
-            Measurements.insertMany(measurementsData),
-            Weight.insertMany(weightData),
-            Glucose.insertMany(glucoseData),
-            Insulin.insertMany(insulinData),
+            Measurements.insertMany(
+                encryptRows(measurementsData, ENCRYPTED_FIELDS.measurements)
+            ),
+            Weight.insertMany(encryptRows(weightData, ENCRYPTED_FIELDS.weight)),
+            Glucose.insertMany(encryptRows(glucoseData, ENCRYPTED_FIELDS.glucose)),
+            Insulin.insertMany(encryptRows(insulinData, ENCRYPTED_FIELDS.insulin)),
         ]);
 
         return NextResponse.json({

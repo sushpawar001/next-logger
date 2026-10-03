@@ -2,6 +2,7 @@ import { connectDB } from "@/dbConfig/connectDB";
 import Measurements from "@/models/measurementsModel";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { errorStatus } from "@/helpers/httpError";
 import { convertArrayStringToNumber } from "@/helpers/convertStringToNumber";
 
 connectDB();
@@ -22,6 +23,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ data: convertedData });
     } catch (error) {
         console.log("Error getting Measurements " + error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: errorStatus(error) });
     }
 }

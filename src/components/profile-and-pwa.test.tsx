@@ -1,4 +1,3 @@
-import fs from "node:fs";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders, screen, userEvent, waitFor, within } from "@/test/render";
 import { rejectsWith } from "@/test/promises";
@@ -156,27 +155,25 @@ describe("DashboardPreferences", () => {
         expect(setDashboardLayoutLocal).toHaveBeenCalledWith("fitness");
     });
 
-    /**
-     * KNOWN BUG (docs/BUGS.md #18): submitValue has no try/catch, so a failed save
-     * rejects unhandled -- the user sees no error and the button is left in its
-     * submitting state.
-     *
-     * Asserted at the source level rather than by driving a rejection: with no
-     * catch anywhere, the rejection escapes the component entirely and would
-     * fail the whole test run rather than this one test.
-     */
-    it("has no error handling around its save", () => {
-        const source = fs.readFileSync(
-            "src/components/ProfileComponents/DashboardPref.tsx",
-            "utf8"
+    // docs/BUGS.md #18 (fixed): a failed save used to reject unhandled, with no
+    // toast and the button stuck submitting.
+    it("reports a failed save and re-enables the button", async () => {
+        const user = userEvent.setup();
+        post.mockImplementation(
+            rejectsWith({ response: { data: { error: "Layout not saved" } } })
         );
-        const submitBody = source.slice(
-            source.indexOf("const submitValue"),
-            source.indexOf("return (")
-        );
+        renderWithProviders(<DashboardPreferences />);
+        await waitFor(() => expect(getDashboardLayout).toHaveBeenCalled());
 
-        expect(submitBody).toContain("axios.post");
-        expect(submitBody).not.toContain("catch");
+        await user.click(screen.getByRole("radio", { name: /fitness/i }));
+        const button = screen.getByRole("button", { name: /save|update/i });
+        await user.click(button);
+
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("Layout not saved", "error")
+        );
+        expect(setDashboardLayoutLocal).not.toHaveBeenCalled();
+        expect(screen.getByRole("button", { name: /save|update/i })).toBeEnabled();
     });
 
     it("offers Diabetes and Fitness as picture cards, checking the stored one", async () => {
@@ -488,8 +485,6 @@ describe("ContactUsForm", () => {
 
     it("reports a failed send", async () => {
         const user = userEvent.setup();
-        // Shaped like a real axios error: the catch reads
-        // error.response.data.error with no guard (see docs/BUGS.md #20).
         post.mockImplementation(
             rejectsWith({ response: { data: { error: "Error sending message" } } })
         );
@@ -501,7 +496,27 @@ describe("ContactUsForm", () => {
         await user.type(textboxes[2], "Hello");
         await user.click(screen.getByRole("button", { name: /send|submit/i }));
 
-        await waitFor(() => expect(post).toHaveBeenCalled());
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("Error sending message", "error")
+        );
+    });
+
+    // docs/BUGS.md #20 (fixed): the catch read error.response.data.error with no
+    // guard, so an error without a response threw a second time.
+    it("reports a network failure that has no response", async () => {
+        const user = userEvent.setup();
+        post.mockImplementation(rejectsWith(new Error("Network Error")));
+        renderWithProviders(<ContactUsForm />);
+
+        const textboxes = screen.getAllByRole("textbox");
+        await user.type(textboxes[0], "Ada");
+        await user.type(textboxes[1], "ada@example.com");
+        await user.type(textboxes[2], "Hello");
+        await user.click(screen.getByRole("button", { name: /send|submit/i }));
+
+        await waitFor(() =>
+            expect(notify).toHaveBeenCalledWith("Could not send your message", "error")
+        );
     });
 });
 

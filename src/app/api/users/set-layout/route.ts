@@ -2,6 +2,7 @@ import { connectDB } from "@/dbConfig/connectDB";
 import ClerkUser from "@/models/userModelClerk";
 import { NextResponse, NextRequest } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { errorStatus } from "@/helpers/httpError";
 
 connectDB();
 
@@ -24,6 +25,6 @@ export async function POST(request: NextRequest) {
         });
     } catch (error) {
         console.log("Error setting user layout settings: " + error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: errorStatus(error) });
     }
 }

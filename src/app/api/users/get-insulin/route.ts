@@ -3,6 +3,7 @@ import InsulinType from "@/models/insulinTypeModel";
 import User from "@/models/userModel";
 import { NextResponse, NextRequest } from "next/server";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { errorStatus } from "@/helpers/httpError";
 import mongoose from "mongoose";
 mongoose.model("InsulinType", InsulinType.schema);
 
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest) {
         console.error("Error getting user insulin: " + error);
         return NextResponse.json(
             { data: [], error: error.message },
-            { status: 500 }
+            { status: errorStatus(error) }
         );
     }
 }

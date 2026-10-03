@@ -1,16 +1,20 @@
 import { connectDB } from "@/dbConfig/connectDB";
 import { NextResponse, NextRequest } from "next/server";
-// import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { errorStatus } from "@/helpers/httpError";
 import InsulinType from "@/models/insulinTypeModel";
 
 connectDB();
 
 export async function POST(request: NextRequest) {
   try {
+    // The catalogue is shared by every user, so rows carry no `user` field --
+    // but only a signed-in user may add to it.
+    await getUserObjectId();
+
     const body = await request.json();
     let { name } = body;
     name = name.trim();
-    // const user = await getUserObjectId();
 
     const oldInsulin = await InsulinType.findOne({ name });
     if (oldInsulin) {
@@ -24,6 +28,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ entry, message: `${name} insulin added!` });
   } catch (error) {
     console.log("Error adding Insulin Type" + error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: errorStatus(error) });
   }
 }

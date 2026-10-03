@@ -29,6 +29,7 @@ import LegacyUser from "@/models/userModel";
 import InsulinType from "@/models/insulinTypeModel";
 import ContactUs from "@/models/contactUs";
 import { getUserObjectId } from "@/helpers/getUserObjectId";
+import { HttpError } from "@/helpers/httpError";
 import { auth } from "@clerk/nextjs/server";
 import { asDoc, createFailingQuery, createQuery } from "@/test/mongoose";
 import { CLERK_ID_A, USER_A, mockClerkSignedIn, mockClerkSignedOut } from "@/test/auth";
@@ -369,19 +370,28 @@ describe("insulin-type routes", () => {
         expect((await POST(makeJsonRequest("/x", {}))).status).toBe(500);
     });
 
-    /**
-     * KNOWN BUG (docs/BUGS.md #5): the getUserObjectId import is commented out, so
-     * this route writes to a globally shared collection with no authentication
-     * at all. Characterizing current behavior.
-     */
-    it("writes without ever resolving a user", async () => {
+    // docs/BUGS.md #5 (fixed): the auth call was commented out, so anyone could write.
+    it("resolves the caller before writing", async () => {
         insulinType.findOne.mockReturnValue(createQuery(null));
         insulinType.create.mockResolvedValue({ _id: "i1", name: "Tresiba" });
         const { POST } = await import("@/app/api/insulin-type/add/route");
 
         await POST(makeJsonRequest("/x", { name: "Tresiba" }));
 
-        expect(getUserObjectId).not.toHaveBeenCalled();
+        expect(getUserObjectId).toHaveBeenCalled();
+    });
+
+    it("returns 401 and writes nothing when the caller is signed out", async () => {
+        vi.mocked(getUserObjectId).mockRejectedValue(
+            new HttpError(401, "User not logged in")
+        );
+        const { POST } = await import("@/app/api/insulin-type/add/route");
+
+        const res = await POST(makeJsonRequest("/x", { name: "Tresiba" }));
+
+        expect(res.status).toBe(401);
+        expect(insulinType.findOne).not.toHaveBeenCalled();
+        expect(insulinType.create).not.toHaveBeenCalled();
     });
 });
 

@@ -3,6 +3,7 @@ import {
     setDashboardLayoutLocal,
 } from "@/helpers/getDashboardLayout";
 import notify from "@/helpers/notify";
+import { mutationErrorMessage } from "@/hooks/queries/useEntryMutations";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
@@ -49,13 +50,18 @@ export default function DashboardPreferences({
         event.preventDefault();
         if (isChanged) {
             setIsSubmitting(true);
-            const response = await axios.post("/api/users/set-layout", {
-                layoutSettings: layoutSettings,
-            });
-            setDashboardLayoutLocal(layoutSettings);
-            setIsSubmitting(false);
-            setIsChanged(false);
-            notify(response.data.message, "success");
+            try {
+                const response = await axios.post("/api/users/set-layout", {
+                    layoutSettings: layoutSettings,
+                });
+                setDashboardLayoutLocal(layoutSettings);
+                setIsChanged(false);
+                notify(response.data.message, "success");
+            } catch (error) {
+                notify(mutationErrorMessage(error, "Could not save your preference"), "error");
+            } finally {
+                setIsSubmitting(false);
+            }
         }
     };
 

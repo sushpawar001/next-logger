@@ -11,6 +11,7 @@ vi.mock("@/models/userModelClerk", async () => {
 
 import ClerkUser from "@/models/userModelClerk";
 import { getUserObjectId } from "./getUserObjectId";
+import { HttpError, errorStatus } from "./httpError";
 import { createQuery, createFailingQuery } from "@/test/mongoose";
 import {
     CLERK_ID_A,
@@ -70,13 +71,34 @@ describe("getUserObjectId", () => {
         await expect(getUserObjectId()).rejects.toThrow("connection lost");
     });
 
-    /**
-     * Callers wrap this in a try/catch that returns 500, so an unauthenticated
-     * request surfaces as a server error rather than a 401. See docs/BUGS.md #14.
-     */
-    it("signals auth failure by throwing, which callers turn into a 500", async () => {
-        mockClerkSignedOut();
+    // docs/BUGS.md #14 (fixed): callers' catch blocks read the status off the
+    // error, so auth failures must carry 401 while a DB failure stays a 500.
+    it.each([
+        ["no Clerk session", () => mockClerkSignedOut()],
+        [
+            "no mirrored Mongo row",
+            () => {
+                mockClerkSignedIn();
+                clerkUser.findOne.mockReturnValue(createQuery(null));
+            },
+        ],
+    ])("throws a 401 HttpError when there is %s", async (_case, arrange) => {
+        arrange();
 
-        await expect(getUserObjectId()).rejects.toBeInstanceOf(Error);
+        const error = await getUserObjectId().catch((e) => e);
+
+        expect(error).toBeInstanceOf(HttpError);
+        expect(errorStatus(error)).toBe(401);
+    });
+
+    it("leaves a database failure as a 500", async () => {
+        mockClerkSignedIn();
+        clerkUser.findOne.mockReturnValue(
+            createFailingQuery(new Error("connection lost"))
+        );
+
+        const error = await getUserObjectId().catch((e) => e);
+
+        expect(errorStatus(error)).toBe(500);
     });
 });
