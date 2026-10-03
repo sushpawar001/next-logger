@@ -149,16 +149,80 @@ describe("DiabetesDashboard", () => {
         expect(await screen.findByRole("alert")).toHaveTextContent(/failed to load/i);
     });
 
-    it("offers a log-entry chooser linking to each quick-log page", async () => {
+});
+
+describe("Log entry sheet (mobile)", () => {
+    const openSheet = async (user: ReturnType<typeof userEvent.setup>) => {
+        await user.click(screen.getByRole("button", { name: "Log entry" }));
+        const sheet = screen.getByRole("dialog", { name: "Log entry" });
+        // Wait for the user's insulins, which decide whether a reading chains to a dose.
+        await waitFor(() => expect(get.mock.calls.some((c) => String(c[0]).includes("/users/get-insulin"))).toBe(true));
+        return sheet;
+    };
+
+    it("logs a reading then its dose without leaving the dashboard", async () => {
         const user = userEvent.setup();
         renderWithProviders(<DiabetesDashboard />);
+        const sheet = await openSheet(user);
 
-        await user.click(screen.getByRole("button", { name: "Log entry" }));
+        expect(within(sheet).getByLabelText("Reading")).toHaveFocus();
+        await user.type(within(sheet).getByLabelText("Reading"), "140");
+        await user.click(within(sheet).getByRole("button", { name: /save reading/i }));
 
-        const dialog = screen.getByRole("dialog");
-        expect(within(dialog).getByRole("link", { name: /glucose/i })).toHaveAttribute("href", "/glucose?quick=1");
-        expect(within(dialog).getByRole("link", { name: /insulin/i })).toHaveAttribute("href", "/insulin?quick=1");
-        expect(within(dialog).getByRole("link", { name: /weight/i })).toHaveAttribute("href", "/weight?quick=1");
+        await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
+        expect(post.mock.calls[0][0]).toBe("/api/glucose/add");
+
+        // Moved on to a dose, last-used insulin preselected, sheet still open.
+        expect(await within(sheet).findByText(/reading saved/i)).toBeInTheDocument();
+        expect(within(sheet).getByRole("button", { name: "Insulin" })).toHaveAttribute("aria-pressed", "true");
+        expect(within(sheet).getByRole("radio", { name: "NovoRapid" })).toHaveAttribute("aria-checked", "true");
+
+        await user.type(within(sheet).getByLabelText("Dose"), "6");
+        await user.click(within(sheet).getByRole("button", { name: /save dose/i }));
+
+        await waitFor(() => expect(post).toHaveBeenCalledTimes(2));
+        expect(post.mock.calls[1][0]).toBe("/api/insulin/add");
+        expect(post.mock.calls[1][1]).toEqual({ units: "6", name: "NovoRapid", date: null, tag: null });
+        expect(screen.getByRole("dialog", { name: "Log entry" })).toBeInTheDocument();
+    });
+
+    it("holds the entry-logged event until the sheet closes", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<DiabetesDashboard />);
+        const sheet = await openSheet(user);
+
+        await user.click(within(sheet).getByRole("button", { name: "Weight" }));
+        await user.type(within(sheet).getByLabelText("Weight"), "72");
+        await user.click(within(sheet).getByRole("button", { name: /save weight/i }));
+        await waitFor(() => expect(post).toHaveBeenCalled());
+        expect(entryLogged).not.toHaveBeenCalled();
+
+        await user.click(within(sheet).getByRole("button", { name: "Done" }));
+
+        await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+        expect(entryLogged).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not announce when closed without saving", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<DiabetesDashboard />);
+        const sheet = await openSheet(user);
+
+        await user.click(within(sheet).getByRole("button", { name: "Done" }));
+
+        await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+        expect(entryLogged).not.toHaveBeenCalled();
+    });
+
+    it("links to the full page for the selected type", async () => {
+        const user = userEvent.setup();
+        renderWithProviders(<DiabetesDashboard />);
+        const sheet = await openSheet(user);
+
+        const link = () => within(sheet).getByRole("link", { name: /backdate or see history/i });
+        expect(link()).toHaveAttribute("href", "/glucose");
+        await user.click(within(sheet).getByRole("button", { name: "Insulin" }));
+        expect(link()).toHaveAttribute("href", "/insulin");
     });
 });
 

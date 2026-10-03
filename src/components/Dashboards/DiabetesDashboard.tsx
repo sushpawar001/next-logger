@@ -4,7 +4,7 @@
  * glucose and weight heroes side by side, the glucose trend with this week's
  * summary and a quick log, and today's entries.
  */
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { useUser } from "@clerk/nextjs";
@@ -17,7 +17,8 @@ import DataPeriodSelectCard from "@/components/DataPeriodSelectCard";
 import { Eyebrow, MobileCta, PageHeader, Panel, PanelHead, PanelSub, PanelTitle } from "@/components/app-ui/layout";
 import { Delta, LegendItem, Reading, StatusBadge, TimeInRangeBar, TypeIcon } from "@/components/app-ui/data";
 import { AppButton } from "@/components/app-ui/controls";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import entryLogged from "@/helpers/entryLogged";
 import { CHART } from "@/components/Charts/RechartComponents/chartTheme";
 import { GlucoseLineChart, WeightTrendChart } from "./DashboardCharts";
 import QuickLog from "./QuickLog";
@@ -316,13 +317,23 @@ function TodayList({ items, isPending }: { items: ReturnType<typeof todayEntries
     );
 }
 
-function LogEntryChooser() {
+/**
+ * Mobile counterpart of the desktop QuickLog panel: a bottom sheet, so a
+ * reading and its dose can be logged back to back without leaving the page.
+ */
+function LogEntrySheet({ lastInsulin }: { lastInsulin?: string }) {
     const [open, setOpen] = useState(false);
-    const choices = [
-        { href: "/glucose?quick=1", label: "Glucose", icon: Droplets },
-        { href: "/insulin?quick=1", label: "Insulin", icon: Syringe },
-        { href: "/weight?quick=1", label: "Weight", icon: Weight },
-    ];
+    // QuickLog defers the entry-logged event in the sheet; fire it once on close.
+    const saved = useRef(false);
+
+    const close = () => {
+        setOpen(false);
+        if (saved.current) {
+            saved.current = false;
+            entryLogged();
+        }
+    };
+
     return (
         <>
             <MobileCta>
@@ -331,29 +342,22 @@ function LogEntryChooser() {
                     Log entry
                 </AppButton>
             </MobileCta>
-            <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent aria-describedby={undefined}>
-                    <div className="p-6">
-                        <DialogTitle className="mb-4 pr-8">What would you like to log?</DialogTitle>
-                        <ul className="m-0 grid list-none gap-2 p-0">
-                            {choices.map(({ href, label, icon: Icon }) => (
-                                <li key={href}>
-                                    <Link
-                                        href={href}
-                                        className="flex h-12 items-center gap-3 rounded-lg border border-border px-4 font-semibold text-brand-ink no-underline hover:bg-brand-cream"
-                                    >
-                                        <TypeIcon>
-                                            <Icon aria-hidden="true" />
-                                        </TypeIcon>
-                                        {label}
-                                        <ArrowRight className="icon-nudge ml-auto h-4 w-4 text-brand-muted" aria-hidden="true" />
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            <Sheet open={open} onOpenChange={(next) => (next ? setOpen(true) : close())}>
+                <SheetContent
+                    side="bottom"
+                    aria-describedby={undefined}
+                    className="max-h-[90dvh] overflow-y-auto rounded-t-2xl bg-white px-4 pt-5 pb-[calc(16px+env(safe-area-inset-bottom))] text-brand-ink"
+                >
+                    <SheetTitle className="mb-4 pr-8 text-lg">Log entry</SheetTitle>
+                    {/* Radix unmounts the content on close, so each open starts fresh. */}
+                    <QuickLog
+                        variant="sheet"
+                        lastInsulin={lastInsulin}
+                        onSaved={() => (saved.current = true)}
+                        onDone={close}
+                    />
+                </SheetContent>
+            </Sheet>
         </>
     );
 }
@@ -417,7 +421,7 @@ export default function DiabetesDashboard() {
                 <TodayList items={today} isPending={anyPending} />
             </div>
 
-            <LogEntryChooser />
+            <LogEntrySheet lastInsulin={lastInsulin} />
         </>
     );
 }
