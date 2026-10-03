@@ -27,7 +27,7 @@ export async function GET(request: NextRequest, props) {
                 createdAt: { $gt: prevDaysAgo },
             },
             { __v: 0, user: 0 }
-        ).sort({ createdAt: -1 });
+        ).sort({ createdAt: -1 }).lean();
 
         const daysAgoData = data.filter((d) => d.createdAt > daysAgo);
         const prevDaysAgoData = data.filter(
@@ -35,11 +35,11 @@ export async function GET(request: NextRequest, props) {
         );
 
         const convertedDaysAgoData = convertArrayStringToNumber(
-            daysAgoData.map((item) => item.toObject()),
+            daysAgoData,
             ["value"]
         );
         const convertedPrevDaysAgoData = convertArrayStringToNumber(
-            prevDaysAgoData.map((item) => item.toObject()),
+            prevDaysAgoData,
             ["value"]
         );
 

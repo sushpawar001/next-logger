@@ -10,7 +10,11 @@ vi.mock("@/models/userModelClerk", async () => {
 });
 
 import ClerkUser from "@/models/userModelClerk";
-import { getUserObjectId } from "./getUserObjectId";
+import {
+    getUserObjectId,
+    clearUserIdCache,
+    forgetUserId,
+} from "./getUserObjectId";
 import { HttpError, errorStatus } from "./httpError";
 import { createQuery, createFailingQuery } from "@/test/mongoose";
 import {
@@ -24,6 +28,7 @@ const clerkUser = ClerkUser as any;
 
 beforeEach(() => {
     clerkUser.findOne.mockReset();
+    clearUserIdCache();
 });
 
 describe("getUserObjectId", () => {
@@ -100,5 +105,60 @@ describe("getUserObjectId", () => {
         const error = await getUserObjectId().catch((e) => e);
 
         expect(errorStatus(error)).toBe(500);
+    });
+
+    it("only fetches the id, as a lean document", async () => {
+        mockClerkSignedIn(CLERK_ID_A);
+        const query = createQuery({ _id: { toString: () => USER_A } });
+        clerkUser.findOne.mockReturnValue(query);
+
+        await getUserObjectId();
+
+        expect(query.select).toHaveBeenCalledWith("_id");
+        expect(query.lean).toHaveBeenCalled();
+    });
+
+    it("reuses the mapping on a warm instance instead of querying again", async () => {
+        mockClerkSignedIn(CLERK_ID_A);
+        clerkUser.findOne.mockReturnValue(
+            createQuery({ _id: { toString: () => USER_A } })
+        );
+
+        await getUserObjectId();
+        await expect(getUserObjectId()).resolves.toBe(USER_A);
+        expect(clerkUser.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not cache a missing user", async () => {
+        mockClerkSignedIn(CLERK_ID_A);
+        clerkUser.findOne.mockReturnValueOnce(createQuery(null));
+        await expect(getUserObjectId()).rejects.toThrow("User not found");
+
+        clerkUser.findOne.mockReturnValueOnce(
+            createQuery({ _id: { toString: () => USER_A } })
+        );
+        await expect(getUserObjectId()).resolves.toBe(USER_A);
+    });
+
+    it("looks the user up again once the cached id expires or is forgotten", async () => {
+        vi.useFakeTimers();
+        try {
+            mockClerkSignedIn(CLERK_ID_A);
+            clerkUser.findOne.mockReturnValue(
+                createQuery({ _id: { toString: () => USER_A } })
+            );
+
+            await getUserObjectId();
+            vi.advanceTimersByTime(61_000);
+            await getUserObjectId();
+            expect(clerkUser.findOne).toHaveBeenCalledTimes(2);
+
+            // A deleted account must not keep resolving from the cache.
+            forgetUserId(CLERK_ID_A);
+            clerkUser.findOne.mockReturnValue(createQuery(null));
+            await expect(getUserObjectId()).rejects.toThrow("User not found");
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });

@@ -3,8 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 /**
  * The one place mongoose itself is mocked. Everywhere else connectDB is stubbed
  * out globally (src/test/setup.node.ts) because all 43 route modules call it at
- * import time and the real implementation calls process.exit() on a connection
- * error -- which would kill the Vitest worker.
+ * import time and would otherwise try to reach a real database.
  */
 // setup.node.ts mocks @/dbConfig/connectDB for every node test. This is the one
 // file that needs the real thing, so opt back out of that global mock.
@@ -24,23 +23,32 @@ vi.mock("mongoose", () => {
 
 import mongoose from "mongoose";
 
-// connectDB.ts has no import-time side effects, so the module can be shared;
-// resetting the registry here would hand back a different mongoose mock than
-// the one asserted on above.
+// connectDB keeps its cache on globalThis, so each test clears it and gets a
+// fresh view of how many times connect/on are called.
 const loadFresh = async () => import("./connectDB");
+const g = globalThis as any;
 
 beforeEach(() => {
     vi.mocked(mongoose.connect).mockReset();
+    vi.mocked(mongoose.connect).mockResolvedValue(mongoose as any);
     vi.mocked(mongoose.connection.on).mockReset();
+    delete g.__mongoConnect;
+    delete g.__mongoListening;
 });
 
 describe("connectDB", () => {
-    it("connects using MONGO_URI", async () => {
+    it("connects using MONGO_URI with a small, fail-fast pool", async () => {
         const { connectDB } = await loadFresh();
 
         await connectDB();
 
-        expect(mongoose.connect).toHaveBeenCalledWith(process.env.MONGO_URI);
+        expect(mongoose.connect).toHaveBeenCalledWith(
+            process.env.MONGO_URI,
+            expect.objectContaining({
+                maxPoolSize: 5,
+                serverSelectionTimeoutMS: 5_000,
+            })
+        );
     });
 
     it("registers a connection error handler", async () => {
@@ -54,12 +62,7 @@ describe("connectDB", () => {
         );
     });
 
-    /**
-     * The error handler calls process.exit(). setup.node.ts replaces exit with
-     * a throwing spy so this is observable instead of fatal -- and so a stray
-     * real connection in another test fails loudly rather than killing the run.
-     */
-    it("exits the process when the connection errors", async () => {
+    it("logs a connection error instead of exiting the process", async () => {
         const { connectDB } = await loadFresh();
         await connectDB();
 
@@ -67,26 +70,69 @@ describe("connectDB", () => {
             .mocked(mongoose.connection.on)
             .mock.calls.find(([event]) => event === "error")![1] as Function;
 
-        expect(() => handler(new Error("connection refused"))).toThrow(
-            /process\.exit/
-        );
+        // setup.node.ts turns process.exit into a throwing spy.
+        expect(() => handler(new Error("connection refused"))).not.toThrow();
     });
 
-    /**
-     * connectDB is invoked at module scope by every route file and adds a new
-     * listener each time, with no cached-connection guard. On a warm serverless
-     * container this accumulates listeners.
-     * Characterizing current behavior.
-     */
-    it("adds another listener on every call rather than reusing one connection", async () => {
+    it("reuses one connection and one listener across calls", async () => {
         const { connectDB } = await loadFresh();
 
         await connectDB();
         await connectDB();
         await connectDB();
 
-        expect(mongoose.connection.on).toHaveBeenCalledTimes(3);
-        expect(mongoose.connect).toHaveBeenCalledTimes(3);
+        expect(mongoose.connection.on).toHaveBeenCalledTimes(1);
+        expect(mongoose.connect).toHaveBeenCalledTimes(1);
+    });
+
+    it("shares an in-flight connection between concurrent callers", async () => {
+        let resolveConnect: () => void;
+        vi.mocked(mongoose.connect).mockReturnValue(
+            new Promise((r) => {
+                resolveConnect = () => r(mongoose as any);
+            }) as any
+        );
+        const { connectDB } = await loadFresh();
+
+        const first = connectDB();
+        const second = connectDB();
+        resolveConnect!();
+        await Promise.all([first, second]);
+
+        expect(mongoose.connect).toHaveBeenCalledTimes(1);
+    });
+
+    it("waits for the connection before resolving", async () => {
+        let resolveConnect: () => void;
+        vi.mocked(mongoose.connect).mockReturnValue(
+            new Promise((r) => {
+                resolveConnect = () => r(mongoose as any);
+            }) as any
+        );
+        const { connectDB } = await loadFresh();
+
+        let done = false;
+        const pending = connectDB().then(() => {
+            done = true;
+        });
+        await Promise.resolve();
+        expect(done).toBe(false);
+
+        resolveConnect!();
+        await pending;
+        expect(done).toBe(true);
+    });
+
+    it("resolves rather than rejects when the connection fails, and retries next call", async () => {
+        vi.mocked(mongoose.connect).mockRejectedValueOnce(
+            new Error("connection refused")
+        );
+        const { connectDB } = await loadFresh();
+
+        await expect(connectDB()).resolves.toBeUndefined();
+        await connectDB();
+
+        expect(mongoose.connect).toHaveBeenCalledTimes(2);
     });
 
     it("swallows a synchronous connect failure instead of rejecting", async () => {
@@ -95,21 +141,6 @@ describe("connectDB", () => {
         });
         const { connectDB } = await loadFresh();
 
-        // The try/catch only logs, so callers cannot detect the failure.
         await expect(connectDB()).resolves.toBeUndefined();
-    });
-
-    it("does not await the connection, so it resolves before mongo is ready", async () => {
-        let resolveConnect: () => void;
-        vi.mocked(mongoose.connect).mockReturnValue(
-            new Promise<void>((r) => {
-                resolveConnect = r;
-            }) as any
-        );
-        const { connectDB } = await loadFresh();
-
-        // Resolves immediately despite the pending connection promise.
-        await expect(connectDB()).resolves.toBeUndefined();
-        resolveConnect!();
     });
 });

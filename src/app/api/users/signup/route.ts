@@ -10,6 +10,7 @@ connectDB();
 
 export async function POST(request) {
     try {
+        await connectDB();
         const body = await request.json();
         const { email, password } = body;
         const oldUser = await User.findOne({ email: email });

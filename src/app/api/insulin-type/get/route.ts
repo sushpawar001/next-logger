@@ -6,6 +6,7 @@ connectDB();
 
 export async function GET(request: NextRequest) {
   try {
+    await connectDB();
     const data = await InsulinType.find({});
     return NextResponse.json({ data: data });
   } catch (error) {

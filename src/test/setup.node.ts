@@ -3,11 +3,9 @@ import { beforeEach, vi } from "vitest";
 /**
  * Global mocks for the `node` project.
  *
- * All 43 route modules call `connectDB()` at module scope. The real
- * implementation registers a connection `error` listener that calls
- * `process.exit()` -- which would take down the Vitest worker -- and adds a new
- * listener per call. Mocking it here removes both, plus any chance of a test
- * reaching a real database.
+ * All 43 route modules call `connectDB()` at module scope. Mocking it here
+ * keeps every test away from a real database (and mongoose's 5s
+ * server-selection wait).
  */
 vi.mock("@/dbConfig/connectDB", () => ({
     connectDB: vi.fn(async () => undefined),

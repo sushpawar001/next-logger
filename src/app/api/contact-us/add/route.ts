@@ -15,6 +15,7 @@ const isFilledString = (value: unknown, max: number): value is string =>
 export async function POST(request: NextRequest) {
     let body: any;
     try {
+        await connectDB();
         body = await request.json();
     } catch {
         return NextResponse.json(

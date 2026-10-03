@@ -7,6 +7,7 @@ connectDB();
 
 export async function GET() {
     try {
+        await connectDB();
         // Get the current user from Clerk
         const { userId } = await auth();
 

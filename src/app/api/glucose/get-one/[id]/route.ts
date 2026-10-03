@@ -14,11 +14,11 @@ export async function GET(request: NextRequest, props) {
         const data = await Glucose.findOne(
             { _id: params.id, user: user },
             { __v: 0, user: 0 }
-        );
+        ).lean();
         if (!data) {
             return NextResponse.json({ error: "Entry not found" }, { status: 404 });
         }
-        const convertedData = convertStringToNumber(data.toObject(), ["value"]);
+        const convertedData = convertStringToNumber(data, ["value"]);
         return NextResponse.json({ data: convertedData });
     } catch (error) {
         console.log("Error getting Glucose " + error);

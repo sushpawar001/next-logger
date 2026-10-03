@@ -13,9 +13,9 @@ export async function GET(request: NextRequest) {
         const data = await Insulin.find(
             { user: user },
             { __v: 0, user: 0 }
-        ).sort({ createdAt: -1 });
+        ).sort({ createdAt: -1 }).lean();
         const convertedData = convertArrayStringToNumber(
-            data.map((item) => item.toObject()),
+            data,
             ["units"]
         );
         return NextResponse.json({ data: convertedData });

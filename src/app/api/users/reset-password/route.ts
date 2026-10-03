@@ -7,6 +7,7 @@ connectDB();
 
 export async function POST(request: NextRequest) {
     try {
+        await connectDB();
         const body = await request.json();
         const { hashedToken, password, confirmPassword } = body;
 

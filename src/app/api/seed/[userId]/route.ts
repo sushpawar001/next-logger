@@ -76,6 +76,7 @@ export async function POST(
 ) {
     const params = await props.params;
     try {
+        await connectDB();
         const { userId } = params;
         const { days = 60, count = 180, seed_token } = await req.json();
 

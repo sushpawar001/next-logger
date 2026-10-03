@@ -14,11 +14,11 @@ export async function GET(request: NextRequest, props) {
         const data = await Measurements.findOne(
             { _id: params.id, user: user },
             { __v: 0, user: 0 }
-        );
+        ).lean();
         if (!data) {
             return NextResponse.json({ error: "Entry not found" }, { status: 404 });
         }
-        const convertedData = convertStringToNumber(data.toObject(), [
+        const convertedData = convertStringToNumber(data, [
             "arms",
             "chest",
             "abdomen",

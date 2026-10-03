@@ -13,9 +13,9 @@ export async function GET() {
         const data = await Glucose.find(
             { user: user },
             { __v: 0, user: 0 }
-        ).sort({ createdAt: -1 });
+        ).sort({ createdAt: -1 }).lean();
         const convertedData = convertArrayStringToNumber(
-            data.map((item) => item.toObject()),
+            data,
             ["value"]
         );
         return NextResponse.json({ data: convertedData });

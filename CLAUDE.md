@@ -39,8 +39,8 @@ Shared harness lives in `src/test/`:
 - `mongoose.ts` — `createModelMock()` (constructible + statics) and
   `createQuery()`, a chainable thenable standing in for a mongoose Query.
   Always use `createFailingQuery()` rather than an eagerly-rejected promise.
-- `setup.node.ts` — globally mocks `@/dbConfig/connectDB` (the real one calls
-  `process.exit()`, which would kill the worker) and `@clerk/nextjs/server`.
+- `setup.node.ts` — globally mocks `@/dbConfig/connectDB` (so no test reaches
+  a real database) and `@clerk/nextjs/server`.
 - `setup.jsdom.tsx` — jsdom gaps: `ResizeObserver`, `matchMedia`,
   `Element.animate`, Pointer Capture, `scrollIntoView`, plus stubs for
   `next/image`, `next/dynamic`, `next/font` and the Chart.js dayjs adapter.

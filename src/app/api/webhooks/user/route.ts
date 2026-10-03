@@ -1,4 +1,5 @@
 import { connectDB } from "@/dbConfig/connectDB";
+import { forgetUserId } from "@/helpers/getUserObjectId";
 import { NextResponse, NextRequest } from "next/server";
 import ClerkUser from "@/models/userModelClerk";
 import Glucose from "@/models/glucoseModel";
@@ -12,6 +13,7 @@ connectDB();
 
 export async function POST(request: NextRequest) {
     try {
+        await connectDB();
         const body = await request.json();
         const { data } = body;
         const requestType = body.type;
@@ -61,6 +63,7 @@ export async function POST(request: NextRequest) {
 
             case "user.deleted": {
                 const clerkUserId = data.id;
+                forgetUserId(clerkUserId);
                 const existingUser = await ClerkUser.findOne({
                     clerkUserId: clerkUserId,
                 });

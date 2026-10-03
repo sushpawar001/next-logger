@@ -10,6 +10,7 @@ const resend = new Resend(process.env.RESEND_API_KEY!);
 
 export async function POST(request: NextRequest) {
     try {
+        await connectDB();
         const body = await request.json();
         const { email } = body;
 
