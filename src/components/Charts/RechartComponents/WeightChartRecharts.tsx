@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { memo, useEffect, useState, useCallback, useMemo } from "react";
 import {
     ComposedChart,
     Area,
@@ -11,7 +11,15 @@ import {
 } from "recharts";
 import axios from "axios";
 import dayjs from "dayjs";
-import { CHART, axisProps, gridProps, tooltipBoxStyle } from "./chartTheme";
+import {
+    CHART,
+    axisProps,
+    gridProps,
+    tooltipBoxStyle,
+    formatDay,
+    toTimestamp,
+} from "./chartTheme";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 
 interface WeightData {
     createdAt?: string | number | Date;
@@ -85,7 +93,16 @@ function dateTicks(min: number, max: number, count = 5) {
  * weigh-ins sit behind it as a thin Aubergine line with small dots, so
  * day-to-day noise reads as secondary.
  */
-export default function WeightChartRecharts(props: {
+type RawPoint = { createdAt: number; value: number };
+
+// Convert createdAt to a timestamp (ms) so the time-scaled axis can plot it.
+const prepareData = (data: WeightData[]): RawPoint[] =>
+    data.map((item) => ({
+        createdAt: toTimestamp(item.createdAt),
+        value: item.value,
+    }));
+
+function WeightChartRecharts(props: {
     days?: number;
     fetch: boolean;
     data?: WeightData[];
@@ -94,26 +111,16 @@ export default function WeightChartRecharts(props: {
     /** Draw a dot per weigh-in. Defaults to true. */
     showDots?: boolean;
 }) {
-    const [weight, setWeight] = useState<{ createdAt: number; value: number }[]>([]);
+    const [fetched, setFetched] = useState<RawPoint[]>(EMPTY_ROWS);
     const daysOfData = props.days || 7;
     const showAverage = props.showAverage ?? true;
     const showDots = props.showDots ?? true;
-
-    // Helper to convert createdAt to timestamp (number)
-    const prepareData = (data: WeightData[]) =>
-        data.map((item) => ({
-            createdAt:
-                typeof item.createdAt === "number"
-                    ? item.createdAt
-                    : new Date(item.createdAt).getTime(),
-            value: item.value,
-        }));
 
     const getWeight = useCallback(async () => {
         try {
             const response = await axios.get(`/api/weight/get/${daysOfData}`);
             if (response.status === 200) {
-                setWeight(prepareData(response.data.data.reverse()));
+                setFetched(prepareData(response.data.data.slice().reverse()));
             } else {
                 console.error(
                     "API request failed with status:",
@@ -126,21 +133,50 @@ export default function WeightChartRecharts(props: {
     }, [daysOfData]);
 
     useEffect(() => {
-        if (props.fetch === false && props.data) {
-            setWeight(prepareData(props.data.slice().reverse()));
-        } else if (props.fetch) {
-            getWeight();
-        }
-    }, [getWeight, props.data, props.fetch]);
+        if (props.fetch) getWeight();
+    }, [getWeight, props.fetch]);
 
-    const points = withSevenDayAverage(weight);
+    // Derived rather than copied into state, so a new data prop paints once.
+    const points = useMemo(
+        () =>
+            withSevenDayAverage(
+                props.fetch === false
+                    ? props.data
+                        ? prepareData(props.data.slice().reverse())
+                        : EMPTY_ROWS
+                    : props.fetch
+                      ? fetched
+                      : EMPTY_ROWS
+            ),
+        [props.fetch, props.data, fetched]
+    );
     const minTime = points.length ? points[0].createdAt : undefined;
     const maxTime = points.length ? points[points.length - 1].createdAt : undefined;
 
-    const values = points.map((d) => Number(d.value));
-    const yDomain: [number, number] | ["auto", "auto"] = values.length
-        ? [Math.floor(Math.min(...values) - 0.5), Math.ceil(Math.max(...values) + 0.5)]
-        : ["auto", "auto"];
+    const yDomain = useMemo((): [number, number] | ["auto", "auto"] => {
+        if (!points.length) return ["auto", "auto"];
+        let lo = Infinity;
+        let hi = -Infinity;
+        for (const d of points) {
+            const v = Number(d.value);
+            if (v < lo) lo = v;
+            if (v > hi) hi = v;
+        }
+        return [Math.floor(lo - 0.5), Math.ceil(hi + 0.5)];
+    }, [points]);
+    const ticks = useMemo(
+        () => (minTime !== undefined ? dateTicks(minTime, maxTime) : []),
+        [minTime, maxTime]
+    );
+
+    const pointCount = points.length;
+    const dot = useMemo(
+        () =>
+            showDots
+                ? (p: any) => <WeighInDot {...p} points={pointCount} />
+                : false,
+        [showDots, pointCount]
+    );
 
     return (
         <ResponsiveContainer width="100%" height="100%">
@@ -158,10 +194,8 @@ export default function WeightChartRecharts(props: {
                             ? [minTime, maxTime]
                             : ["auto", "auto"]
                     }
-                    ticks={
-                        minTime !== undefined ? dateTicks(minTime, maxTime) : []
-                    }
-                    tickFormatter={(value) => dayjs(value).format("D MMM")}
+                    ticks={ticks}
+                    tickFormatter={formatDay}
                     {...axisProps}
                 />
                 <YAxis
@@ -191,11 +225,7 @@ export default function WeightChartRecharts(props: {
                     stroke={CHART.aubergine}
                     strokeOpacity={0.55}
                     strokeWidth={1.5}
-                    dot={
-                        showDots
-                            ? (p: any) => <WeighInDot {...p} points={points.length} />
-                            : false
-                    }
+                    dot={dot}
                     activeDot={{ r: 4, fill: CHART.aubergine, stroke: "#FFFFFF" }}
                     connectNulls
                 />
@@ -216,3 +246,5 @@ export default function WeightChartRecharts(props: {
         </ResponsiveContainer>
     );
 }
+
+export default memo(WeightChartRecharts);

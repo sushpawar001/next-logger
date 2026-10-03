@@ -90,7 +90,9 @@ export default function Stats() {
 
         const byType = new Map<string, insulin[]>();
         for (const row of ins) {
-            byType.set(row.name, [...(byType.get(row.name) ?? []), row]);
+            const list = byType.get(row.name);
+            if (list) list.push(row);
+            else byType.set(row.name, [row]);
         }
         const dailyAvg = (rows: insulin[]) =>
             summarize(getDailyInsulinValues(rows)).avg;

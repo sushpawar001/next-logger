@@ -322,6 +322,14 @@ describe("AdvInsulinChartSeparateRecharts", () => {
         expect(container.textContent).toBeTruthy();
     });
 
+    it("does not refetch when the page hands down an empty filtered list", () => {
+        renderWithProviders(
+            <AdvInsulinChartSeparateRecharts fetch={false} data={[]} />
+        );
+
+        expect(get).not.toHaveBeenCalled();
+    });
+
     it("handles a single insulin type", async () => {
         renderWithProviders(
             <AdvInsulinChartSeparateRecharts

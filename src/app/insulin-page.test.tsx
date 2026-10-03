@@ -129,6 +129,28 @@ describe("insulin page", () => {
         expect(screen.getByText("Showing 4 of 4")).toBeInTheDocument();
     });
 
+    it("shows 20 doses at a time", async () => {
+        const user = userEvent.setup();
+        route(
+            Array.from({ length: 25 }, (_, i) => ({
+                _id: `p${i}`,
+                units: 4,
+                name: "NovoRapid",
+                createdAt: dayjs().subtract(i + 1, "day").toISOString(),
+                tag: null,
+            }))
+        );
+        await mountList();
+
+        expect(within(table()).getAllByRole("row").slice(1)).toHaveLength(20);
+        expect(screen.getByText("Showing 20 of 25")).toBeInTheDocument();
+
+        await user.click(screen.getByRole("button", { name: "Load more" }));
+
+        expect(screen.getByText("Showing 25 of 25")).toBeInTheDocument();
+        expect(screen.queryByRole("button", { name: "Load more" })).not.toBeInTheDocument();
+    });
+
     it("filters the table by insulin", async () => {
         const user = userEvent.setup();
         await mountList();
@@ -138,7 +160,7 @@ describe("insulin page", () => {
 
         // Rows leave through auto-animate, which jsdom never finishes, so
         // count through the summary rather than the DOM.
-        expect(screen.getByText("Showing 1 of 4")).toBeInTheDocument();
+        expect(screen.getByText("Showing 1 of 1")).toBeInTheDocument();
     });
 
     it("filters the table by tag", async () => {
@@ -148,7 +170,7 @@ describe("insulin page", () => {
 
         await user.click(within(byTag).getByRole("button", { name: "Before meal" }));
 
-        expect(screen.getByText("Showing 2 of 4")).toBeInTheDocument();
+        expect(screen.getByText("Showing 2 of 2")).toBeInTheDocument();
     });
 
     it("says so when the filters match nothing", async () => {

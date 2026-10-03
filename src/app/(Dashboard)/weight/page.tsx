@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import formatDate from "@/helpers/formatDate";
 import notify from "@/helpers/notify";
 import { useEntries } from "@/hooks/queries/useEntries";
@@ -78,7 +78,21 @@ export default function WeightPage() {
     };
 
     // Filter data based on selected tags (newest first, as the API returns it)
-    const filteredWeightData = filterByTags(weightData, selectedTags);
+    const filteredWeightData = useMemo(
+        () => filterByTags(weightData, selectedTags),
+        [weightData, selectedTags]
+    );
+    const { values, average, highest, lowest } = useMemo(() => {
+        const values = filteredWeightData.map((w) => Number(w.value));
+        return {
+            values,
+            average: values.length
+                ? values.reduce((a, b) => a + b, 0) / values.length
+                : 0,
+            highest: values.length ? Math.max(...values) : 0,
+            lowest: values.length ? Math.min(...values) : 0,
+        };
+    }, [filteredWeightData]);
 
     if (isPending) {
         return <LoadingSkeleton />;
@@ -92,13 +106,9 @@ export default function WeightPage() {
         );
     }
 
-    const values = filteredWeightData.map((w) => Number(w.value));
     const latest = filteredWeightData[0];
     const oldest = filteredWeightData[filteredWeightData.length - 1];
     const change = latest && oldest ? Number(latest.value) - Number(oldest.value) : 0;
-    const average = values.length
-        ? values.reduce((a, b) => a + b, 0) / values.length
-        : 0;
     const periodLabel =
         daysOfData === ALL_DAYS ? "in view" : `in ${daysOfData} days`;
     const averageLabel =
@@ -170,14 +180,14 @@ export default function WeightPage() {
                                 </Stat>
                                 <Stat label="Highest">
                                     <Reading
-                                        value={values.length ? kg(Math.max(...values)) : "–"}
+                                        value={values.length ? kg(highest) : "–"}
                                         unit={values.length ? "kg" : undefined}
                                         size="sm"
                                     />
                                 </Stat>
                                 <Stat label="Lowest">
                                     <Reading
-                                        value={values.length ? kg(Math.min(...values)) : "–"}
+                                        value={values.length ? kg(lowest) : "–"}
                                         unit={values.length ? "kg" : undefined}
                                         size="sm"
                                     />

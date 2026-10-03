@@ -11,7 +11,7 @@ import { filterByTags } from "@/helpers/tagFilterHelpers";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Pencil } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useEntries } from "@/hooks/queries/useEntries";
 import { EMPTY_ROWS } from "@/lib/query/keys";
 import { useDeleteEntry } from "@/hooks/queries/useEntryMutations";
@@ -84,6 +84,21 @@ export default function GlucosePage() {
         }
     };
 
+    // Derived once per data or filter change, not on every dialog toggle or
+    // "Load more".
+    const filteredGlucoseData = useMemo(
+        () => filterByTags(glucoseData, selectedTags),
+        [glucoseData, selectedTags]
+    );
+    const { summary, byTag, tagBarMax } = useMemo(() => {
+        const byTag = averageByTag(glucoseData, entryTags);
+        return {
+            summary: summarise(glucoseData),
+            byTag,
+            tagBarMax: Math.max(TAG_BAR_MAX, ...byTag.map((t) => t.average)),
+        };
+    }, [glucoseData]);
+
     const openLog = () => dialog.setOpen(true);
     const logDialog = (
         <>
@@ -126,12 +141,7 @@ export default function GlucosePage() {
         );
     }
 
-    // Filter data based on selected tags
-    const filteredGlucoseData = filterByTags(glucoseData, selectedTags);
     const latest = glucoseData[0];
-    const summary = summarise(glucoseData);
-    const byTag = averageByTag(glucoseData, entryTags);
-    const tagBarMax = Math.max(TAG_BAR_MAX, ...byTag.map((t) => t.average));
     const shown = filteredGlucoseData.slice(0, visible);
 
     return (

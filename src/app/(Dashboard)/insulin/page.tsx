@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { ArrowRight, Pencil } from "lucide-react";
@@ -30,7 +30,7 @@ import {
     PanelTitle,
 } from "@/components/app-ui/layout";
 import { LegendItem, Reading, TagPill } from "@/components/app-ui/data";
-import { IconButton } from "@/components/app-ui/controls";
+import { AppButton, IconButton } from "@/components/app-ui/controls";
 import { DataTable, DataTableWrap, actionsCell } from "@/components/app-ui/table";
 import {
     LogEntryButton,
@@ -47,6 +47,8 @@ type insulinEntryType = {
     units: number;
     tag: string;
 };
+
+const PAGE_SIZE = 20;
 
 /** A short vertical bar in the insulin's kind colour. */
 function KindMark({ name, tall = false }: { name: string; tall?: boolean }) {
@@ -79,6 +81,7 @@ export default function InsulinPage() {
     const [daysOfData, setDaysOfData] = useState(7);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [selectedInsulins, setSelectedInsulins] = useState<string[]>([]);
+    const [visible, setVisible] = useState(PAGE_SIZE);
     const [parent] = useAutoAnimate({ duration: 400 });
 
     const {
@@ -92,7 +95,68 @@ export default function InsulinPage() {
 
     const changeDaysOfData = (event: { target: { value: string } }) => {
         setDaysOfData(parseInt(event.target.value));
+        setVisible(PAGE_SIZE);
     };
+
+    const changeTags = (tags: string[]) => {
+        setSelectedTags(tags);
+        setVisible(PAGE_SIZE);
+    };
+
+    const changeInsulins = (names: string[]) => {
+        setSelectedInsulins(names);
+        setVisible(PAGE_SIZE);
+    };
+
+    const filteredInsulinData = useMemo(
+        () =>
+            filterByTags(insulinData, selectedTags).filter(
+                (entry) =>
+                    selectedInsulins.length === 0 ||
+                    selectedInsulins.includes(entry.name)
+            ),
+        [insulinData, selectedTags, selectedInsulins]
+    );
+
+    // "Today" ignores the filters: it answers "how much have I taken today".
+    // Keyed on the date too, so a page left open past midnight rolls over.
+    const todayKey = dayjs().format("YYYY-MM-DD");
+    const today = useMemo(() => {
+        const now = dayjs(todayKey);
+        return insulinData
+            .filter((d) => dayjs(d.createdAt).isSame(now, "day"))
+            .sort((a, b) => +new Date(a.createdAt) - +new Date(b.createdAt));
+    }, [insulinData, todayKey]);
+
+    const insulinNames = useMemo(
+        () =>
+            Array.from(
+                new Set([
+                    ...userInsulins.map((i) => i.name),
+                    ...insulinData.map((d) => d.name),
+                ])
+            )
+                .filter(Boolean)
+                .sort((a, b) => a.localeCompare(b)),
+        [userInsulins, insulinData]
+    );
+
+    const dailyAverage = useMemo(() => {
+        const dailyTotals = dailyInsulinTotals(filteredInsulinData);
+        return dailyTotals.length
+            ? dailyTotals.reduce((s, d) => s + d.total, 0) / dailyTotals.length
+            : 0;
+    }, [filteredInsulinData]);
+
+    const chartData = useMemo(
+        () =>
+            filteredInsulinData.map(({ units, name, createdAt }) => ({
+                units,
+                name,
+                createdAt: new Date(createdAt),
+            })),
+        [filteredInsulinData]
+    );
 
     const deleteData = async (id: string) => {
         try {
@@ -115,30 +179,12 @@ export default function InsulinPage() {
         );
     }
 
-    const filteredInsulinData = filterByTags(insulinData, selectedTags).filter(
-        (entry) =>
-            selectedInsulins.length === 0 || selectedInsulins.includes(entry.name)
-    );
-
-    // "Today" ignores the filters: it answers "how much have I taken today".
-    const today = insulinData
-        .filter((d) => dayjs(d.createdAt).isSame(dayjs(), "day"))
-        .sort((a, b) => dayjs(a.createdAt).valueOf() - dayjs(b.createdAt).valueOf());
     const todaySplit = splitUnits(today);
     const lastDose = today[today.length - 1];
     const todayByName = (name: string) =>
         today.filter((d) => d.name === name).reduce((s, d) => s + Number(d.units), 0);
 
-    const insulinNames = Array.from(
-        new Set([...userInsulins.map((i) => i.name), ...insulinData.map((d) => d.name)])
-    )
-        .filter(Boolean)
-        .sort((a, b) => a.localeCompare(b));
-
-    const dailyTotals = dailyInsulinTotals(filteredInsulinData);
-    const dailyAverage = dailyTotals.length
-        ? dailyTotals.reduce((s, d) => s + d.total, 0) / dailyTotals.length
-        : 0;
+    const shown = filteredInsulinData.slice(0, visible);
 
     const pct = (n: number) =>
         todaySplit.total > 0 ? `${(n / todaySplit.total) * 100}%` : "0%";
@@ -258,7 +304,7 @@ export default function InsulinPage() {
                 {insulinNames.length > 0 && (
                     <TagFilterCard
                         selectedTags={selectedInsulins}
-                        onTagsChange={setSelectedInsulins}
+                        onTagsChange={changeInsulins}
                         tags={insulinNames}
                         label="Filter by insulin"
                         title="Insulin"
@@ -266,7 +312,7 @@ export default function InsulinPage() {
                 )}
                 <TagFilterCard
                     selectedTags={selectedTags}
-                    onTagsChange={setSelectedTags}
+                    onTagsChange={changeTags}
                 />
             </div>
 
@@ -299,13 +345,7 @@ export default function InsulinPage() {
                     </PanelHead>
                     <div className="h-[220px]">
                         <InsulinChartRecharts
-                            data={filteredInsulinData.map(
-                                ({ units, name, createdAt }) => ({
-                                    units,
-                                    name,
-                                    createdAt: new Date(createdAt),
-                                })
-                            )}
+                            data={chartData}
                             fetch={false}
                         />
                     </div>
@@ -315,7 +355,7 @@ export default function InsulinPage() {
                     <PanelHead>
                         <PanelTitle id="doses-title">Doses</PanelTitle>
                         <span className="text-[13px] text-brand-muted">
-                            Showing {filteredInsulinData.length} of {insulinData.length}
+                            Showing {shown.length} of {filteredInsulinData.length}
                         </span>
                     </PanelHead>
                     <DataTableWrap>
@@ -345,7 +385,7 @@ export default function InsulinPage() {
                                         </td>
                                     </tr>
                                 ) : (
-                                    filteredInsulinData.map((entry) => {
+                                    shown.map((entry) => {
                                         const when = dayjs(entry.createdAt);
                                         return (
                                             <tr key={entry._id}>
@@ -398,6 +438,16 @@ export default function InsulinPage() {
                             </tbody>
                         </DataTable>
                     </DataTableWrap>
+                    {filteredInsulinData.length > visible && (
+                        <div className="mt-4 text-center">
+                            <AppButton
+                                variant="outline"
+                                onClick={() => setVisible((v) => v + PAGE_SIZE)}
+                            >
+                                Load more
+                            </AppButton>
+                        </div>
+                    )}
                 </Panel>
             </div>
 

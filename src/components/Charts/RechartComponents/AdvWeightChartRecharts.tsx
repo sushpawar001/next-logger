@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { memo, useEffect, useState, useCallback, useMemo } from "react";
 import {
     ComposedChart,
     Area,
@@ -13,7 +13,8 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { simpleMovingAverage } from "@/helpers/statsHelpers";
 import getMovingAvgInterval from "@/helpers/getMovingAvgInterval";
-import { CHART, axisProps, gridProps } from "./chartTheme";
+import { CHART, axisProps, gridProps, formatDay, withTimestamps } from "./chartTheme";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 import { ChartTooltip, SeriesToggle, dailyTicks } from "./chartParts";
 
 interface WeightData {
@@ -25,37 +26,23 @@ interface WeightData {
  * Weight is a trend, not a verdict: the Lavender moving average is the main
  * line, and single weigh-ins sit behind it as a thin line with small dots.
  */
-export default function AdvWeightChartRecharts(props: {
+function AdvWeightChartRecharts(props: {
     days?: number;
     fetch: boolean;
     data?: WeightData[];
 }) {
-    const [weight, setWeight] = useState<WeightData[]>([]);
-    const [maInterval, setMaInterval] = useState(1);
+    const [fetched, setFetched] = useState<WeightData[] | null>(null);
     const [visibleLines, setVisibleLines] = useState<{
         value: boolean;
         ma: boolean;
     }>({ value: true, ma: true });
     const daysOfData = props.days || 7;
 
-    // Helper to convert createdAt to timestamp (number)
-    const prepareData = (data: WeightData[]): WeightData[] => {
-        return data.map((item) => ({
-            ...item,
-            createdAt:
-                typeof item.createdAt === "number"
-                    ? item.createdAt
-                    : new Date(item.createdAt).getTime(),
-        }));
-    };
-
     const getWeight = useCallback(async () => {
         try {
             const response = await axios.get(`/api/weight/get/${daysOfData}`);
             if (response.status === 200) {
-                let weightData = prepareData(response.data.data.reverse());
-                setWeight(weightData);
-                setMaInterval(getMovingAvgInterval(daysOfData));
+                setFetched(withTimestamps(response.data.data.slice().reverse()));
             } else {
                 console.error(
                     "API request failed with status:",
@@ -68,37 +55,56 @@ export default function AdvWeightChartRecharts(props: {
     }, [daysOfData]);
 
     useEffect(() => {
-        if (props.fetch === false && props.data) {
-            setWeight(prepareData(props.data.slice().reverse()));
-            setMaInterval(getMovingAvgInterval(daysOfData));
-        } else if (props.fetch) {
-            getWeight();
+        if (props.fetch) getWeight();
+    }, [getWeight, props.fetch]);
+
+    // Supplied rows (fetch={false}) or a completed fetch; until either
+    // arrives the window stays at 1, as before.
+    const supplied = props.fetch === false && !!props.data;
+    const weight = supplied
+        ? props.data
+        : props.fetch && fetched
+          ? fetched
+          : EMPTY_ROWS;
+    const maInterval =
+        supplied || (props.fetch && fetched)
+            ? getMovingAvgInterval(daysOfData)
+            : 1;
+
+    // Derived rather than copied into state, so a new data prop paints once.
+    const { chartData, minTime, maxTime, yDomain } = useMemo(() => {
+        const rows = supplied ? withTimestamps(weight.slice().reverse()) : weight;
+        const weightValues = rows.map((d) => d.value);
+        const maValues = simpleMovingAverage(weightValues, maInterval);
+        const chartData = rows.map((d, i) => ({
+            ...d,
+            ma: maValues[i],
+        }));
+
+        let lo = Infinity;
+        let hi = -Infinity;
+        for (const d of rows) {
+            const t = d.createdAt as number;
+            if (t < lo) lo = t;
+            if (t > hi) hi = t;
         }
-    }, [getWeight, props.data, props.fetch]);
 
-    const weightValues = weight.map((d) => d.value);
-    const maValues = simpleMovingAverage(weightValues, maInterval);
-    const chartData = weight.map((d, i) => ({
-        ...d,
-        ma: maValues[i],
-    }));
-
-    const minTime = weight.length
-        ? Math.min(...weight.map((d) => d.createdAt as number))
-        : undefined;
-    const maxTime = weight.length
-        ? Math.max(...weight.map((d) => d.createdAt as number))
-        : undefined;
-
-    // Tight, padded domain: a kilo matters, so don't start the axis at zero.
-    const weightOnly = weightValues.filter((v) => v !== null);
-    const minWeight = weightOnly.length ? Math.min(...weightOnly) : 0;
-    const maxWeight = weightOnly.length ? Math.max(...weightOnly) : 100;
-    const pad = Math.max(0.5, (maxWeight - minWeight) * 0.15);
-    const yDomain = [
-        Math.floor(Math.max(0, minWeight - pad)),
-        Math.ceil(maxWeight + pad),
-    ];
+        // Tight, padded domain: a kilo matters, so don't start the axis at zero.
+        const weightOnly = weightValues.filter((v) => v !== null);
+        const minWeight = weightOnly.length ? Math.min(...weightOnly) : 0;
+        const maxWeight = weightOnly.length ? Math.max(...weightOnly) : 100;
+        const pad = Math.max(0.5, (maxWeight - minWeight) * 0.15);
+        return {
+            chartData,
+            minTime: rows.length ? lo : undefined,
+            maxTime: rows.length ? hi : undefined,
+            yDomain: [
+                Math.floor(Math.max(0, minWeight - pad)),
+                Math.ceil(maxWeight + pad),
+            ],
+        };
+    }, [weight, supplied, maInterval]);
+    const ticks = useMemo(() => dailyTicks(minTime, maxTime, 6), [minTime, maxTime]);
 
     const maLabel = `Moving avg (${maInterval})`;
 
@@ -120,10 +126,8 @@ export default function AdvWeightChartRecharts(props: {
                                     ? [minTime, maxTime]
                                     : ["auto", "auto"]
                             }
-                            ticks={dailyTicks(minTime, maxTime, 6)}
-                            tickFormatter={(value) =>
-                                dayjs(value).format("D MMM")
-                            }
+                            ticks={ticks}
+                            tickFormatter={formatDay}
                         />
                         <YAxis {...axisProps} domain={yDomain} width={36} />
                         <Tooltip content={<ChartTooltip unit="kg" />} />
@@ -179,3 +183,5 @@ export default function AdvWeightChartRecharts(props: {
         </div>
     );
 }
+
+export default memo(AdvWeightChartRecharts);

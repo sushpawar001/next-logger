@@ -1,4 +1,5 @@
 "use client";
+import { useMemo } from "react";
 import dayjs from "dayjs";
 import GlucoseChartRecharts from "@/components/Charts/RechartComponents/GlucoseChartRecharts";
 import { Panel, PanelHead, PanelSub, PanelTitle } from "@/components/app-ui/layout";
@@ -31,12 +32,19 @@ export default function GlucoseDayContext({
     const { data = EMPTY_ROWS as glucose[] } = useEntries<glucose>("glucose", days);
     const rows = Array.isArray(data) ? data : (EMPTY_ROWS as glucose[]);
 
-    const start = dayjs(createdAt).startOf("day");
-    const end = start.endOf("day");
-    const sameDay = rows.filter((r) => {
-        const t = dayjs(r.createdAt);
-        return !t.isBefore(start) && !t.isAfter(end);
-    });
+    // Stable references, so the memoised chart only re-renders when the day's
+    // readings change rather than on every edit-form keystroke.
+    const xDomain = useMemo((): [number, number] => {
+        const start = dayjs(createdAt).startOf("day");
+        return [start.valueOf(), start.endOf("day").valueOf()];
+    }, [createdAt]);
+    const sameDay = useMemo(() => {
+        const [from, to] = xDomain;
+        return rows.filter((r) => {
+            const t = +new Date(r.createdAt);
+            return t >= from && t <= to;
+        });
+    }, [rows, xDomain]);
 
     if (sameDay.length === 0) return null;
 
@@ -56,7 +64,7 @@ export default function GlucoseDayContext({
                     data={sameDay}
                     fetch={false}
                     xTicks="hour"
-                    xDomain={[start.valueOf(), end.valueOf()]}
+                    xDomain={xDomain}
                     highlight={createdAt}
                 />
             </div>

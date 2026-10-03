@@ -7,6 +7,7 @@
  * - Weight's 7-day average is the Lavender main line; single weigh-ins sit
  *   behind it as a thin Aubergine line with small dots.
  */
+import dayjs from "dayjs";
 import { glucoseStatus } from "@/helpers/glucoseStatus";
 
 export const CHART = {
@@ -56,3 +57,15 @@ export function statusColor(value: number) {
     const status = glucoseStatus(value);
     return status === "in" ? CHART.aubergine : CHART[status];
 }
+
+/** A row's createdAt as a timestamp (ms), for the time-scaled x axes. */
+export const toTimestamp = (createdAt: string | number | Date): number =>
+    typeof createdAt === "number" ? createdAt : new Date(createdAt).getTime();
+
+/** Rows with createdAt normalised to a timestamp (ms). */
+export const withTimestamps = <T extends { createdAt?: string | number | Date }>(
+    data: T[]
+): T[] => data.map((item) => ({ ...item, createdAt: toTimestamp(item.createdAt) }));
+
+/** Day label for date axes and tooltips. */
+export const formatDay = (value: number) => dayjs(value).format("D MMM");

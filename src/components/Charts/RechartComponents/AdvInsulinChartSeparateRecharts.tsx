@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import {
     BarChart,
     Bar,
@@ -13,6 +13,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { insulin } from "@/types/models";
 import { CHART, SERIES, axisProps, gridProps } from "./chartTheme";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 import { ChartTooltip } from "./chartParts";
 
 /** Daily units per insulin type, keyed by local day. */
@@ -43,14 +44,15 @@ export default function AdvInsulinChartSeparateRecharts(props: {
     fetch?: boolean;
     data?: insulin[];
 }) {
-    const [insulinData, setInsulinData] = useState<insulin[]>([]);
+    const [fetched, setFetched] = useState<insulin[]>(EMPTY_ROWS);
     const daysOfData = props.days || 7;
+    const hasData = !!props.data && props.data.length > 0;
 
     const getInsulin = useCallback(async () => {
         try {
             const response = await axios.get(`/api/insulin/get/${daysOfData}`);
             if (response.status === 200) {
-                setInsulinData(response.data.data.slice().reverse());
+                setFetched(response.data.data);
             } else {
                 console.error(
                     "API request failed with status:",
@@ -63,14 +65,19 @@ export default function AdvInsulinChartSeparateRecharts(props: {
     }, [daysOfData]);
 
     useEffect(() => {
-        if (props.data && props.data.length > 0) {
-            setInsulinData(props.data.slice().reverse());
-        } else {
-            getInsulin();
-        }
-    }, [getInsulin, props.data]);
+        if (!hasData && props.fetch !== false) getInsulin();
+    }, [getInsulin, hasData, props.fetch]);
 
-    const { names, days, byDay } = dailyUnitsByType(insulinData);
+    // Supplied rows win; otherwise show what was fetched. With fetch={false}
+    // an empty list (e.g. a tag filter matching no insulin) renders the empty
+    // state instead of refetching the unfiltered period.
+    const source = hasData ? props.data : props.fetch === false ? EMPTY_ROWS : fetched;
+
+    // Oldest first, so the first type logged takes the first series colour.
+    const { names, days, byDay } = useMemo(
+        () => dailyUnitsByType(source.slice().reverse()),
+        [source]
+    );
 
     if (names.length === 0) {
         return (

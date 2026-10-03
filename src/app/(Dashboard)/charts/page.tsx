@@ -1,6 +1,6 @@
 "use client";
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Loader2 } from "lucide-react";
 import AdvInsulinChartSeparateRecharts from "@/components/Charts/RechartComponents/AdvInsulinChartSeparateRecharts";
 import AdvWeightChartRecharts from "@/components/Charts/RechartComponents/AdvWeightChartRecharts";
@@ -60,9 +60,19 @@ export default function ChartPage() {
     const weightData = weightQuery.data ?? EMPTY_ROWS;
     const insulinData = insulinQuery.data ?? EMPTY_ROWS;
 
-    const filteredGlucoseData = filterByTags(glucoseData, selectedTags);
-    const filteredWeightData = filterByTags(weightData, selectedTags);
-    const filteredInsulinData = filterByTags(insulinData, selectedTags);
+    // Memoised so the charts (React.memo) keep the same rows across renders.
+    const filteredGlucoseData = useMemo(
+        () => filterByTags(glucoseData, selectedTags),
+        [glucoseData, selectedTags]
+    );
+    const filteredWeightData = useMemo(
+        () => filterByTags(weightData, selectedTags),
+        [weightData, selectedTags]
+    );
+    const filteredInsulinData = useMemo(
+        () => filterByTags(insulinData, selectedTags),
+        [insulinData, selectedTags]
+    );
 
     // Rows arrive newest first.
     const latestWeight: number | undefined = filteredWeightData[0]?.value;

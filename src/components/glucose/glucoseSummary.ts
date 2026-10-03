@@ -2,13 +2,14 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { localZone } from "@/helpers/formatDate";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(relativeTime);
 
 /** UTC → the viewer's zone, the same conversion as src/helpers/formatDate.ts. */
-const local = (raw: string | Date) => dayjs.utc(raw).tz(dayjs.tz.guess());
+const local = (raw: string | Date) => dayjs.utc(raw).tz(localZone());
 
 /** "26 Sep" */
 export const dayLabel = (raw: string | Date) => local(raw).format("D MMM");

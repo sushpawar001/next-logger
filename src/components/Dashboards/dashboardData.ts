@@ -7,6 +7,7 @@ import { getHba1cPrecise } from "@/helpers/statsHelpers";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { localZone } from "@/helpers/formatDate";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -16,12 +17,14 @@ type Dated = { createdAt?: string | Date | number };
 
 /** Entry dates are stored in UTC; show them in the browser's zone (see formatDate.ts). */
 export const toLocal = (d: string | Date | number): Dayjs =>
-    dayjs.utc(d).tz(dayjs.tz.guess());
+    dayjs.utc(d).tz(localZone());
 
 export const timeOf = (d: string | Date | number) => toLocal(d).format("HH:mm");
 
+const localDayKey = (now: Dayjs) => now.tz(localZone()).format("YYYY-MM-DD");
+
 export function isSameLocalDay(d: string | Date | number, now: Dayjs = dayjs()) {
-    return toLocal(d).format("YYYY-MM-DD") === now.tz(dayjs.tz.guess()).format("YYYY-MM-DD");
+    return toLocal(d).format("YYYY-MM-DD") === localDayKey(now);
 }
 
 export function greeting(now: Dayjs = dayjs()) {
@@ -73,9 +76,15 @@ export function todayEntries(
     },
     now: Dayjs = dayjs()
 ): TodayItem[] {
+    // Today's key once, rather than re-converting `now` for every row.
+    const today = localDayKey(now);
     const pick = (kind: TodayItem["kind"], rows: readonly Row[]) =>
         rows
-            .filter((r) => r.createdAt && isSameLocalDay(r.createdAt, now))
+            .filter(
+                (r) =>
+                    r.createdAt &&
+                    toLocal(r.createdAt).format("YYYY-MM-DD") === today
+            )
             .map((r, i) => ({
                 kind,
                 id: r._id ?? `${kind}-${i}`,
@@ -106,9 +115,29 @@ export function weightTrend(rows: readonly { value: number; createdAt?: string |
         .map((r) => ({ t: +new Date(r.createdAt!), value: Number(r.value) }))
         .sort((a, b) => a.t - b.t);
     const WEEK = 7 * 24 * 60 * 60 * 1000;
+    // Sliding window over the sorted points: `start` is the oldest weigh-in
+    // still inside the week ending at p, and `end` takes in ties at p.t.
+    // Non-numeric values (e.g. a row that failed to decrypt) are kept out of
+    // the running sum -- once added, a NaN could never be subtracted back out
+    // and would blank every later average.
+    let start = 0;
+    let end = 0;
+    let sum = 0;
+    let count = 0;
     return pts.map((p) => {
-        const window = pts.filter((q) => q.t <= p.t && q.t > p.t - WEEK);
-        const avg = window.reduce((a, b) => a + b.value, 0) / window.length;
+        for (; end < pts.length && pts[end].t <= p.t; end++) {
+            if (Number.isFinite(pts[end].value)) {
+                sum += pts[end].value;
+                count++;
+            }
+        }
+        for (; pts[start].t <= p.t - WEEK; start++) {
+            if (Number.isFinite(pts[start].value)) {
+                sum -= pts[start].value;
+                count--;
+            }
+        }
+        const avg = count ? sum / count : NaN;
         return { ...p, avg: Math.round(avg * 10) / 10 };
     });
 }

@@ -5,6 +5,7 @@
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { localZone } from "@/helpers/formatDate";
 import {
     MEASUREMENT_FIELDS,
     type MeasurementField,
@@ -60,7 +61,7 @@ export function filledCount(row: Row): number {
 
 /** "23 Sep", converted from UTC to the user's zone like formatDate(). */
 export function dayLabel(rawDate: string | Date): string {
-    return dayjs.utc(rawDate).tz(dayjs.tz.guess()).format("D MMM");
+    return dayjs.utc(rawDate).tz(localZone()).format("D MMM");
 }
 
 /** "+0.3 cm", "−1.2 cm", "0 cm" (with a true minus sign). */

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { memo, useEffect, useState, useCallback, useMemo } from "react";
 import {
     LineChart,
     Line,
@@ -20,10 +20,13 @@ import {
     gridProps,
     statusColor,
     tooltipBoxStyle,
+    formatDay,
+    withTimestamps,
 } from "./chartTheme";
+import { EMPTY_ROWS } from "@/lib/query/keys";
 
 interface GlucoseData {
-    createdAt?: string | number | Date; // Normalised to a timestamp (ms) by prepareData
+    createdAt?: string | number | Date; // Normalised to a timestamp (ms) by withTimestamps
     value: number;
 }
 
@@ -110,7 +113,8 @@ const makeDot =
         );
     };
 
-export default function GlucoseChartRecharts(props: {
+const formatHour = (value: number) => dayjs(value).format("HH:mm");
+function GlucoseChartRecharts(props: {
     days?: number;
     fetch: boolean;
     data?: GlucoseData[];
@@ -124,26 +128,14 @@ export default function GlucoseChartRecharts(props: {
     xDomain?: [number, number];
     dotRadius?: number;
 }) {
-    const [glucose, setGlucose] = useState<GlucoseData[]>([]);
+    const [fetched, setFetched] = useState<GlucoseData[]>(EMPTY_ROWS);
     const daysOfData = props.days || 7;
-
-    // Helper to convert createdAt to timestamp (number)
-    const prepareData = (data: GlucoseData[]): GlucoseData[] => {
-        return data.map((item) => ({
-            ...item,
-            createdAt:
-                typeof item.createdAt === "number"
-                    ? item.createdAt
-                    : new Date(item.createdAt).getTime(),
-        }));
-    };
 
     const getGlucose = useCallback(async () => {
         try {
             const response = await axios.get(`/api/glucose/get/${daysOfData}`);
             if (response.status === 200) {
-                let glucoseData = prepareData(response.data.data.reverse());
-                setGlucose(glucoseData);
+                setFetched(withTimestamps(response.data.data.slice().reverse()));
             } else {
                 console.error(
                     "API request failed with status:",
@@ -156,25 +148,49 @@ export default function GlucoseChartRecharts(props: {
     }, [daysOfData]);
 
     useEffect(() => {
-        if (props.fetch === false && props.data) {
-            setGlucose(prepareData(props.data.slice().reverse()));
-        } else if (props.fetch) {
-            getGlucose();
+        if (props.fetch) getGlucose();
+    }, [getGlucose, props.fetch]);
+
+    // Derived rather than copied into state, so a new data prop paints once.
+    const glucose = useMemo(
+        () =>
+            props.fetch === false
+                ? props.data
+                    ? withTimestamps(props.data.slice().reverse())
+                    : EMPTY_ROWS
+                : props.fetch
+                  ? fetched
+                  : EMPTY_ROWS,
+        [props.fetch, props.data, fetched]
+    );
+
+    const { minTime, maxTime, maxValue } = useMemo(() => {
+        let lo = Infinity;
+        let hi = -Infinity;
+        let top = 0;
+        for (const d of glucose) {
+            const t = d.createdAt as number;
+            if (t < lo) lo = t;
+            if (t > hi) hi = t;
+            const v = Number(d.value) || 0;
+            if (v > top) top = v;
         }
-    }, [getGlucose, props.data, props.fetch]);
+        return {
+            minTime: props.xDomain
+                ? props.xDomain[0]
+                : glucose.length
+                  ? lo
+                  : undefined,
+            maxTime: props.xDomain
+                ? props.xDomain[1]
+                : glucose.length
+                  ? hi
+                  : undefined,
+            maxValue: top,
+        };
+    }, [glucose, props.xDomain]);
 
-    const minTime = props.xDomain
-        ? props.xDomain[0]
-        : glucose.length
-          ? Math.min(...glucose.map((d) => d.createdAt as number))
-          : undefined;
-    const maxTime = props.xDomain
-        ? props.xDomain[1]
-        : glucose.length
-          ? Math.max(...glucose.map((d) => d.createdAt as number))
-          : undefined;
-
-    const getTicks = () => {
+    const ticks = useMemo(() => {
         if (minTime === undefined || maxTime === undefined) return [];
         const ticks = [];
         if (props.xTicks === "hour") {
@@ -195,7 +211,7 @@ export default function GlucoseChartRecharts(props: {
         // Too many midnights to label on a long window: thin them out.
         const every = Math.ceil(ticks.length / 8);
         return ticks.filter((_, i) => i % every === 0);
-    };
+    }, [minTime, maxTime, props.xTicks]);
 
     const highlight =
         props.highlight == null
@@ -204,10 +220,13 @@ export default function GlucoseChartRecharts(props: {
               ? props.highlight
               : new Date(props.highlight).getTime();
 
-    const maxValue = glucose.length
-        ? Math.max(...glucose.map((d) => Number(d.value) || 0))
-        : 0;
     const yMax = Math.max(260, Math.ceil((maxValue + 20) / 20) * 20);
+
+    const dot = useMemo(
+        () => makeDot(props.dotRadius ?? 3.5, highlight),
+        [props.dotRadius, highlight]
+    );
+    const tickFormatter = props.xTicks === "hour" ? formatHour : formatDay;
 
     return (
         <ResponsiveContainer width="100%" height="100%">
@@ -242,12 +261,8 @@ export default function GlucoseChartRecharts(props: {
                             ? [minTime, maxTime]
                             : ["auto", "auto"]
                     }
-                    ticks={getTicks()}
-                    tickFormatter={(value) =>
-                        props.xTicks === "hour"
-                            ? dayjs(value).format("HH:mm")
-                            : dayjs(value).format("D MMM")
-                    }
+                    ticks={ticks}
+                    tickFormatter={tickFormatter}
                 />
                 <YAxis
                     {...axisProps}
@@ -278,7 +293,7 @@ export default function GlucoseChartRecharts(props: {
                     stroke={CHART.aubergine}
                     strokeWidth={2.5}
                     strokeLinecap="round"
-                    dot={makeDot(props.dotRadius ?? 3.5, highlight)}
+                    dot={dot}
                     activeDot={{
                         r: 6,
                         fill: CHART.aubergine,
@@ -292,3 +307,5 @@ export default function GlucoseChartRecharts(props: {
         </ResponsiveContainer>
     );
 }
+
+export default memo(GlucoseChartRecharts);

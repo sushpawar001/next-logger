@@ -97,6 +97,17 @@ describe("unitsByName", () => {
 });
 
 describe("weightTrend", () => {
+    it("keeps one unreadable value from blanking later averages", () => {
+        const trend = weightTrend([
+            { value: 70, createdAt: "2026-09-01T07:00:00Z" },
+            { value: NaN, createdAt: "2026-09-02T07:00:00Z" },
+            { value: 72, createdAt: "2026-09-03T07:00:00Z" },
+            { value: 80, createdAt: "2026-09-20T07:00:00Z" },
+        ]);
+
+        expect(trend.map((p) => p.avg)).toEqual([70, 70, 71, 80]);
+    });
+
     it("sorts oldest first and averages the trailing seven days", () => {
         const trend = weightTrend([
             { value: 72, createdAt: "2026-09-20T07:00:00Z" },
